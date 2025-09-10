@@ -1,0 +1,13 @@
+# Quartus build files
+db/
+incremental_db/
+output_files/
+simulation/
+*.rpt
+*.log
+*.summary
+
+# Compiled bitstreams (optional)
+*.sof
+*.pof
+*.jic
