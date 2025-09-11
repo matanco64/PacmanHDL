@@ -24,7 +24,13 @@ const int	y_FRAME_TOP		=	(SafetyMargin) * FIXED_POINT_MULTIPLIER;
 const int	y_FRAME_BOTTOM	=	(479 -SafetyMargin - OBJECT_HIGHT_Y ) * FIXED_POINT_MULTIPLIER; //- OBJECT_HIGHT_Y
 
 
-const int	MOVEMENT_SPEED = 10; 
+localparam UP_KEY = 4'd8;
+localparam RIGHT_KEY = 4'd6;
+localparam LEFT_KEY = 4'd4;
+localparam DOWN_KEY = 4'd2;
+
+
+const int	MOVEMENT_SPEED = 1; 
 
 
 parameter int INITIAL_X = 280;
@@ -92,15 +98,29 @@ begin
 		//------------
 		
 			if(keyPadValid) begin
-				Xspeed <= 0;
-				Yspeed <= 0;
 				case(keyPadCode)
-					8: Yspeed <= MOVEMENT_SPEED;
-					6: Xspeed <= MOVEMENT_SPEED;
-					4: Xspeed <= -MOVEMENT_SPEED;
-					2: Yspeed <= -MOVEMENT_SPEED;
-				
+					UP_KEY: begin
+						Yspeed <= MOVEMENT_SPEED;
+						Xspeed <= 0;
+						currentDirection <= UP_KEY;
+					end
+					RIGHT_KEY: begin 
+						Xspeed <= MOVEMENT_SPEED;
+						Yspeed <= 0;
+						currentDirection <= RIGHT_KEY;
+					end
+					LEFT_KEY: begin
+						Xspeed <= -MOVEMENT_SPEED;
+						Yspeed <= 0;
+						currentDirection <= LEFT_KEY;
+					end
+					DOWN_KEY: begin
+						Yspeed <= -MOVEMENT_SPEED;
+						Xspeed <= 0;
+						currentDirection <= DOWN_KEY;
+					end
 				endcase
+				
 			end
 		
 		
@@ -183,14 +203,27 @@ begin
 		//------------------------
 			POSITION_LIMITS_ST : begin  //check if still inside the frame 
 		//------------------------
-		if (Xposition < x_FRAME_LEFT) 
-						Xposition <= x_FRAME_LEFT ; 
-		if (Xposition > x_FRAME_RIGHT)
-						Xposition <= x_FRAME_RIGHT ; 
-		if (Yposition < y_FRAME_TOP) 
+		
+		if (Xposition < x_FRAME_LEFT) begin
+						Xposition <= x_FRAME_LEFT ;
+						Xspeed <= 0;
+						Yspeed <= 0;
+		end				
+		if (Xposition > x_FRAME_RIGHT) begin
+						Xposition <= x_FRAME_RIGHT ;
+						Xspeed <= 0;
+						Yspeed <= 0;
+		end	
+		if (Yposition < y_FRAME_TOP) begin
 						Yposition <= y_FRAME_TOP ; 
-		if (Yposition > y_FRAME_BOTTOM) 
-						Yposition <= y_FRAME_BOTTOM ; 
+						Xspeed <= 0;
+						Yspeed <= 0;
+		end
+		if (Yposition > y_FRAME_BOTTOM) begin
+						Yposition <= y_FRAME_BOTTOM ;
+						Xspeed <= 0;
+						Yspeed <= 0;
+		end
 
 				SM_Motion <= MOVE_ST ; 
 			
