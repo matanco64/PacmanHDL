@@ -30,7 +30,7 @@ localparam LEFT_KEY = 4'd4;
 localparam DOWN_KEY = 4'd2;
 
 
-const int	MOVEMENT_SPEED = 1; 
+const int	MOVEMENT_SPEED = 10	; 
 
 
 parameter int INITIAL_X = 280;
@@ -75,6 +75,7 @@ begin
 		Xspeed <= 0;
 		Yspeed <= 0;
 		Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER;
+		currentDirection <= 0;
 	end
 
 	case(SM_Motion)

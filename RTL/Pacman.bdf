@@ -1615,11 +1615,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(pt 976 384)
-	(pt 984 384)
-	(bus)
-)
-(connector
 	(text "RGB[7..0]" (rect 988 368 1032 385)(font "Intel Clear" ))
 	(pt 984 384)
 	(pt 1064 384)
@@ -1699,7 +1694,6 @@ agreement for further details.
 (junction (pt 1296 1232))
 (junction (pt 1296 1248))
 (junction (pt 464 960))
-(junction (pt 984 384))
 (text "Output to 7Seg" (rect 1368 936 1458 955)(font "Intel Clear" (font_size 8)))
 (text "Add here the \"square_object\" and  \"random\" modules" (rect -424 1008 -43 1028)(font "Intel Clear" (font_size 10)(bold)))
 (text "31.5 MHz Clock genrtaor" (rect 88 -40 233 -21)(font "Intel Clear" (font_size 8)))
