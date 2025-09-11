@@ -30,7 +30,7 @@ localparam LEFT_KEY = 4'd4;
 localparam DOWN_KEY = 4'd2;
 
 
-const int	MOVEMENT_SPEED = 10	; 
+const int	MOVEMENT_SPEED = 50	; 
 
 
 parameter int INITIAL_X = 280;
