@@ -150,7 +150,7 @@ agreement for further details.
 )
 (pin
 	(output)
-	(rect 1280 168 1456 184)
+	(rect 2168 168 2344 184)
 	(text "OUTPUT" (rect 1 0 39 10)(font "Arial" (font_size 6)))
 	(text "pacmanDR" (rect 90 0 141 17)(font "Intel Clear" ))
 	(pt 0 8)
@@ -166,7 +166,7 @@ agreement for further details.
 )
 (pin
 	(output)
-	(rect 1280 184 1458 200)
+	(rect 2168 184 2346 200)
 	(text "OUTPUT" (rect 1 0 39 10)(font "Arial" (font_size 6)))
 	(text "pacmanRGB[7..0]" (rect 90 0 172 17)(font "Intel Clear" ))
 	(pt 0 8)
@@ -287,7 +287,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect 56 88 232 152))
 )
 (symbol
-	(rect 936 144 1184 288)
+	(rect 1424 144 1672 288)
 	(text "pacman_mouth_openBitMap" (rect 5 0 143 12)(font "Arial" ))
 	(text "inst" (rect 8 128 25 140)(font "Arial" ))
 	(port
@@ -358,7 +358,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 576 176 800 320)
+	(rect 856 176 1080 320)
 	(text "square_object" (rect 5 0 73 12)(font "Arial" ))
 	(text "inst6" (rect 8 128 31 140)(font "Arial" ))
 	(port
@@ -449,29 +449,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 208 128))
 	)
-	(annotation_block (parameter)(rect 576 328 804 404))
-)
-(connector
-	(text "clk" (rect 529 192 543 209)(font "Intel Clear" ))
-	(pt 520 208)
-	(pt 576 208)
-)
-(connector
-	(text "resetN" (rect 525 208 555 225)(font "Intel Clear" ))
-	(pt 520 224)
-	(pt 576 224)
-)
-(connector
-	(text "pixelX[10..0]" (rect 490 224 549 241)(font "Intel Clear" ))
-	(pt 480 240)
-	(pt 576 240)
-	(bus)
-)
-(connector
-	(text "pixelY[10..0]" (rect 490 240 549 257)(font "Intel Clear" ))
-	(pt 480 256)
-	(pt 576 256)
-	(bus)
+	(annotation_block (parameter)(rect 856 328 1084 404))
 )
 (connector
 	(pt 32 368)
@@ -500,63 +478,13 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "<<__$DEF_ALIAS4427>>" (rect -208 320 -90 337)(font "Intel Clear" )(invisible))
 	(pt -208 336)
 	(pt 32 336)
-)
-(connector
-	(pt 288 272)
-	(pt 576 272)
-	(bus)
-)
-(connector
-	(pt 288 288)
-	(pt 576 288)
-	(bus)
 )
 (connector
 	(text "Direction[3..0]" (rect 296 288 360 305)(font "Intel Clear" ))
 	(pt 288 304)
 	(pt 376 304)
-	(bus)
-)
-(connector
-	(pt 800 208)
-	(pt 936 208)
-	(bus)
-)
-(connector
-	(pt 800 224)
-	(pt 936 224)
-	(bus)
-)
-(connector
-	(pt 800 240)
-	(pt 936 240)
-)
-(connector
-	(text "Direction[3..0]" (rect 857 240 921 257)(font "Intel Clear" ))
-	(pt 848 256)
-	(pt 936 256)
-	(bus)
-)
-(connector
-	(text "clk" (rect 889 160 903 177)(font "Intel Clear" ))
-	(pt 880 176)
-	(pt 936 176)
-)
-(connector
-	(text "resetN" (rect 885 176 915 193)(font "Intel Clear" ))
-	(pt 880 192)
-	(pt 936 192)
-)
-(connector
-	(pt 1184 176)
-	(pt 1280 176)
-)
-(connector
-	(pt 1184 192)
-	(pt 1280 192)
 	(bus)
 )
 (connector
@@ -568,5 +496,76 @@ agreement for further details.
 	(text "resetN" (rect -202 272 -172 289)(font "Intel Clear" ))
 	(pt -208 288)
 	(pt 32 288)
+)
+(connector
+	(text "clk" (rect 1377 160 1391 177)(font "Intel Clear" ))
+	(pt 1368 176)
+	(pt 1424 176)
+)
+(connector
+	(text "Direction[3..0]" (rect 1345 240 1409 257)(font "Intel Clear" ))
+	(pt 1336 256)
+	(pt 1424 256)
+	(bus)
+)
+(connector
+	(text "resetN" (rect 1370 176 1400 193)(font "Intel Clear" ))
+	(pt 1368 192)
+	(pt 1424 192)
+)
+(connector
+	(pt 1672 176)
+	(pt 2168 176)
+)
+(connector
+	(pt 1672 192)
+	(pt 2168 192)
+	(bus)
+)
+(connector
+	(text "clk" (rect 809 192 823 209)(font "Intel Clear" ))
+	(pt 800 208)
+	(pt 856 208)
+)
+(connector
+	(text "resetN" (rect 805 208 835 225)(font "Intel Clear" ))
+	(pt 800 224)
+	(pt 856 224)
+)
+(connector
+	(text "pixelX[10..0]" (rect 770 224 829 241)(font "Intel Clear" ))
+	(pt 480 240)
+	(pt 856 240)
+	(bus)
+)
+(connector
+	(text "pixelY[10..0]" (rect 770 240 829 257)(font "Intel Clear" ))
+	(pt 480 256)
+	(pt 856 256)
+	(bus)
+)
+(connector
+	(pt 288 272)
+	(pt 856 272)
+	(bus)
+)
+(connector
+	(pt 288 288)
+	(pt 856 288)
+	(bus)
+)
+(connector
+	(pt 1080 208)
+	(pt 1424 208)
+	(bus)
+)
+(connector
+	(pt 1080 224)
+	(pt 1424 224)
+	(bus)
+)
+(connector
+	(pt 1080 240)
+	(pt 1424 240)
 )
 (text " " (rect 0 320 2 337)(font "Intel Clear" ))

@@ -69,7 +69,7 @@ logic [4:0] hit_reg = 5'b00000;
 
 always_ff @(posedge clk or negedge resetN)
 begin
-	if (resetN === 1'b0) begin
+	if (resetN == 1'b0) begin
 		SM_Motion <= IDLE_ST;
 		Xposition <= INITIAL_X*FIXED_POINT_MULTIPLIER;
 		Xspeed <= 0;
@@ -77,162 +77,163 @@ begin
 		Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER;
 		currentDirection <= 0;
 	end
+	else begin
 
-	case(SM_Motion)
-		
-		//------------
-			IDLE_ST: begin
-		//------------
-		
-				Xspeed  <= 0; 
-				Yspeed  <= 0; 
-				Xposition <= INITIAL_X*FIXED_POINT_MULTIPLIER; 
-				Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER; 
-
-				if (startOfFrame) 
-					SM_Motion <= MOVE_ST ;
- 	
-			end
-	
-		//------------
-			MOVE_ST:  begin     // moving collecting colisions 
-		//------------
-		
-			if(keyPadValid) begin
-				case(keyPadCode)
-					UP_KEY: begin
-						Yspeed <= MOVEMENT_SPEED;
-						Xspeed <= 0;
-						currentDirection <= UP_KEY;
-					end
-					RIGHT_KEY: begin 
-						Xspeed <= MOVEMENT_SPEED;
-						Yspeed <= 0;
-						currentDirection <= RIGHT_KEY;
-					end
-					LEFT_KEY: begin
-						Xspeed <= -MOVEMENT_SPEED;
-						Yspeed <= 0;
-						currentDirection <= LEFT_KEY;
-					end
-					DOWN_KEY: begin
-						Yspeed <= -MOVEMENT_SPEED;
-						Xspeed <= 0;
-						currentDirection <= DOWN_KEY;
-					end
-				endcase
-				
-			end
-		
-		
-//			if (collision) begin
-//				hit_reg[HitEdgeCode]<=1'b1;
-//			end
+		case(SM_Motion)
 			
-
-			if (startOfFrame )
-				SM_Motion <= START_OF_FRAME_ST ; 
-					
-					
-				
-		end 
-		
-		//------------
-			START_OF_FRAME_ST:  begin      //check if any colisin was detected 
-		//------------
-
-	
-			if (hit_reg == CORNER)   // pure corner 
-					begin
-//							Yspeed <= 0-Xspeed ;
-//							Xspeed <= 0-Yspeed ;
-              Yspeed <= 0-Yspeed ;
-				  Xspeed <= 0-Xspeed ;
-					end
-			else begin 
-				case (hit_reg[3:0] )  // test sides 
-	
-					TOP+RIGHT, LEFT+BOTTOM, TOP+LEFT, BOTTOM+RIGHT :  // two sides - corner 
-					begin
-							 Yspeed <= 0-Yspeed ;
-				          Xspeed <= 0-Xspeed ;
-					end
-					LEFT, TOP+RIGHT+BOTTOM : // left side or cavity  
-					begin
-						if (Xspeed < 0) // left 
-							  Xspeed <= 0-Xspeed ;
-					end
-	
-					RIGHT, LEFT+BOTTOM +TOP :   // right side or cavity  
-					begin
-						if (Xspeed > 0) // right 
-							  Xspeed <= 0-Xspeed ;
-					end
-					
-					TOP, RIGHT+LEFT+BOTTOM :  // top side or cavity  
-					begin
-						if (Yspeed < 0) // up 
-							  Yspeed <= 0-Yspeed ;
-					end
-				
-				BOTTOM, TOP+LEFT+RIGHT :  // bottom side or cavity  
-					begin
-						if (Yspeed > 0) // doun 
-							  Yspeed <= -Yspeed ;
-					end
-					
-					default: ; 
-	
-			  endcase
-			end // else 
-	
-			hit_reg <= 5'b00000;						
-			SM_Motion <= POSITION_CHANGE_ST ; 
-		end 
-
-		//------------------------
-			POSITION_CHANGE_ST : begin  // position interpolate 
-		//------------------------
-	
-				Xposition <= Xposition + Xspeed ; 
-				Yposition <= Yposition + Yspeed ;
-			 
-				
-				SM_Motion <= POSITION_LIMITS_ST ; 
-			end
-		
-		//------------------------
-			POSITION_LIMITS_ST : begin  //check if still inside the frame 
-		//------------------------
-		
-		if (Xposition < x_FRAME_LEFT) begin
-						Xposition <= x_FRAME_LEFT ;
-						Xspeed <= 0;
-						Yspeed <= 0;
-		end				
-		if (Xposition > x_FRAME_RIGHT) begin
-						Xposition <= x_FRAME_RIGHT ;
-						Xspeed <= 0;
-						Yspeed <= 0;
-		end	
-		if (Yposition < y_FRAME_TOP) begin
-						Yposition <= y_FRAME_TOP ; 
-						Xspeed <= 0;
-						Yspeed <= 0;
-		end
-		if (Yposition > y_FRAME_BOTTOM) begin
-						Yposition <= y_FRAME_BOTTOM ;
-						Xspeed <= 0;
-						Yspeed <= 0;
-		end
-
-				SM_Motion <= MOVE_ST ; 
+			//------------
+				IDLE_ST: begin
+			//------------
 			
-			end
+					Xspeed  <= 0; 
+					Yspeed  <= 0; 
+					Xposition <= INITIAL_X*FIXED_POINT_MULTIPLIER; 
+					Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER; 
+					currentDirection <= 0;
+					if (startOfFrame) 
+						SM_Motion <= MOVE_ST ;
 		
-		endcase  // case 
+				end
+		
+			//------------
+				MOVE_ST:  begin     // moving collecting colisions 
+			//------------
+			
+				if(keyPadValid) begin
+					case(keyPadCode)
+						UP_KEY: begin
+							Yspeed <= -MOVEMENT_SPEED;
+							Xspeed <= 0;
+							currentDirection <= UP_KEY;
+						end
+						RIGHT_KEY: begin 
+							Xspeed <= MOVEMENT_SPEED;
+							Yspeed <= 0;
+							currentDirection <= RIGHT_KEY;
+						end
+						LEFT_KEY: begin
+							Xspeed <= -MOVEMENT_SPEED;
+							Yspeed <= 0;
+							currentDirection <= LEFT_KEY;
+						end
+						DOWN_KEY: begin
+							Yspeed <= MOVEMENT_SPEED;
+							Xspeed <= 0;
+							currentDirection <= DOWN_KEY;
+						end
+					endcase
+					
+				end
+			
+			
+	//			if (collision) begin
+	//				hit_reg[HitEdgeCode]<=1'b1;
+	//			end
+				
 
+				if (startOfFrame )
+					SM_Motion <= START_OF_FRAME_ST ; 
+						
+						
+					
+			end 
+			
+			//------------
+				START_OF_FRAME_ST:  begin      //check if any colisin was detected 
+			//------------
+
+	//	
+	//			if (hit_reg == CORNER)   // pure corner 
+	//					begin
+	////							Yspeed <= 0-Xspeed ;
+	////							Xspeed <= 0-Yspeed ;
+	//              Yspeed <= 0-Yspeed ;
+	//				  Xspeed <= 0-Xspeed ;
+	//					end
+	//			else begin 
+	//				case (hit_reg[3:0] )  // test sides 
+	//	
+	//					TOP+RIGHT, LEFT+BOTTOM, TOP+LEFT, BOTTOM+RIGHT :  // two sides - corner 
+	//					begin
+	//							 Yspeed <= 0-Yspeed ;
+	//				          Xspeed <= 0-Xspeed ;
+	//					end
+	//					LEFT, TOP+RIGHT+BOTTOM : // left side or cavity  
+	//					begin
+	//						if (Xspeed < 0) // left 
+	//							  Xspeed <= 0-Xspeed ;
+	//					end
+	//	
+	//					RIGHT, LEFT+BOTTOM +TOP :   // right side or cavity  
+	//					begin
+	//						if (Xspeed > 0) // right 
+	//							  Xspeed <= 0-Xspeed ;
+	//					end
+	//					
+	//					TOP, RIGHT+LEFT+BOTTOM :  // top side or cavity  
+	//					begin
+	//						if (Yspeed < 0) // up 
+	//							  Yspeed <= 0-Yspeed ;
+	//					end
+	//				
+	//				BOTTOM, TOP+LEFT+RIGHT :  // bottom side or cavity  
+	//					begin
+	//						if (Yspeed > 0) // doun 
+	//							  Yspeed <= -Yspeed ;
+	//					end
+	//					
+	//					default: ; 
+	//	
+	//			  endcase
+	//			end // else 
 		
+				hit_reg <= 5'b00000;						
+				SM_Motion <= POSITION_CHANGE_ST ; 
+			end 
+
+			//------------------------
+				POSITION_CHANGE_ST : begin  // position interpolate 
+			//------------------------
+		
+					Xposition <= Xposition + Xspeed ; 
+					Yposition <= Yposition + Yspeed ;
+				 
+					
+					SM_Motion <= POSITION_LIMITS_ST ; 
+				end
+			
+			//------------------------
+				POSITION_LIMITS_ST : begin  //check if still inside the frame 
+			//------------------------
+			
+			if (Xposition < x_FRAME_LEFT) begin
+							Xposition <= x_FRAME_LEFT ;
+							Xspeed <= 0;
+							Yspeed <= 0;
+			end				
+			if (Xposition > x_FRAME_RIGHT) begin
+							Xposition <= x_FRAME_RIGHT ;
+							Xspeed <= 0;
+							Yspeed <= 0;
+			end	
+			if (Yposition < y_FRAME_TOP) begin
+							Yposition <= y_FRAME_TOP ; 
+							Xspeed <= 0;
+							Yspeed <= 0;
+			end
+			if (Yposition > y_FRAME_BOTTOM) begin
+							Yposition <= y_FRAME_BOTTOM ;
+							Xspeed <= 0;
+							Yspeed <= 0;
+			end
+
+					SM_Motion <= MOVE_ST ; 
+				
+				end
+			
+			endcase  // case 
+
+		end
 	end 
 
 assign 	topLeftX = Xposition / FIXED_POINT_MULTIPLIER ;   // note it must be 2^n 
