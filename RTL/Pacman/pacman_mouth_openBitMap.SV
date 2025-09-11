@@ -59,32 +59,98 @@ logic [0:OBJECT_HEIGHT_Y-1] [0:OBJECT_WIDTH_X-1] [7:0] object_colors = {
 	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
 	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
 	
-always_ff@(posedge clk or negedge resetN)
-begin
-	if(!resetN) begin
-		RGBout <=	8'h00;
-		HitEdgeCode <= 3'h0;
-	end
+	
+	
+	// helper direction names (adjust if your decoder gives different values)
+localparam logic [3:0] DIR_RIGHT = 4'd6;
+localparam logic [3:0] DIR_UP    = 4'd8;
+localparam logic [3:0] DIR_LEFT  = 4'd4;
+localparam logic [3:0] DIR_DOWN  = 4'd2;
 
-	else begin
-		RGBout <= TRANSPARENT_ENCODING ; // default  
-		HitEdgeCode <= 3'h0;
+logic [10:0] srcX, srcY;                 // source coordinates into object_colors
+logic [10:0] displayWidth, displayHeight; // dims of the rectangle that we are drawing into (depends on rotation)
+logic       localInside;                  // computed inside-rectangle (uses displayWidth/displayHeight)
 
-		if (InsideRectangle == 1'b1 ) 
-		begin // inside an external bracket 
-			case(inputDirection)
-				8: RGBout <= object_colors[OBJECT_HEIGHT_Y- 1 - offsetY][OBJECT_HEIGHT_Y- 1 - offsetX];
-				6: RGBout <= object_colors[offsetY][offsetX];
-				4: RGBout <= object_colors[offsetY][OBJECT_HEIGHT_Y- 1 - offsetX];
-				2: RGBout <= object_colors[OBJECT_HEIGHT_Y- 1 - offsetY][OBJECT_HEIGHT_Y- 1 - offsetX];
-				default: RGBout <= object_colors[offsetY][offsetX];
-			endcase
-			//HitEdgeCode <= hit_colors[HitCodeY][HitCodeX];	//get hitting edge code from the colors table  
-		
-		end  	
-	end
-		
+// compute mapping and bounding box depending on direction
+always_comb begin
+    // defaults
+    displayWidth  = OBJECT_WIDTH_X;
+    displayHeight = OBJECT_HEIGHT_Y;
+    srcX = 0;
+    srcY = 0;
+
+    case (inputDirection)
+        DIR_RIGHT: begin
+            // no rotation
+            displayWidth  = OBJECT_WIDTH_X;
+            displayHeight = OBJECT_HEIGHT_Y;
+            srcX = offsetX;
+            srcY = offsetY;
+        end
+
+        DIR_UP: begin
+            // rotate 90° counter-clockwise (right -> up)
+            // new dims: width' = OBJECT_HEIGHT_Y, height' = OBJECT_WIDTH_X
+            displayWidth  = OBJECT_HEIGHT_Y;
+            displayHeight = OBJECT_WIDTH_X;
+            // inverse mapping (dst -> src): srcX = OBJECT_WIDTH_X - 1 - dstY; srcY = dstX;
+            srcX = OBJECT_WIDTH_X - 1 - offsetY;
+            srcY = offsetX;
+        end
+
+        DIR_LEFT: begin
+            // 180° rotation (right -> left)
+            displayWidth  = OBJECT_WIDTH_X;
+            displayHeight = OBJECT_HEIGHT_Y;
+            // src = (W-1 - dstX, H-1 - dstY)
+            srcX = OBJECT_WIDTH_X - 1 - offsetX;
+            srcY = OBJECT_HEIGHT_Y - 1 - offsetY;
+        end
+
+        DIR_DOWN: begin
+            // rotate 90° clockwise (right -> down)
+            // new dims: width' = OBJECT_HEIGHT_Y, height' = OBJECT_WIDTH_X
+            displayWidth  = OBJECT_HEIGHT_Y;
+            displayHeight = OBJECT_WIDTH_X;
+            // inverse mapping (dst -> src): srcX = dstY; srcY = OBJECT_HEIGHT_Y - 1 - dstX
+            srcX = offsetY;
+            srcY = OBJECT_HEIGHT_Y - 1 - offsetX;
+        end
+
+        default: begin
+            // fallback to normal
+            displayWidth  = OBJECT_WIDTH_X;
+            displayHeight = OBJECT_HEIGHT_Y;
+            srcX = offsetX;
+            srcY = offsetY;
+        end
+    endcase
+
+    // compute local inside flag using the computed display dims (this prevents index out-of-range
+    // when the caller didn't swap the rectangle dims for rotated drawing)
+    localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
 end
+
+// synchronous output generation (keeps your original reset behavior)
+always_ff @(posedge clk or negedge resetN) begin
+    if (!resetN) begin
+        RGBout      <= 8'h00;
+        HitEdgeCode <= 3'h0;
+    end
+    else begin
+        RGBout      <= TRANSPARENT_ENCODING; // default  
+        HitEdgeCode <= 3'h0;
+
+        if (localInside) begin
+            // Safety: make sure srcX/srcY are in original object index ranges before indexing
+            if ((srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y))
+                RGBout <= object_colors[srcY][srcX]; // note: object_colors[y][x]
+            else
+                RGBout <= TRANSPARENT_ENCODING; // out-of-range — don't draw
+        end
+    end
+end
+
 
 assign drawingRequest = (RGBout != TRANSPARENT_ENCODING ) ? 1'b1 : 1'b0 ;
 
