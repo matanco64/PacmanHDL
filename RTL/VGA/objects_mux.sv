@@ -26,7 +26,10 @@ module	objects_mux	(
 					input		logic ScoreTxtDrawingRequest, 
 					input		logic	[7:0] ScoreTxtRGB,		
 			  
-		  ////////////////////////
+		  
+		  
+					input		logic MapDrawingRequest, 
+					input		logic	[7:0] MapRGB,
 		  // background   
 //					input		logic	[7:0] backGroundRGB, 
 //					input		logic	BGDrawingRequest, 
@@ -40,8 +43,7 @@ begin
 			RGBOut	<= 8'b0;
 	end
 	
-	else begin
-	
+	else begin	
 		if (PacmanDrawingRequest) 
 			RGBOut <= PacmanRGB;  //first priority 
 		else if (pinkyDR)
@@ -57,8 +59,9 @@ begin
 			RGBOut <= ScoreLSBRGB;
 		else if (ScoreTxtDrawingRequest)
 			RGBOut <= ScoreTxtRGB;		
-		else 
-			RGBOut <= RGB_MIF ;// last priority 
+		else if (MapDrawingRequest == 1'b1 )
+			RGBOut <= MapRGB;
+		else RGBOut <= RGB_MIF ;// last priority 
 		end ; 
 	end
 
