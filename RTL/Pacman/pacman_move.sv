@@ -17,14 +17,15 @@ const int	FIXED_POINT_MULTIPLIER = 64;
 
 const int   OBJECT_WIDTH_X = 32;
 const int   OBJECT_HIGHT_Y = 32;
-const int	SafetyMargin   =	2;
+const int	SafetyMargin   = 16;
 const int	x_FRAME_LEFT	=	(SafetyMargin)* FIXED_POINT_MULTIPLIER; 
-const int	x_FRAME_RIGHT	=	(639 - SafetyMargin - OBJECT_WIDTH_X)* FIXED_POINT_MULTIPLIER; 
+const int	x_FRAME_RIGHT	=	(640 - SafetyMargin - OBJECT_WIDTH_X)* FIXED_POINT_MULTIPLIER; 
 const int	y_FRAME_TOP		=	(SafetyMargin) * FIXED_POINT_MULTIPLIER;
-const int	y_FRAME_BOTTOM	=	(479 -SafetyMargin - OBJECT_HIGHT_Y ) * FIXED_POINT_MULTIPLIER; //- OBJECT_HIGHT_Y
+const int	y_FRAME_BOTTOM	=	(480 -SafetyMargin - OBJECT_HIGHT_Y ) * FIXED_POINT_MULTIPLIER; //- OBJECT_HIGHT_Y
 
 
 localparam UP_KEY = 4'd8;
+localparam INITIAL_DIRECTION = 4'd8;
 localparam RIGHT_KEY = 4'd6;
 localparam LEFT_KEY = 4'd4;
 localparam DOWN_KEY = 4'd2;
@@ -66,6 +67,8 @@ enum  logic [2:0] {IDLE_ST,         	// initial state
 						
 logic [4:0] hit_reg = 5'b00000;
 
+logic canTurn;
+
 
 always_ff @(posedge clk or negedge resetN)
 begin
@@ -75,7 +78,7 @@ begin
 		Xspeed <= 0;
 		Yspeed <= 0;
 		Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER;
-		currentDirection <= 0;
+		currentDirection <= INITIAL_DIRECTION;
 	end
 	else begin
 
@@ -89,7 +92,7 @@ begin
 					Yspeed  <= 0; 
 					Xposition <= INITIAL_X*FIXED_POINT_MULTIPLIER; 
 					Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER; 
-					currentDirection <= 0;
+					currentDirection <= INITIAL_DIRECTION;
 					if (startOfFrame) 
 						SM_Motion <= MOVE_ST ;
 		
@@ -98,8 +101,8 @@ begin
 			//------------
 				MOVE_ST:  begin     // moving collecting colisions 
 			//------------
-			
-				if(keyPadValid) begin
+				canTurn = (Xposition / FIXED_POINT_MULTIPLIER) % 16 == 0 && (Yposition / FIXED_POINT_MULTIPLIER) % 16 == 0;
+				if(keyPadValid && canTurn) begin
 					case(keyPadCode)
 						UP_KEY: begin
 							Yspeed <= -MOVEMENT_SPEED;
