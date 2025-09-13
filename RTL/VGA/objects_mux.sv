@@ -6,6 +6,15 @@ module	objects_mux	(
 		   // pacman 
 					input		logic PacmanDrawingRequest, 
 					input		logic	[7:0] PacmanRGB, 
+			// pinky 
+					input		logic pinkyDR, 
+					input		logic	[7:0] pinkyRGB,	
+			// inky 
+					input		logic inkyDR, 
+					input		logic	[7:0] inkyRGB,	
+			// pinky 
+					input		logic clydeDR, 
+					input		logic	[7:0] clydeRGB,			
 					     
 		  // ScoreMSB 
 					input		logic ScoreMSBDrawingRequest, 
@@ -32,10 +41,18 @@ begin
 	end
 	
 	else begin
+	
 		if (PacmanDrawingRequest) 
 			RGBOut <= PacmanRGB;  //first priority 
+		else if (pinkyDR)
+			RGBOut <= pinkyRGB;
+		else if (inkyDR)
+			RGBOut <= inkyRGB;
+		else if (clydeDR)
+			RGBOut <= clydeRGB;
+			
 		else if (ScoreMSBDrawingRequest)
-			RGBOut <= ScoreMSBRGB;
+			RGBOut <= ScoreMSBRGB;	
 		else if (ScoreLSBDrawingRequest)
 			RGBOut <= ScoreLSBRGB;
 		else if (ScoreTxtDrawingRequest)
