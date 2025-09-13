@@ -610,6 +610,5 @@ set_global_assignment -name VERILOG_FILE output_files/Lab1Demo.v
 set_global_assignment -name BDF_FILE output_files/Letter.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/ScoreBitMap.sv
 set_global_assignment -name BDF_FILE RTL/Pacman/Score.bdf
-set_global_assignment -name BDF_FILE RTL/Pacman/ScoreB.bdf
 set_global_assignment -name SLD_FILE db/stp1_auto_stripped.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

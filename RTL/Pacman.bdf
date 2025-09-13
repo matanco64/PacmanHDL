@@ -1381,9 +1381,61 @@ agreement for further details.
 	(annotation_block (parameter)(rect -96 1488 51 1564))
 )
 (symbol
-	(rect -144 1960 160 2120)
-	(text "ScoreB" (rect 5 0 46 19)(font "Intel Clear" (font_size 8)))
-	(text "inst24" (rect 8 139 36 156)(font "Intel Clear" ))
+	(rect -528 1096 -368 1176)
+	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
+	(text "inst2" (rect 8 64 30 81)(font "Intel Clear" ))
+	(port
+		(pt 160 32)
+		(output)
+		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
+		(line (pt 160 32)(pt 144 32)(line_width 3))
+	)
+	(parameter
+		"size"
+		"11"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"MyValue"
+		"128"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 144 64))
+	)
+	(annotation_block (parameter)(rect -736 1096 -567 1153))
+)
+(symbol
+	(rect -520 1496 -360 1576)
+	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
+	(text "inst8" (rect 8 64 30 81)(font "Intel Clear" ))
+	(port
+		(pt 160 32)
+		(output)
+		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
+		(line (pt 160 32)(pt 144 32)(line_width 3))
+	)
+	(parameter
+		"size"
+		"11"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"MyValue"
+		"144"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 144 64))
+	)
+	(annotation_block (parameter)(rect -736 1496 -567 1553))
+)
+(symbol
+	(rect -160 1944 136 2104)
+	(text "Score" (rect 5 0 38 19)(font "Intel Clear" (font_size 8)))
+	(text "inst25" (rect 8 139 36 156)(font "Intel Clear" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -1427,27 +1479,22 @@ agreement for further details.
 		(line (pt 0 112)(pt 16 112)(line_width 3))
 	)
 	(port
-		(pt 304 32)
+		(pt 296 32)
 		(output)
-		(text "ScoreTxtBDrawingRequest" (rect 0 0 156 19)(font "Intel Clear" (font_size 8)))
-		(text "ScoreTxtBDrawingRequest" (rect 127 27 283 46)(font "Intel Clear" (font_size 8)))
-		(line (pt 304 32)(pt 288 32))
+		(text "ScoreTxtDrawingRequest" (rect 0 0 148 19)(font "Intel Clear" (font_size 8)))
+		(text "ScoreTxtDrawingRequest" (rect 127 27 275 46)(font "Intel Clear" (font_size 8)))
+		(line (pt 296 32)(pt 280 32))
 	)
 	(port
-		(pt 304 48)
+		(pt 296 48)
 		(output)
-		(text "RGBScoretxtB[7..0]" (rect 0 0 113 19)(font "Intel Clear" (font_size 8)))
-		(text "RGBScoretxtB[7..0]" (rect 170 43 283 62)(font "Intel Clear" (font_size 8)))
-		(line (pt 304 48)(pt 288 48)(line_width 3))
+		(text "RGBScoreTxt[7..0]" (rect 0 0 108 19)(font "Intel Clear" (font_size 8)))
+		(text "RGBScoreTxt[7..0]" (rect 167 43 275 62)(font "Intel Clear" (font_size 8)))
+		(line (pt 296 48)(pt 280 48)(line_width 3))
 	)
 	(parameter
 		"COLOR"
-		"11111111"
-		""
-	)
-	(parameter
-		"HEIGHT"
-		"16"
+		"11111110"
 		""
 	)
 	(parameter
@@ -1455,62 +1502,15 @@ agreement for further details.
 		"96"
 		""
 	)
+	(parameter
+		"HEIGHT"
+		"16"
+		""
+	)
 	(drawing
-		(rectangle (rect 16 16 288 144))
+		(rectangle (rect 16 16 280 144))
 	)
-	(annotation_block (parameter)(rect -144 1856 3 1932))
-)
-(symbol
-	(rect -528 1096 -368 1176)
-	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
-	(text "inst2" (rect 8 64 30 81)(font "Intel Clear" ))
-	(port
-		(pt 160 32)
-		(output)
-		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
-		(line (pt 160 32)(pt 144 32)(line_width 3))
-	)
-	(parameter
-		"size"
-		"11"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"MyValue"
-		"100"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 144 64))
-	)
-	(annotation_block (parameter)(rect -736 1096 -567 1153))
-)
-(symbol
-	(rect -520 1496 -360 1576)
-	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
-	(text "inst8" (rect 8 64 30 81)(font "Intel Clear" ))
-	(port
-		(pt 160 32)
-		(output)
-		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
-		(line (pt 160 32)(pt 144 32)(line_width 3))
-	)
-	(parameter
-		"size"
-		"11"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"MyValue"
-		"116"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 144 64))
-	)
-	(annotation_block (parameter)(rect -736 1496 -567 1553))
+	(annotation_block (parameter)(rect -160 1864 -13 1940))
 )
 (connector
 	(text "resetN" (rect -134 176 -104 193)(font "Intel Clear" ))
@@ -1925,17 +1925,6 @@ agreement for further details.
 	(pt -96 1640)
 )
 (connector
-	(text "ScoreLSBDrawingRequest" (rect 178 1608 300 1625)(font "Intel Clear" ))
-	(pt 176 1624)
-	(pt 280 1624)
-)
-(connector
-	(text "RGBScoreLSB[7..0]" (rect 186 1624 275 1641)(font "Intel Clear" ))
-	(pt 176 1640)
-	(pt 280 1640)
-	(bus)
-)
-(connector
 	(text "pixelX[10..0]" (rect -166 1640 -106 1652)(font "Arial" ))
 	(pt -192 1656)
 	(pt -96 1656)
@@ -2093,49 +2082,60 @@ agreement for further details.
 	(pt 816 8)
 )
 (connector
-	(text "clk" (rect -159 1976 -145 1993)(font "Intel Clear" ))
-	(pt -176 1992)
-	(pt -144 1992)
+	(text "clk" (rect -175 1960 -161 1977)(font "Intel Clear" ))
+	(pt -192 1976)
+	(pt -160 1976)
 )
 (connector
-	(text "resetN" (rect -173 1992 -143 2009)(font "Intel Clear" ))
-	(pt -176 2008)
-	(pt -144 2008)
+	(text "resetN" (rect -189 1976 -159 1993)(font "Intel Clear" ))
+	(pt -192 1992)
+	(pt -160 1992)
 )
 (connector
-	(text "pixelX[10..0]" (rect -214 2008 -154 2020)(font "Arial" ))
-	(pt -240 2024)
-	(pt -144 2024)
+	(text "pixelX[10..0]" (rect -230 1992 -170 2004)(font "Arial" ))
+	(pt -256 2008)
+	(pt -160 2008)
 	(bus)
 )
 (connector
-	(text "pixelY[10..0]" (rect -214 2024 -152 2036)(font "Arial" ))
-	(pt -240 2040)
-	(pt -144 2040)
+	(text "pixelY[10..0]" (rect -230 2008 -168 2020)(font "Arial" ))
+	(pt -256 2024)
+	(pt -160 2024)
 	(bus)
 )
 (connector
-	(text "topLeftXScoreTxt[10..0]" (rect -214 2040 -104 2057)(font "Intel Clear" ))
-	(pt -216 2056)
-	(pt -144 2056)
+	(text "topLeftXScoreTxt[10..0]" (rect -230 2024 -120 2041)(font "Intel Clear" ))
+	(pt -232 2040)
+	(pt -160 2040)
 	(bus)
 )
 (connector
-	(text "topLeftYScoreTxt[10..0]" (rect -214 2056 -104 2073)(font "Intel Clear" ))
-	(pt -216 2072)
-	(pt -144 2072)
+	(text "topLeftYScoreTxt[10..0]" (rect -230 2040 -120 2057)(font "Intel Clear" ))
+	(pt -232 2056)
+	(pt -160 2056)
 	(bus)
 )
 (connector
-	(text "RGBScoreTxt[7..0]" (rect 178 1992 262 2009)(font "Intel Clear" ))
-	(pt 160 2008)
-	(pt 272 2008)
+	(text "ScoreLSBDrawingRequest" (rect 210 1608 332 1625)(font "Intel Clear" ))
+	(pt 176 1624)
+	(pt 312 1624)
+)
+(connector
+	(text "RGBScoreLSB[7..0]" (rect 218 1624 307 1641)(font "Intel Clear" ))
+	(pt 176 1640)
+	(pt 312 1640)
 	(bus)
 )
 (connector
-	(text "ScoreTxtDrawingRequest" (rect 170 1976 288 1993)(font "Intel Clear" ))
-	(pt 160 1992)
-	(pt 272 1992)
+	(text "ScoreTxtDrawingRequest" (rect 146 1960 264 1977)(font "Intel Clear" ))
+	(pt 136 1976)
+	(pt 248 1976)
+)
+(connector
+	(text "RGBScoreTxt[7..0]" (rect 154 1976 238 1993)(font "Intel Clear" ))
+	(pt 136 1992)
+	(pt 248 1992)
+	(bus)
 )
 (junction (pt 1296 1232))
 (junction (pt 1296 1248))
