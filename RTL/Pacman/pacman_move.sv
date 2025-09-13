@@ -25,13 +25,13 @@ const int	y_FRAME_BOTTOM	=	(480 -SafetyMargin - OBJECT_HIGHT_Y ) * FIXED_POINT_M
 
 
 localparam UP_KEY = 4'd8;
-localparam INITIAL_DIRECTION = 4'd8;
+localparam INITIAL_DIRECTION = UP_KEY;
 localparam RIGHT_KEY = 4'd6;
 localparam LEFT_KEY = 4'd4;
 localparam DOWN_KEY = 4'd2;
 
 
-const int	MOVEMENT_SPEED = 50	; 
+const int	MOVEMENT_SPEED = 64; 
 
 
 parameter int INITIAL_X = 280;
@@ -65,9 +65,12 @@ enum  logic [2:0] {IDLE_ST,         	// initial state
 						 POSITION_LIMITS_ST  // check if inside the frame  
 						}  SM_Motion ;
 						
-logic [4:0] hit_reg = 5'b00000;
+logic hit_reg = 1'b0;
+logic is_neg;
 
 logic canTurn;
+
+assign canTurn = ((Xposition / FIXED_POINT_MULTIPLIER) % 16) == 0 && ((Yposition / FIXED_POINT_MULTIPLIER) % 16) == 0;
 
 
 always_ff @(posedge clk or negedge resetN)
@@ -77,6 +80,8 @@ begin
 		Xposition <= INITIAL_X*FIXED_POINT_MULTIPLIER;
 		Xspeed <= 0;
 		Yspeed <= 0;
+		hit_reg <= 1'b0;
+		is_neg <= 1'b0;
 		Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER;
 		currentDirection <= INITIAL_DIRECTION;
 	end
@@ -101,8 +106,8 @@ begin
 			//------------
 				MOVE_ST:  begin     // moving collecting colisions 
 			//------------
-				canTurn = (Xposition / FIXED_POINT_MULTIPLIER) % 16 == 0 && (Yposition / FIXED_POINT_MULTIPLIER) % 16 == 0;
-				if(keyPadValid && canTurn) begin
+				
+				if(keyPadValid && !is_neg && canTurn) begin
 					case(keyPadCode)
 						UP_KEY: begin
 							Yspeed <= -MOVEMENT_SPEED;
@@ -126,12 +131,16 @@ begin
 						end
 					endcase
 					
+					// ensure there is no accumaltive 1/64th pixel error:
+					Xposition <= ((Xposition / FIXED_POINT_MULTIPLIER) * FIXED_POINT_MULTIPLIER);
+					Yposition <= ((Yposition / FIXED_POINT_MULTIPLIER) * FIXED_POINT_MULTIPLIER);
+					
 				end
 			
 			
-	//			if (collision) begin
-	//				hit_reg[HitEdgeCode]<=1'b1;
-	//			end
+	 			if (collision) begin
+					hit_reg <= 1'b1;
+				end
 				
 
 				if (startOfFrame )
@@ -142,57 +151,41 @@ begin
 			end 
 			
 			//------------
-				START_OF_FRAME_ST:  begin      //check if any colisin was detected 
+				START_OF_FRAME_ST:  begin      //check if any colision was detected 
 			//------------
-
-	//	
-	//			if (hit_reg == CORNER)   // pure corner 
-	//					begin
-	////							Yspeed <= 0-Xspeed ;
-	////							Xspeed <= 0-Yspeed ;
-	//              Yspeed <= 0-Yspeed ;
-	//				  Xspeed <= 0-Xspeed ;
-	//					end
-	//			else begin 
-	//				case (hit_reg[3:0] )  // test sides 
-	//	
-	//					TOP+RIGHT, LEFT+BOTTOM, TOP+LEFT, BOTTOM+RIGHT :  // two sides - corner 
-	//					begin
-	//							 Yspeed <= 0-Yspeed ;
-	//				          Xspeed <= 0-Xspeed ;
-	//					end
-	//					LEFT, TOP+RIGHT+BOTTOM : // left side or cavity  
-	//					begin
-	//						if (Xspeed < 0) // left 
-	//							  Xspeed <= 0-Xspeed ;
-	//					end
-	//	
-	//					RIGHT, LEFT+BOTTOM +TOP :   // right side or cavity  
-	//					begin
-	//						if (Xspeed > 0) // right 
-	//							  Xspeed <= 0-Xspeed ;
-	//					end
-	//					
-	//					TOP, RIGHT+LEFT+BOTTOM :  // top side or cavity  
-	//					begin
-	//						if (Yspeed < 0) // up 
-	//							  Yspeed <= 0-Yspeed ;
-	//					end
-	//				
-	//				BOTTOM, TOP+LEFT+RIGHT :  // bottom side or cavity  
-	//					begin
-	//						if (Yspeed > 0) // doun 
-	//							  Yspeed <= -Yspeed ;
-	//					end
-	//					
-	//					default: ; 
-	//	
-	//			  endcase
-	//			end // else 
-		
-				hit_reg <= 5'b00000;						
-				SM_Motion <= POSITION_CHANGE_ST ; 
-			end 
+					if (hit_reg && !is_neg) begin
+						Xspeed <= -Xspeed;
+						Yspeed <= -Yspeed;
+						hit_reg <= 1'b0;
+						is_neg <= 1'b1;
+//						case(currentDirection)
+//							UP_KEY: begin
+//								Yspeed <= MOVEMENT_SPEED;
+//								Xspeed <= 0;
+//							end
+//							RIGHT_KEY: begin 
+//								Xspeed <= -MOVEMENT_SPEED;
+//								Yspeed <= 0;
+//							end
+//							LEFT_KEY: begin
+//								Xspeed <= MOVEMENT_SPEED;
+//								Yspeed <= 0;
+//							end
+//							DOWN_KEY: begin
+//								Yspeed <= -MOVEMENT_SPEED;
+//								Xspeed <= 0;
+//							end
+//						endcase
+						
+					end else if (!hit_reg && is_neg) begin
+						Xspeed <= 0;
+						Yspeed <= 0;
+						is_neg <= 1'b0;
+					end
+					
+					
+					SM_Motion <= POSITION_CHANGE_ST ; 
+				end
 
 			//------------------------
 				POSITION_CHANGE_ST : begin  // position interpolate 
@@ -232,7 +225,7 @@ begin
 
 					SM_Motion <= MOVE_ST ; 
 				
-				end
+			end
 			
 			endcase  // case 
 
