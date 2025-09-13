@@ -60,8 +60,7 @@ begin
 			offsetY	<= (pixelY - topLeftY);
 		end 
 		
-
-		
+	
 	end
 end 
 endmodule 
