@@ -73,7 +73,6 @@ localparam logic [3:0] DIR_DOWN  = 4'd2;
 
 logic [10:0] srcX, srcY;                 // source coordinates into object_colors
 logic [10:0] displayWidth, displayHeight; // dims of the rectangle that we are drawing into (depends on rotation)
-logic       localInside;                  // computed inside-rectangle (uses displayWidth/displayHeight)
 
 // compute mapping and bounding box depending on direction
 always_comb begin
@@ -130,9 +129,9 @@ always_comb begin
         end
     endcase
 
-    // compute local inside flag using the computed display dims (this prevents index out-of-range
-    // when the caller didn't swap the rectangle dims for rotated drawing)
-    localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
+//    // compute local inside flag using the computed display dims (this prevents index out-of-range
+//    // when the caller didn't swap the rectangle dims for rotated drawing)
+//    localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
 end
 
 
@@ -169,7 +168,7 @@ always_ff @(posedge clk or negedge resetN) begin
         RGBout      <= TRANSPARENT_ENCODING; // default  
         HitEdgeCode <= 3'h0;
 
-        if (localInside) begin
+        if (InsideRectangle) begin
             // Safety: make sure srcX/srcY are in original object index ranges before indexing
             if ((srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y))
 					 RGBout <= (mouthOpen) ? object_colors_open[srcY][srcX] :object_colors_closed[srcY][srcX];
@@ -181,6 +180,6 @@ always_ff @(posedge clk or negedge resetN) begin
 end
 
 
-assign drawingRequest = (RGBout != TRANSPARENT_ENCODING ) ? 1'b1 : 1'b0 ;
+assign drawingRequest = InsideRectangle; //(RGBout != TRANSPARENT_ENCODING ) ? 1'b1 : 1'b0 ;
 
 endmodule 
