@@ -4,7 +4,7 @@ module map1_drawer (
 	input logic signed	[10:0] pixelX,//  current VGA pixel 
 	input 	logic signed	[10:0] pixelY,
 	output	logic	drawingRequest, // output that the pixel should be displayed
-	output	logic	[7:0] RGBout  // rgb value from the bitmap 
+	output	logic	[7:0] RGBout  // rgb value from the bitmap
 );
 
 
@@ -73,22 +73,17 @@ begin
 		drawingRequest	<=	1'b0;
 	end
 	else begin 
- 
-		begin 
-			tile = pacmanMap[pixelX / TILE_SIZE + 1][pixelY / TILE_SIZE + 1];
+		RGBout <= 8'b0 ;
+		drawingRequest <= 1'b0 ;
+		if (pixelY / TILE_SIZE >= 1) begin 
+			tile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 1];
 			if(tile == 2'd1 || tile == 2'd2) begin
 				RGBout <= OBJECT_COLOR ;
 				drawingRequest <= 1'b1;
 				
-			end else begin
-				RGBout <= 8'b0 ;
-				drawingRequest <= 1'b0 ;
 			end
-		end 
-		
-
-		
-	end
-end 
+		end
+	end 
+end
 
 endmodule
