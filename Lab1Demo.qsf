@@ -292,5 +292,5 @@ set_global_assignment -name BDF_FILE RTL/Pacman/Pinky.bdf
 set_global_assignment -name BDF_FILE RTL/Pacman/Character.bdf
 set_global_assignment -name BDF_FILE RTL/Pacman/Ghost.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/ghost_move.sv
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name SLD_FILE db/stp1_auto_stripped.stp
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
