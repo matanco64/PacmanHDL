@@ -3,6 +3,7 @@ module map1_drawer (
 	input logic resetN,
 	input logic signed	[10:0] pixelX,//  current VGA pixel 
 	input 	logic signed	[10:0] pixelY,
+	input logic coinCollision,  // Marks collision with pacman and coin, relevant cell should be disabled.
 	output	logic	drawingRequest, // output that the pixel should be displayed
 	output	logic	drawingCoin, // ouput Whether a coin is drawn or not
 	output	logic	[7:0] RGBout  // rgb value from the bitmap
@@ -27,9 +28,14 @@ module map1_drawer (
   localparam OBJECT_COLOR = 8'b00000011;
   localparam COIN_COLOR = 8'b11000000;
   localparam TILE_SIZE = 16; // IMPORTANT TO KEEP 2^n
+  localparam logic [7:0] TRANSPARENT_ENCODING = 8'h0;
+  localparam logic [1:0] WALL = 2'd2;
+  localparam logic [1:0] GHOST_WALL = 2'd3;
+  localparam logic [1:0] COIN = 2'd1;
+  localparam logic [1:0] EMPTY = 2'd0;
   
 
-  logic [0:30][0:27][1:0] pacmanMap = {
+  logic [0:30][0:27][1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
   { 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2 },
   { 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2 },
   { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
@@ -63,12 +69,14 @@ module map1_drawer (
   { 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2 },
 };
 
+logic [0:30][0:27][1:0] pacmanMap;
+
+
 
 
 
 logic [1:0] tile;
 
-assign tile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 1];
 assign Utile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 2];
 assign Dtile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE];
 assign Ltile = pacmanMap[pixelX / TILE_SIZE - 1][pixelY / TILE_SIZE];
@@ -77,35 +85,42 @@ assign Rtile = pacmanMap[pixelX / TILE_SIZE + 1][pixelY / TILE_SIZE];
 
 //maze_part maze_part ( .symbol(tile), .USymbol(Utile), .DSymbol(Dtile), .LSymbol(Ltile), .RSymbol(Rtile), .offsetX(pixelX % TILE_SIZE), .offsetY(pixelY % TILE_SIZE), .RGBout(RGBDraw));
 
-logic offsetX = pixelX % TILE_SIZE;
-logic offsetY = pixelY % TILE_SIZE;
+logic [3:0] offsetX;
+logic [3:0] offsetY;
+
 
 always_ff@(posedge clk or negedge resetN)
 begin
 	if(!resetN) begin
 		RGBout			<=	8'b0;
 		drawingRequest	<=	1'b0;
+		pacmanMap <= OriginalPacmanMap;
 	end
 	else begin 
-		RGBout <= 8'b0 ;
+		RGBout <= TRANSPARENT_ENCODING ;
 		drawingRequest <= 1'b0 ;
+		drawingCoin <= 1'b0;
+		tile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 1];
 		if (pixelY / TILE_SIZE >= 1) begin 
-			if(tile == 2'd2 || tile == 2'd3) begin
+			if(tile == WALL || tile == GHOST_WALL) begin
 //				RGBout <= RGBDraw;
 				RGBout <= OBJECT_COLOR;
 				drawingRequest <= 1'b1;
 				
 			end
-		end else if (tile == 2'd1) begin
-			if (offsetX >= 6 && offsetX < 10 && offsetY >= 6 && offsetY < 10) begin
-				RGBout <= OBJECT_COLOR;
-				drawingRequest <= 1'b1;
-				drawingCoin <= 1'b1;
+			
+			if (tile == COIN) begin
+				offsetX = pixelX % TILE_SIZE;
+				offsetY = pixelY % TILE_SIZE;
+				if (offsetX >= 6 && offsetX < 10 && offsetY >= 6 && offsetY < 10) begin
+					RGBout <= COIN_COLOR;
+					drawingCoin <= 1'b1;
+				end
+				if (coinCollision)
+					pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 1] <= EMPTY;
 			end
-				
+			
 		end
-		
-		
 	end 
 end
 
