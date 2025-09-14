@@ -153,9 +153,16 @@ agreement for further details.
 	(port
 		(pt 0 320)
 		(input)
+		(text "CoinDrawingRequest" (rect 0 0 83 12)(font "Arial" ))
+		(text "CoinDrawingRequest" (rect 21 315 104 327)(font "Arial" ))
+		(line (pt 0 320)(pt 16 320)(line_width 1))
+	)
+	(port
+		(pt 0 336)
+		(input)
 		(text "MapRGB[7..0]" (rect 0 0 59 12)(font "Arial" ))
-		(text "MapRGB[7..0]" (rect 21 315 80 327)(font "Arial" ))
-		(line (pt 0 320)(pt 16 320)(line_width 3))
+		(text "MapRGB[7..0]" (rect 21 331 80 343)(font "Arial" ))
+		(line (pt 0 336)(pt 16 336)(line_width 3))
 	)
 	(port
 		(pt 264 32)
