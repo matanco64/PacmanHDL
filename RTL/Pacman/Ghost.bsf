@@ -21,7 +21,7 @@ agreement for further details.
 */
 (header "symbol" (version "1.2"))
 (symbol
-	(rect 16 16 240 208)
+	(rect 16 16 296 208)
 	(text "Ghost" (rect 5 0 39 19)(font "Intel Clear" (font_size 8)))
 	(text "inst" (rect 8 171 24 188)(font "Intel Clear" ))
 	(port
@@ -83,23 +83,37 @@ agreement for further details.
 	(port
 		(pt 0 160)
 		(input)
-		(text "charcterSelect[1..0]" (rect 0 0 114 19)(font "Intel Clear" (font_size 8)))
-		(text "charcterSelect[1..0]" (rect 21 155 135 174)(font "Intel Clear" (font_size 8)))
+		(text "ghostSelect[1..0]" (rect 0 0 99 19)(font "Intel Clear" (font_size 8)))
+		(text "ghostSelect[1..0]" (rect 21 155 120 174)(font "Intel Clear" (font_size 8)))
 		(line (pt 0 160)(pt 16 160)(line_width 3))
 	)
 	(port
-		(pt 224 32)
+		(pt 280 32)
 		(output)
 		(text "DR" (rect 0 0 17 19)(font "Intel Clear" (font_size 8)))
-		(text "DR" (rect 186 27 203 46)(font "Intel Clear" (font_size 8)))
-		(line (pt 224 32)(pt 208 32))
+		(text "DR" (rect 242 27 259 46)(font "Intel Clear" (font_size 8)))
+		(line (pt 280 32)(pt 264 32))
 	)
 	(port
-		(pt 224 48)
+		(pt 280 48)
 		(output)
 		(text "RGB[7..0]" (rect 0 0 56 19)(font "Intel Clear" (font_size 8)))
-		(text "RGB[7..0]" (rect 147 43 203 62)(font "Intel Clear" (font_size 8)))
-		(line (pt 224 48)(pt 208 48)(line_width 3))
+		(text "RGB[7..0]" (rect 203 43 259 62)(font "Intel Clear" (font_size 8)))
+		(line (pt 280 48)(pt 264 48)(line_width 3))
+	)
+	(port
+		(pt 280 64)
+		(output)
+		(text "ghostOffsetX[10..0]" (rect 0 0 115 19)(font "Intel Clear" (font_size 8)))
+		(text "ghostOffsetX[10..0]" (rect 144 59 259 78)(font "Intel Clear" (font_size 8)))
+		(line (pt 280 64)(pt 264 64)(line_width 3))
+	)
+	(port
+		(pt 280 80)
+		(output)
+		(text "ghostOffsetY[10..0]" (rect 0 0 115 19)(font "Intel Clear" (font_size 8)))
+		(text "ghostOffsetY[10..0]" (rect 144 75 259 94)(font "Intel Clear" (font_size 8)))
+		(line (pt 280 80)(pt 264 80)(line_width 3))
 	)
 	(parameter
 		"initial_X"
@@ -112,7 +126,7 @@ agreement for further details.
 		""
 	)
 	(drawing
-		(rectangle (rect 16 16 208 176))
+		(rectangle (rect 16 16 264 176))
 	)
-	(annotation_block (parameter)(rect 240 -64 340 16))
+	(annotation_block (parameter)(rect 296 -64 396 16))
 )
