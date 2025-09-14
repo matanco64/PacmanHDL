@@ -29,6 +29,7 @@ module	objects_mux	(
 		  
 		  
 					input		logic MapDrawingRequest, 
+					input		logic CoinDrawingRequest, 
 					input		logic	[7:0] MapRGB,
 		  // background   
 //					input		logic	[7:0] backGroundRGB, 
@@ -59,7 +60,7 @@ begin
 			RGBOut <= ScoreLSBRGB;
 		else if (ScoreTxtDrawingRequest)
 			RGBOut <= ScoreTxtRGB;		
-		else if (MapDrawingRequest == 1'b1 )
+		else if (MapDrawingRequest || CoinDrawingRequest)
 			RGBOut <= MapRGB;
 		else RGBOut <= RGB_MIF ;// last priority 
 		end ; 
