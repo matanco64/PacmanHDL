@@ -4,9 +4,6 @@ module map1_drawer (
 	input logic signed	[10:0] pixelX,//  current VGA pixel 
 	input 	logic signed	[10:0] pixelY,
 	input logic coinCollision,  // Marks collision with pacman and coin, relevant cell should be disabled.
-	output	logic	drawingRequest, // output that the pixel should be displayed
-	output	logic	drawingCoin, // ouput Whether a coin is drawn or not
-	output	logic	[7:0] RGBout  // rgb value from the bitmap
 	
 	//Ghosts - inputs//
 	input logic [10:0] PinkyOffsetX,
@@ -14,6 +11,7 @@ module map1_drawer (
 	
 	////
 	output	logic	drawingRequest, // output that the pixel should be displayed
+	output	logic	drawingCoin, // ouput Whether a coin is drawn or not
 	output	logic	[7:0] RGBout,  // rgb value from the bitmap
 	
 	//Ghosts - outputs//
@@ -133,7 +131,6 @@ begin
 		tile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 1];
 		if (pixelY / TILE_SIZE >= 1) begin 
 			if(tile == WALL || tile == GHOST_WALL) begin
-//				RGBout <= RGBDraw;
 				RGBout <= OBJECT_COLOR;
 				drawingRequest <= 1'b1;
 				

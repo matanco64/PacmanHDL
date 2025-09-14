@@ -31,9 +31,6 @@ module	objects_mux	(
 					input		logic MapDrawingRequest, 
 					input		logic CoinDrawingRequest, 
 					input		logic	[7:0] MapRGB,
-		  // background   
-//					input		logic	[7:0] backGroundRGB, 
-//					input		logic	BGDrawingRequest, 
 			  
 				   output	logic	[7:0] RGBOut
 );
