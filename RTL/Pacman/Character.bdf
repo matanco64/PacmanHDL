@@ -332,7 +332,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect 1248 288 1476 364))
 )
 (symbol
-	(rect 1816 104 2072 280)
+	(rect 1800 104 2056 280)
 	(text "characterBitMap" (rect 5 0 84 12)(font "Arial" ))
 	(text "inst2" (rect 8 160 30 177)(font "Intel Clear" ))
 	(port
@@ -517,22 +517,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "clk" (rect 1769 120 1783 137)(font "Intel Clear" ))
-	(pt 1760 136)
-	(pt 1816 136)
-)
-(connector
-	(text "Direction[3..0]" (rect 1737 200 1801 217)(font "Intel Clear" ))
-	(pt 1728 216)
-	(pt 1816 216)
-	(bus)
-)
-(connector
-	(text "resetN" (rect 1762 136 1792 153)(font "Intel Clear" ))
-	(pt 1760 152)
-	(pt 1816 152)
-)
-(connector
 	(text "clk" (rect 1201 152 1215 169)(font "Intel Clear" ))
 	(pt 1192 168)
 	(pt 1248 168)
@@ -548,36 +532,8 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(pt 1472 168)
-	(pt 1816 168)
-	(bus)
-)
-(connector
-	(pt 1472 184)
-	(pt 1816 184)
-	(bus)
-)
-(connector
-	(pt 1472 200)
-	(pt 1816 200)
-)
-(connector
 	(pt 376 328)
 	(pt 376 360)
-	(bus)
-)
-(connector
-	(text "startOfFrame" (rect 1762 216 1825 233)(font "Intel Clear" ))
-	(pt 1744 232)
-	(pt 1816 232)
-)
-(connector
-	(pt 2072 136)
-	(pt 2568 136)
-)
-(connector
-	(pt 2072 152)
-	(pt 2584 152)
 	(bus)
 )
 (connector
@@ -650,12 +606,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "charcterSelect[1..0]" (rect 1691 232 1781 249)(font "Intel Clear" ))
-	(pt 1688 248)
-	(pt 1816 248)
-	(bus)
-)
-(connector
 	(text "KeyPadCode[3..0]" (rect 284 472 370 489)(font "Intel Clear" ))
 	(pt 272 488)
 	(pt 408 488)
@@ -681,6 +631,56 @@ agreement for further details.
 	(text "pixelY[10..0]" (rect 1098 200 1157 217)(font "Intel Clear" ))
 	(pt 1088 216)
 	(pt 1248 216)
+	(bus)
+)
+(connector
+	(text "clk" (rect 1753 120 1767 137)(font "Intel Clear" ))
+	(pt 1744 136)
+	(pt 1800 136)
+)
+(connector
+	(text "Direction[3..0]" (rect 1721 200 1785 217)(font "Intel Clear" ))
+	(pt 1712 216)
+	(pt 1800 216)
+	(bus)
+)
+(connector
+	(text "resetN" (rect 1746 136 1776 153)(font "Intel Clear" ))
+	(pt 1744 152)
+	(pt 1800 152)
+)
+(connector
+	(pt 1472 168)
+	(pt 1800 168)
+	(bus)
+)
+(connector
+	(pt 1472 184)
+	(pt 1800 184)
+	(bus)
+)
+(connector
+	(pt 1472 200)
+	(pt 1800 200)
+)
+(connector
+	(text "startOfFrame" (rect 1746 216 1809 233)(font "Intel Clear" ))
+	(pt 1728 232)
+	(pt 1800 232)
+)
+(connector
+	(text "charcterSelect[1..0]" (rect 1675 232 1765 249)(font "Intel Clear" ))
+	(pt 1672 248)
+	(pt 1800 248)
+	(bus)
+)
+(connector
+	(pt 2056 136)
+	(pt 2568 136)
+)
+(connector
+	(pt 2056 152)
+	(pt 2584 152)
 	(bus)
 )
 (text "startOfFrame" (rect 256 456 319 473)(font "Intel Clear" ))
