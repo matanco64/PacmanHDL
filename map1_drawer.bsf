@@ -62,9 +62,16 @@ agreement for further details.
 	(port
 		(pt 216 48)
 		(output)
+		(text "drawingCoin" (rect 0 0 47 12)(font "Arial" ))
+		(text "drawingCoin" (rect 148 43 195 55)(font "Arial" ))
+		(line (pt 216 48)(pt 200 48)(line_width 1))
+	)
+	(port
+		(pt 216 64)
+		(output)
 		(text "RGBout[7..0]" (rect 0 0 53 12)(font "Arial" ))
-		(text "RGBout[7..0]" (rect 142 43 195 55)(font "Arial" ))
-		(line (pt 216 48)(pt 200 48)(line_width 3))
+		(text "RGBout[7..0]" (rect 142 59 195 71)(font "Arial" ))
+		(line (pt 216 64)(pt 200 64)(line_width 3))
 	)
 	(drawing
 		(rectangle (rect 16 16 200 96)(line_width 1))

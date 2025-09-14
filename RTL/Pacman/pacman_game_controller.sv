@@ -4,6 +4,7 @@ module	pacman_game_controller	(
 			input	logic	startOfFrame,
 			input logic drawingRequestPacman,
 			input logic drawingRequestWalls,
+			input logic drawingRequestCoin,
 			output logic SingleHitPulse,
 			output logic collision_with_wall
 );
