@@ -7,6 +7,17 @@ module map1_drawer (
 	output	logic	drawingRequest, // output that the pixel should be displayed
 	output	logic	drawingCoin, // ouput Whether a coin is drawn or not
 	output	logic	[7:0] RGBout  // rgb value from the bitmap
+	
+	//Ghosts - inputs//
+	input logic [10:0] PinkyOffsetX,
+	input logic [10:0] PinkyOffsetY,
+	
+	////
+	output	logic	drawingRequest, // output that the pixel should be displayed
+	output	logic	[7:0] RGBout,  // rgb value from the bitmap
+	
+	//Ghosts - outputs//
+	output	logic	[7:0] aroundPinky
 );
 
 
@@ -88,6 +99,25 @@ assign Rtile = pacmanMap[pixelX / TILE_SIZE + 1][pixelY / TILE_SIZE];
 logic [3:0] offsetX;
 logic [3:0] offsetY;
 
+  // Ghosts
+	function automatic [7:0] aroundGhost(
+		 input [10:0] ghostOffsetX,
+		 input [10:0] ghostOffsetY
+	);
+		 logic [10:0] gx, gy;
+		 begin
+			  gx = ghostOffsetX / TILE_SIZE;
+			  gy = ghostOffsetY / TILE_SIZE;
+			  aroundGhost = {
+					pacmanMap[gy - 1][gx], // Up
+					pacmanMap[gy + 1][gx], // Down
+					pacmanMap[gy][gx - 1], // Left
+					pacmanMap[gy][gx + 1]  // Right
+			  };
+		 end
+	endfunction
+	
+	assign aroundPinky = aroundGhost(PinkyOffsetX, PinkyOffsetY);
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -122,6 +152,8 @@ begin
 			
 		end
 	end 
+	
+	
 end
 
 endmodule
