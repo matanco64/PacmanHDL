@@ -60,6 +60,13 @@ agreement for further details.
 		(line (pt 0 96)(pt 16 96)(line_width 1))
 	)
 	(port
+		(pt 0 112)
+		(input)
+		(text "drawingRequestCoin" (rect 0 0 81 12)(font "Arial" ))
+		(text "drawingRequestCoin" (rect 21 107 102 119)(font "Arial" ))
+		(line (pt 0 112)(pt 16 112)(line_width 1))
+	)
+	(port
 		(pt 264 32)
 		(output)
 		(text "SingleHitPulse" (rect 0 0 54 12)(font "Arial" ))
@@ -72,6 +79,27 @@ agreement for further details.
 		(text "collision_with_wall" (rect 0 0 67 12)(font "Arial" ))
 		(text "collision_with_wall" (rect 176 43 243 55)(font "Arial" ))
 		(line (pt 264 48)(pt 248 48)(line_width 1))
+	)
+	(port
+		(pt 264 64)
+		(output)
+		(text "collision_with_coin" (rect 0 0 69 12)(font "Arial" ))
+		(text "collision_with_coin" (rect 174 59 243 71)(font "Arial" ))
+		(line (pt 264 64)(pt 248 64)(line_width 1))
+	)
+	(port
+		(pt 264 80)
+		(output)
+		(text "scoreLSD[3..0]" (rect 0 0 61 12)(font "Arial" ))
+		(text "scoreLSD[3..0]" (rect 182 75 243 87)(font "Arial" ))
+		(line (pt 264 80)(pt 248 80)(line_width 3))
+	)
+	(port
+		(pt 264 96)
+		(output)
+		(text "scoreMSD[3..0]" (rect 0 0 63 12)(font "Arial" ))
+		(text "scoreMSD[3..0]" (rect 180 91 243 103)(font "Arial" ))
+		(line (pt 264 96)(pt 248 96)(line_width 3))
 	)
 	(drawing
 		(rectangle (rect 16 16 248 128)(line_width 1))
