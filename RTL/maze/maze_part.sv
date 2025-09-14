@@ -1,6 +1,6 @@
 module maze_part #(
-					SYMBOL_SIZE = 2
-					TILE_SIZE = 16
+					SYMBOL_SIZE = 2,
+					TILE_SIZE = 16,
 					OBJECT_COLOR = 8'b00000011
 ) (
 	input logic [SYMBOL_SIZE - 1:0] symbol,
@@ -26,15 +26,15 @@ always_comb begin
 	logic isInner =  ((offsetX > BLOCK_DEPTH && (TILE_SIZE - offsetX) > BLOCK_DEPTH) && 
 	    (offsetY > BLOCK_DEPTH && (TILE_SIZE - offsetX) > BLOCK_DEPTH));	 
 	
-	
-	if (!symbol || isInner)  // Inner part of the block or not a tile
-		RGBout = 8'd0;		
-	else if (UpIsWall) begin
-		if (offsetY < BLOCK_DEPTH && (offsetX > BLOCK_DEPTH && (TILE_SIZE - offsetX) > BLOCK_DEPTH)
-			RGBout = 8'd0;	
-		else
-			
-	end else
+//	
+//	if (!symbol || isInner)  // Inner part of the block or not a tile
+//		RGBout = 8'd0;		
+//	else if (UpIsWall) begin
+//		if (offsetY < BLOCK_DEPTH && (offsetX > BLOCK_DEPTH && (TILE_SIZE - offsetX) > BLOCK_DEPTH)
+//			RGBout = 8'd0;	
+//		else
+//			
+//	end else
 	
 end
 
