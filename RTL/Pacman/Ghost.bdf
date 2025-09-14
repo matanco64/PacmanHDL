@@ -315,74 +315,6 @@ agreement for further details.
 	(annotation_block (parameter)(rect 1248 288 1476 364))
 )
 (symbol
-	(rect 440 200 680 312)
-	(text "ghost_move" (rect 5 0 66 12)(font "Arial" ))
-	(text "inst" (rect 8 96 25 108)(font "Arial" ))
-	(port
-		(pt 0 32)
-		(input)
-		(text "clk" (rect 0 0 14 12)(font "Arial" ))
-		(text "clk" (rect 21 27 35 39)(font "Arial" ))
-		(line (pt 0 32)(pt 16 32))
-	)
-	(port
-		(pt 0 48)
-		(input)
-		(text "resetN" (rect 0 0 33 12)(font "Arial" ))
-		(text "resetN" (rect 21 43 54 55)(font "Arial" ))
-		(line (pt 0 48)(pt 16 48))
-	)
-	(port
-		(pt 0 64)
-		(input)
-		(text "startOfFrame" (rect 0 0 67 12)(font "Arial" ))
-		(text "startOfFrame" (rect 21 59 88 71)(font "Arial" ))
-		(line (pt 0 64)(pt 16 64))
-	)
-	(port
-		(pt 0 80)
-		(input)
-		(text "collision" (rect 0 0 38 12)(font "Arial" ))
-		(text "collision" (rect 21 75 59 87)(font "Arial" ))
-		(line (pt 0 80)(pt 16 80))
-	)
-	(port
-		(pt 240 32)
-		(output)
-		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 158 27 231 39)(font "Arial" ))
-		(line (pt 240 32)(pt 224 32)(line_width 3))
-	)
-	(port
-		(pt 240 48)
-		(output)
-		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 156 43 231 55)(font "Arial" ))
-		(line (pt 240 48)(pt 224 48)(line_width 3))
-	)
-	(port
-		(pt 240 64)
-		(output)
-		(text "currentDirection[3..0]" (rect 0 0 103 12)(font "Arial" ))
-		(text "currentDirection[3..0]" (rect 132 59 235 71)(font "Arial" ))
-		(line (pt 240 64)(pt 224 64)(line_width 3))
-	)
-	(parameter
-		"INITIAL_X"
-		"280"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"INITIAL_Y"
-		"185"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 224 96))
-	)
-	(annotation_block (parameter)(rect 696 136 872 200))
-)
-(symbol
 	(rect 1800 104 2056 280)
 	(text "characterBitMap" (rect 5 0 84 12)(font "Arial" ))
 	(text "inst2" (rect 8 160 31 172)(font "Arial" ))
@@ -446,26 +378,94 @@ agreement for further details.
 		(pt 256 32)
 		(output)
 		(text "drawingRequest" (rect 0 0 77 12)(font "Arial" ))
-		(text "drawingRequest" (rect 170 27 235 39)(font "Arial" ))
+		(text "drawingRequest" (rect 170 27 247 39)(font "Arial" ))
 		(line (pt 256 32)(pt 240 32))
 	)
 	(port
 		(pt 256 48)
 		(output)
 		(text "RGBout[7..0]" (rect 0 0 64 12)(font "Arial" ))
-		(text "RGBout[7..0]" (rect 181 43 235 55)(font "Arial" ))
+		(text "RGBout[7..0]" (rect 181 43 245 55)(font "Arial" ))
 		(line (pt 256 48)(pt 240 48)(line_width 3))
 	)
 	(port
 		(pt 256 64)
 		(output)
 		(text "HitEdgeCode[2..0]" (rect 0 0 90 12)(font "Arial" ))
-		(text "HitEdgeCode[2..0]" (rect 159 59 235 71)(font "Arial" ))
+		(text "HitEdgeCode[2..0]" (rect 159 59 249 71)(font "Arial" ))
 		(line (pt 256 64)(pt 240 64)(line_width 3))
 	)
 	(drawing
 		(rectangle (rect 16 16 240 160))
 	)
+)
+(symbol
+	(rect 440 200 680 312)
+	(text "ghost_move" (rect 5 0 66 12)(font "Arial" ))
+	(text "inst" (rect 8 96 25 108)(font "Arial" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 14 12)(font "Arial" ))
+		(text "clk" (rect 21 27 35 39)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 33 12)(font "Arial" ))
+		(text "resetN" (rect 21 43 54 55)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "startOfFrame" (rect 0 0 67 12)(font "Arial" ))
+		(text "startOfFrame" (rect 21 59 88 71)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "collision" (rect 0 0 38 12)(font "Arial" ))
+		(text "collision" (rect 21 75 59 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80))
+	)
+	(port
+		(pt 240 32)
+		(output)
+		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 158 27 231 39)(font "Arial" ))
+		(line (pt 240 32)(pt 224 32)(line_width 3))
+	)
+	(port
+		(pt 240 48)
+		(output)
+		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "topLeftY[10..0]" (rect 156 43 231 55)(font "Arial" ))
+		(line (pt 240 48)(pt 224 48)(line_width 3))
+	)
+	(port
+		(pt 240 64)
+		(output)
+		(text "currentDirection[3..0]" (rect 0 0 103 12)(font "Arial" ))
+		(text "currentDirection[3..0]" (rect 132 59 235 71)(font "Arial" ))
+		(line (pt 240 64)(pt 224 64)(line_width 3))
+	)
+	(parameter
+		"INITIAL_X"
+		"initial_X"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"INITIAL_Y"
+		"initial_Y"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 224 96))
+	)
+	(annotation_block (parameter)(rect 696 136 878 193))
 )
 (connector
 	(text "Direction[3..0]" (rect 688 248 752 265)(font "Intel Clear" ))

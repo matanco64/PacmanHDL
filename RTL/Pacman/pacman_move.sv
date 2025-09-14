@@ -137,7 +137,8 @@ begin
 					
 				end
 			
-			
+				
+				// Collecting collisions during wait for new frame
 	 			if (collision) begin
 					hit_reg <= 1'b1;
 				end
