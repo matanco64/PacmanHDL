@@ -1,28 +1,3 @@
-# pacman_map = [
-#     "###################",
-#     "#        #        #",
-#     "# ## ### # ### ## #",
-#     "# ## ### # ### ## #",
-#     "#                 #",
-#     "# ## # ##### # ## #",
-#     "#    #   #   #    #",
-#     "#### ### # ### ####",
-#     "   # #       # #   ",
-#     "#### # ++ ++ # ####",
-#     "       +   +       ",
-#     "#### # +++++ # ####",
-#     "   # #       # #   ",
-#     "#### # ##### # ####",
-#     "#        #        #",
-#     "# ## ### # ### ## #",
-#     "#  #           #  #",
-#     "## # # ##### # # ##",
-#     "#    #   #   #    #",
-#     "# ###### # ###### #",
-#     "#                 #",
-#     "###################",
-# ]
-
 pacman_map = [
     "############################",
     "#............##............#",
@@ -62,13 +37,13 @@ BITS_PER_SYMBOL = 2
 
 def symbol(ch: str):
     if ch == '#':
-        return f"{BITS_PER_SYMBOL}'d1"
+        return f"{BITS_PER_SYMBOL}'d2"
     elif ch == ".":
-        return f"{BITS_PER_SYMBOL}'d0"
+        return f"{BITS_PER_SYMBOL}'d1"
     elif ch == " ":
         return f"{BITS_PER_SYMBOL}'d0"
     elif ch == "+":
-        return f"{BITS_PER_SYMBOL}'d2"
+        return f"{BITS_PER_SYMBOL}'d3"
     raise Exception("Unknown symbol " + ch)
 
 with open(VERILOG_FILE, "w") as f:
