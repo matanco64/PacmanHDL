@@ -64,7 +64,16 @@ module map1_drawer (
 
 
 logic [1:0] tile;
-	
+
+assign tile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 1];
+assign Utile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 2];
+assign Dtile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE];
+assign Ltile = pacmanMap[pixelX / TILE_SIZE - 1][pixelY / TILE_SIZE];
+assign Rtile = pacmanMap[pixelX / TILE_SIZE + 1][pixelY / TILE_SIZE];
+//logic	[7:0] RGBDraw;
+
+//maze_part maze_part ( .symbol(tile), .USymbol(Utile), .DSymbol(Dtile), .LSymbol(Ltile), .RSymbol(Rtile), .offsetX(pixelX % TILE_SIZE), .offsetY(pixelY % TILE_SIZE), .RGBout(RGBDraw));
+
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -76,9 +85,9 @@ begin
 		RGBout <= 8'b0 ;
 		drawingRequest <= 1'b0 ;
 		if (pixelY / TILE_SIZE >= 1) begin 
-			tile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 1];
 			if(tile == 2'd1 || tile == 2'd2) begin
-				RGBout <= OBJECT_COLOR ;
+//				RGBout <= RGBDraw;
+				RGBout <= OBJECT_COLOR;
 				drawingRequest <= 1'b1;
 				
 			end
