@@ -90,16 +90,23 @@ agreement for further details.
 	(port
 		(pt 264 80)
 		(output)
-		(text "scoreLSD[3..0]" (rect 0 0 61 12)(font "Arial" ))
-		(text "scoreLSD[3..0]" (rect 182 75 243 87)(font "Arial" ))
+		(text "score0[3..0]" (rect 0 0 47 12)(font "Arial" ))
+		(text "score0[3..0]" (rect 196 75 243 87)(font "Arial" ))
 		(line (pt 264 80)(pt 248 80)(line_width 3))
 	)
 	(port
 		(pt 264 96)
 		(output)
-		(text "scoreMSD[3..0]" (rect 0 0 63 12)(font "Arial" ))
-		(text "scoreMSD[3..0]" (rect 180 91 243 103)(font "Arial" ))
+		(text "score1[3..0]" (rect 0 0 46 12)(font "Arial" ))
+		(text "score1[3..0]" (rect 197 91 243 103)(font "Arial" ))
 		(line (pt 264 96)(pt 248 96)(line_width 3))
+	)
+	(port
+		(pt 264 112)
+		(output)
+		(text "score2[3..0]" (rect 0 0 47 12)(font "Arial" ))
+		(text "score2[3..0]" (rect 196 107 243 119)(font "Arial" ))
+		(line (pt 264 112)(pt 248 112)(line_width 3))
 	)
 	(drawing
 		(rectangle (rect 16 16 248 128)(line_width 1))

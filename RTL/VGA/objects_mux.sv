@@ -4,7 +4,7 @@ module	objects_mux	(
 					input		logic	resetN,
 					input		logic	[7:0] RGB_MIF, 
 		   // pacman 
-					input		logic PacmanDrawingRequest, 
+					input		logic PacmanDR, 
 					input		logic	[7:0] PacmanRGB, 
 			// pinky 
 					input		logic pinkyDR, 
@@ -12,24 +12,28 @@ module	objects_mux	(
 			// inky 
 					input		logic inkyDR, 
 					input		logic	[7:0] inkyRGB,	
-			// pinky 
+			// clyde 
 					input		logic clydeDR, 
 					input		logic	[7:0] clydeRGB,			
 					     
-		  // ScoreMSB 
-					input		logic ScoreMSBDrawingRequest, 
-					input		logic	[7:0] ScoreMSBRGB, 
-		  // ScoreLSB 
-					input		logic ScoreLSBDrawingRequest, 
-					input		logic	[7:0] ScoreLSBRGB,
-		  // ScoreTxt 
-					input		logic ScoreTxtDrawingRequest, 
+
+		   // Score0 
+					input		logic Score0DR, 
+			 		input		logic	[7:0] Score0RGB,
+		   // Score1 
+					input		logic Score1DR, 
+					input		logic	[7:0] Score1RGB, 	
+		   // Score2 
+					input		logic Score2DR, 
+					input		logic	[7:0] Score2RGB, 		
+		   // ScoreTxt 
+					input		logic ScoreTxtDR, 
 					input		logic	[7:0] ScoreTxtRGB,		
 			  
 		  
 		  
-					input		logic MapDrawingRequest, 
-					input		logic CoinDrawingRequest, 
+					input		logic MapDR, 
+					input		logic CoinDR, 
 					input		logic	[7:0] MapRGB,
 			  
 				   output	logic	[7:0] RGBOut
@@ -42,8 +46,10 @@ begin
 	end
 	
 	else begin	
-		if (PacmanDrawingRequest) 
+		if (PacmanDR) 
 			RGBOut <= PacmanRGB;  //first priority 
+			
+		// ghosts	
 		else if (pinkyDR)
 			RGBOut <= pinkyRGB;
 		else if (inkyDR)
@@ -51,13 +57,18 @@ begin
 		else if (clydeDR)
 			RGBOut <= clydeRGB;
 			
-		else if (ScoreMSBDrawingRequest)
-			RGBOut <= ScoreMSBRGB;	
-		else if (ScoreLSBDrawingRequest)
-			RGBOut <= ScoreLSBRGB;
-		else if (ScoreTxtDrawingRequest)
-			RGBOut <= ScoreTxtRGB;		
-		else if (MapDrawingRequest || CoinDrawingRequest)
+		// score	
+		else if (Score0DR)
+			RGBOut <= Score0RGB;
+		else if (Score1DR)
+			RGBOut <= Score1RGB;	
+		else if (Score2DR)
+			RGBOut <= Score2RGB;		
+		else if (ScoreTxtDR)
+			RGBOut <= ScoreTxtRGB;
+			
+		// map	
+		else if (MapDR || CoinDR)
 			RGBOut <= MapRGB;
 		else RGBOut <= RGB_MIF ;// last priority 
 		end ; 

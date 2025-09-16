@@ -8,8 +8,9 @@ module	pacman_game_controller	(
 			output logic SingleHitPulse,
 			output logic collision_with_wall,
 			output logic collision_with_coin,
-			output logic [3:0] scoreLSD,   // Least significant digit
-			output logic [3:0] scoreMSD    // Most significant digit
+			output logic [3:0] score0,   // score[0]
+			output logic [3:0] score1,    // score[1]
+			output logic [3:0] score2    // score[2]
 );
 
 // logic flag ; // a semaphore to set the output only once per frame regardless of number of collisions
@@ -25,8 +26,9 @@ begin
 	begin 
 		SingleHitPulse <= 1'b0 ;
 		coin_flag <= 1'b0;
-		scoreLSD <= 4'd0;
-		scoreMSD <= 4'd0;
+		score0 <= 4'd0;
+		score1 <= 4'd0;
+		score2 <= 4'd0;
 	end 
 	else begin 
 		
@@ -40,11 +42,17 @@ begin
 		end 
 		
 		if (collision_with_coin && !coin_flag) begin
-			if (scoreLSD == 4'd9) begin
-				scoreLSD <= 4'd0;
-				scoreMSD <= scoreMSD + 4'd1;
+			if (score0 == 4'd9) begin
+				if (score1 == 4'd9) begin
+					score0 <= 4'd0;
+					score1 <= 4'd0;
+					score2 <= score2 + 4'd1;
+				end else begin
+					score0 <= 4'd0;
+					score1 <= score1 + 4'd1;
+				end
 			end else begin
-				scoreLSD <=  scoreLSD + 4'd1;
+				score0 <=  score0 + 4'd1;
 			end
 			coin_flag <= 1'b1;
 		end
