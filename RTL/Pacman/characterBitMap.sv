@@ -114,42 +114,6 @@ always_comb begin
     srcX = offsetX;
     srcY = offsetY;
 
-    // only rotate for Pacman
-//    if (characterSelect == 2'b00) begin
-//        case (inputDirection)
-//            DIR_RIGHT: begin
-//                displayWidth  = OBJECT_WIDTH_X;
-//                displayHeight = OBJECT_HEIGHT_Y;
-//                srcX = offsetX;
-//                srcY = offsetY;
-//            end
-//            DIR_UP: begin
-//                displayWidth  = OBJECT_HEIGHT_Y;
-//                displayHeight = OBJECT_WIDTH_X;
-//                srcX = OBJECT_WIDTH_X - 1 - offsetY;
-//                srcY = offsetX;
-//            end
-//            DIR_LEFT: begin
-//                displayWidth  = OBJECT_WIDTH_X;
-//                displayHeight = OBJECT_HEIGHT_Y;
-//                srcX = OBJECT_WIDTH_X - 1 - offsetX;
-//                srcY = OBJECT_HEIGHT_Y - 1 - offsetY;
-//            end
-//            DIR_DOWN: begin
-//                displayWidth  = OBJECT_HEIGHT_Y;
-//                displayHeight = OBJECT_WIDTH_X;
-//                srcX = offsetY;
-//                srcY = OBJECT_HEIGHT_Y - 1 - offsetX;
-//            end
-//            default: begin
-//                displayWidth  = OBJECT_WIDTH_X;
-//                displayHeight = OBJECT_HEIGHT_Y;
-//                srcX = offsetX;
-//                srcY = offsetY;
-//            end
-//        endcase
-//    end
-
     // compute inside rectangle flag
     localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
 end

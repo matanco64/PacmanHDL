@@ -1,8 +1,8 @@
 module map1_drawer (
-	input	logic	clk,
+	input logic	clk,
 	input logic resetN,
-	input logic signed	[10:0] pixelX,//  current VGA pixel 
-	input 	logic signed	[10:0] pixelY,
+	input logic signed [10:0] pixelX,//  current VGA pixel 
+	input logic signed [10:0] pixelY,
 	input logic coinCollision,  // Marks collision with pacman and coin, relevant cell should be disabled.
 	
 	//Ghosts - inputs//
@@ -10,12 +10,12 @@ module map1_drawer (
 	input logic [10:0] PinkyOffsetY,
 	
 	////
-	output	logic	drawingRequest, // output that the pixel should be displayed
-	output	logic	drawingCoin, // ouput Whether a coin is drawn or not
-	output	logic	[7:0] RGBout,  // rgb value from the bitmap
+	output logic drawingRequest, // output that the pixel should be displayed
+	output logic drawingCoin, // ouput Whether a coin is drawn or not
+	output logic [7:0] RGBout,  // rgb value from the bitmap
 	
 	//Ghosts - outputs//
-	output	logic	[7:0] aroundPinky
+	output	logic [4 * TILE_BITS-1:0] aroundPinky
 );
 
 
@@ -31,74 +31,71 @@ module map1_drawer (
   localparam int BLINKY_X = 13, BLINKY_Y = 14;
   localparam int PINKY_X  = 13, PINKY_Y  = 15;
   localparam int INKY_X   = 12, INKY_Y   = 15;
-  localparam int CLYDE_X  = 14, CLYDE_Y  = 15;
+  localparam int CLYDE_X  = 14, CLYDE_Y  = 15; 
+
   localparam MAP_HEIGHT_Y = 31;
   localparam MAP_WIDTH_X = 28;
   localparam OBJECT_COLOR = 8'b00000011;
   localparam COIN_COLOR = 8'b11000000;
   localparam TILE_SIZE = 16; // IMPORTANT TO KEEP 2^n
+  localparam TILE_BITS = 3; // 8 types of tiles, 3 bits each - if changed, change the map encoding too
+
   localparam logic [7:0] TRANSPARENT_ENCODING = 8'h0;
-  localparam logic [1:0] WALL = 2'd2;
-  localparam logic [1:0] GHOST_WALL = 2'd3;
-  localparam logic [1:0] COIN = 2'd1;
-  localparam logic [1:0] EMPTY = 2'd0;
+  localparam logic [1:0] EMPTY = 3'd0;
+  localparam logic [1:0] COIN = 3'd1;
+  localparam logic [1:0] WALL = 3'd2;
+  localparam logic [1:0] GHOST_WALL = 3'd3;
   
 
-  logic [0:30][0:27][1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
-  { 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2 },
-  { 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2 },
-  { 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2 },
-  { 2'd0, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd0 },
-  { 2'd0, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd0 },
-  { 2'd0, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd0 },
-  { 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2 },
-  { 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1 },
-  { 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2 },
-  { 2'd0, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd0 },
-  { 2'd0, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd0 },
-  { 2'd0, 2'd0, 2'd0, 2'd0, 2'd0, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd0, 2'd0, 2'd0, 2'd0, 2'd0 },
-  { 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2 },
-  { 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd2 },
-  { 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2 },
-  { 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2 },
-  { 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2, 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd1, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd1, 2'd2 },
-  { 2'd2, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd1, 2'd2 },
-  { 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2, 2'd2 },
+  logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
+  { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
+  { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
+  { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
+  { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
+  { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
+  { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
+  { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
+  { 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1 },
+  { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
+  { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
+  { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
+  { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
+  { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
+  { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd2 },
+  { 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2 },
+  { 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2 },
+  { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
+  { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
+  { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
 };
 
-logic [0:30][0:27][1:0] pacmanMap;
+logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] pacmanMap;
+logic [TILE_BITS-1:0] tile;
 
-
-
-
-
-logic [1:0] tile;
-
-assign Utile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 2];
-assign Dtile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE];
-assign Ltile = pacmanMap[pixelX / TILE_SIZE - 1][pixelY / TILE_SIZE];
-assign Rtile = pacmanMap[pixelX / TILE_SIZE + 1][pixelY / TILE_SIZE];
+// assign Utile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 2];
+// assign Dtile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE];
+// assign Ltile = pacmanMap[pixelX / TILE_SIZE - 1][pixelY / TILE_SIZE];
+// assign Rtile = pacmanMap[pixelX / TILE_SIZE + 1][pixelY / TILE_SIZE];
 //logic	[7:0] RGBDraw;
-
 //maze_part maze_part ( .symbol(tile), .USymbol(Utile), .DSymbol(Dtile), .LSymbol(Ltile), .RSymbol(Rtile), .offsetX(pixelX % TILE_SIZE), .offsetY(pixelY % TILE_SIZE), .RGBout(RGBDraw));
 
 logic [3:0] offsetX;
 logic [3:0] offsetY;
 
   // Ghosts
-	function automatic [7:0] aroundGhost(
+	function automatic [4*TILE_BITS-1:0] aroundGhost(
 		 input [10:0] ghostOffsetX,
 		 input [10:0] ghostOffsetY
 	);
@@ -106,12 +103,12 @@ logic [3:0] offsetY;
 		 begin
 			  gx = ghostOffsetX / TILE_SIZE;
 			  gy = ghostOffsetY / TILE_SIZE;
-			  aroundGhost = {
-					pacmanMap[gy - 1][gx], // Up
-					pacmanMap[gy + 1][gx], // Down
-					pacmanMap[gy][gx - 1], // Left
-					pacmanMap[gy][gx + 1]  // Right
-			  };
+			    aroundGhost = {
+					(gy > 0)                    ? pacmanMap[gy-1][gx] : WALL, // Up
+					(gy < MAP_HEIGHT_Y-1)       ? pacmanMap[gy+1][gx] : WALL, // Down
+					(gx > 0)                    ? pacmanMap[gy][gx-1] : WALL, // Left
+					(gx < MAP_WIDTH_X-1)        ? pacmanMap[gy][gx+1] : WALL  // Right
+			    };
 		 end
 	endfunction
 	
