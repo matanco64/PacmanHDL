@@ -83,7 +83,7 @@ module ghost_move (
                     hit_reg <= 5'b00000;
 
                     // <<< RANDOM PART >>> only for ghostSelect == 3
-                    if (ghostSelect == 2'b11) begin
+                    if (ghostSelect == 2'b01) begin
                         unique case (lfsr[1:0])
                             2'b00: begin
                                 Xspeed           <= 0;
