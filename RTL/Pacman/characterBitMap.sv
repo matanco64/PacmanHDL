@@ -22,45 +22,25 @@ localparam int OBJECT_WIDTH_X  = 16;
 localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
 
 // -----------------------------------------------------------------------------
-// Pacman bitmaps
-logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] pacman_closed = {
+// Ghosts bitmaps
+logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] blinky =  {
 	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'he0,8'he0,8'he0,8'hff,8'he0,8'he0,8'he0,8'hff,8'hff,8'he0,8'he0,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'he0,8'he0,8'hff,8'hff,8'hff,8'he0,8'hff,8'hff,8'hff,8'hff,8'he0,8'he0,8'he3,8'he3},
+	{8'he3,8'he0,8'he0,8'h00,8'h00,8'h00,8'hff,8'hff,8'h00,8'h00,8'hff,8'hff,8'he0,8'he0,8'he3,8'he3},
+	{8'he3,8'he0,8'he0,8'h00,8'h00,8'h00,8'hff,8'hff,8'h00,8'h00,8'hff,8'hff,8'he0,8'he0,8'he0,8'he3},
+	{8'he3,8'he0,8'he0,8'he0,8'hff,8'hff,8'hff,8'he0,8'hff,8'hff,8'hff,8'hff,8'he0,8'he0,8'he0,8'he3},
+	{8'he3,8'he0,8'he0,8'he0,8'he0,8'hff,8'he0,8'he0,8'he0,8'hff,8'hff,8'he0,8'he0,8'he0,8'he0,8'he3},
+	{8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3},
+	{8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3},
+	{8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3},
+	{8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3},
+	{8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3},
+	{8'he3,8'he0,8'he0,8'he3,8'he3,8'he0,8'he3,8'he3,8'he3,8'he0,8'he0,8'he3,8'he3,8'he0,8'he3,8'he3},
 	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
 
-logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] pacman_open = {
-	{8'he3,8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
-
-// -----------------------------------------------------------------------------
-// Ghost bitmaps (placeholders, replace with actual bitmaps)
 logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] pinky = {
 	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
 	{8'he3,8'he3,8'he3,8'he3,8'hf7,8'hf7,8'hf7,8'hf7,8'hf7,8'hf7,8'hf7,8'he3,8'he3,8'he3,8'he3,8'he3},
@@ -135,40 +115,40 @@ always_comb begin
     srcY = offsetY;
 
     // only rotate for Pacman
-    if (characterSelect == 2'b00) begin
-        case (inputDirection)
-            DIR_RIGHT: begin
-                displayWidth  = OBJECT_WIDTH_X;
-                displayHeight = OBJECT_HEIGHT_Y;
-                srcX = offsetX;
-                srcY = offsetY;
-            end
-            DIR_UP: begin
-                displayWidth  = OBJECT_HEIGHT_Y;
-                displayHeight = OBJECT_WIDTH_X;
-                srcX = OBJECT_WIDTH_X - 1 - offsetY;
-                srcY = offsetX;
-            end
-            DIR_LEFT: begin
-                displayWidth  = OBJECT_WIDTH_X;
-                displayHeight = OBJECT_HEIGHT_Y;
-                srcX = OBJECT_WIDTH_X - 1 - offsetX;
-                srcY = OBJECT_HEIGHT_Y - 1 - offsetY;
-            end
-            DIR_DOWN: begin
-                displayWidth  = OBJECT_HEIGHT_Y;
-                displayHeight = OBJECT_WIDTH_X;
-                srcX = offsetY;
-                srcY = OBJECT_HEIGHT_Y - 1 - offsetX;
-            end
-            default: begin
-                displayWidth  = OBJECT_WIDTH_X;
-                displayHeight = OBJECT_HEIGHT_Y;
-                srcX = offsetX;
-                srcY = offsetY;
-            end
-        endcase
-    end
+//    if (characterSelect == 2'b00) begin
+//        case (inputDirection)
+//            DIR_RIGHT: begin
+//                displayWidth  = OBJECT_WIDTH_X;
+//                displayHeight = OBJECT_HEIGHT_Y;
+//                srcX = offsetX;
+//                srcY = offsetY;
+//            end
+//            DIR_UP: begin
+//                displayWidth  = OBJECT_HEIGHT_Y;
+//                displayHeight = OBJECT_WIDTH_X;
+//                srcX = OBJECT_WIDTH_X - 1 - offsetY;
+//                srcY = offsetX;
+//            end
+//            DIR_LEFT: begin
+//                displayWidth  = OBJECT_WIDTH_X;
+//                displayHeight = OBJECT_HEIGHT_Y;
+//                srcX = OBJECT_WIDTH_X - 1 - offsetX;
+//                srcY = OBJECT_HEIGHT_Y - 1 - offsetY;
+//            end
+//            DIR_DOWN: begin
+//                displayWidth  = OBJECT_HEIGHT_Y;
+//                displayHeight = OBJECT_WIDTH_X;
+//                srcX = offsetY;
+//                srcY = OBJECT_HEIGHT_Y - 1 - offsetX;
+//            end
+//            default: begin
+//                displayWidth  = OBJECT_WIDTH_X;
+//                displayHeight = OBJECT_HEIGHT_Y;
+//                srcX = offsetX;
+//                srcY = offsetY;
+//            end
+//        endcase
+//    end
 
     // compute inside rectangle flag
     localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
@@ -206,7 +186,7 @@ always_ff @(posedge clk or negedge resetN) begin
 
         if (localInside && (srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y)) begin
             case (characterSelect)
-                2'b00: RGBout <= (mouthOpen) ? pacman_open[srcY][srcX] : pacman_closed[srcY][srcX];
+                2'b00: RGBout <= blinky[srcY][srcX];
                 2'b01: RGBout <= pinky[srcY][srcX];
                 2'b10: RGBout <= inky[srcY][srcX];
                 2'b11: RGBout <= clyde[srcY][srcX];

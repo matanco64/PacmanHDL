@@ -14,7 +14,10 @@ module	objects_mux	(
 					input		logic	[7:0] inkyRGB,	
 			// clyde 
 					input		logic clydeDR, 
-					input		logic	[7:0] clydeRGB,			
+					input		logic	[7:0] clydeRGB,
+			// blinky 
+					input		logic blinkyDR, 
+					input		logic	[7:0] blinkyRGB,			
 					     
 
 		   // Score0 
@@ -56,6 +59,8 @@ begin
 			RGBOut <= inkyRGB;
 		else if (clydeDR)
 			RGBOut <= clydeRGB;
+		else if (blinkyDR)
+			RGBOut <= blinkyRGB;	
 			
 		// score	
 		else if (Score0DR)
