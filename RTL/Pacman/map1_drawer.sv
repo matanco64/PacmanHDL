@@ -14,11 +14,9 @@ module map1_drawer (
 	output logic drawingCoin, // ouput Whether a coin is drawn or not
 	output logic [7:0] RGBout,  // rgb value from the bitmap
 	
-	//Ghosts - outputs//
-	output	logic [4 * TILE_BITS-1:0] aroundPinky
+	//Ghosts - outputs// change if TILE_SIZE changes
+	output	logic [11:0] aroundPinky
 );
-
-
 
 
   // ---- Coordinates for spawns (0-based: x in [0..27], y in [0..30]) ----
