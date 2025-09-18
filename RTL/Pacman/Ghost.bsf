@@ -21,7 +21,7 @@ agreement for further details.
 */
 (header "symbol" (version "1.2"))
 (symbol
-	(rect 16 16 296 240)
+	(rect 16 16 272 240)
 	(text "Ghost" (rect 5 0 39 19)(font "Intel Clear" (font_size 8)))
 	(text "inst" (rect 8 203 24 220)(font "Intel Clear" ))
 	(port
@@ -95,32 +95,32 @@ agreement for further details.
 		(line (pt 0 176)(pt 16 176)(line_width 3))
 	)
 	(port
-		(pt 280 32)
+		(pt 256 32)
 		(output)
 		(text "DR" (rect 0 0 17 19)(font "Intel Clear" (font_size 8)))
-		(text "DR" (rect 242 27 259 46)(font "Intel Clear" (font_size 8)))
-		(line (pt 280 32)(pt 264 32))
+		(text "DR" (rect 218 27 235 46)(font "Intel Clear" (font_size 8)))
+		(line (pt 256 32)(pt 240 32))
 	)
 	(port
-		(pt 280 48)
+		(pt 256 48)
 		(output)
 		(text "RGB[7..0]" (rect 0 0 56 19)(font "Intel Clear" (font_size 8)))
-		(text "RGB[7..0]" (rect 203 43 259 62)(font "Intel Clear" (font_size 8)))
-		(line (pt 280 48)(pt 264 48)(line_width 3))
+		(text "RGB[7..0]" (rect 179 43 235 62)(font "Intel Clear" (font_size 8)))
+		(line (pt 256 48)(pt 240 48)(line_width 3))
 	)
 	(port
-		(pt 280 64)
+		(pt 256 64)
 		(output)
-		(text "ghostOffsetX[10..0]" (rect 0 0 115 19)(font "Intel Clear" (font_size 8)))
-		(text "ghostOffsetX[10..0]" (rect 144 59 259 78)(font "Intel Clear" (font_size 8)))
-		(line (pt 280 64)(pt 264 64)(line_width 3))
+		(text "topLeftX[10..0]" (rect 0 0 90 19)(font "Intel Clear" (font_size 8)))
+		(text "topLeftX[10..0]" (rect 145 59 235 78)(font "Intel Clear" (font_size 8)))
+		(line (pt 256 64)(pt 240 64)(line_width 3))
 	)
 	(port
-		(pt 280 80)
+		(pt 256 80)
 		(output)
-		(text "ghostOffsetY[10..0]" (rect 0 0 115 19)(font "Intel Clear" (font_size 8)))
-		(text "ghostOffsetY[10..0]" (rect 144 75 259 94)(font "Intel Clear" (font_size 8)))
-		(line (pt 280 80)(pt 264 80)(line_width 3))
+		(text "topLeftY[10..0]" (rect 0 0 90 19)(font "Intel Clear" (font_size 8)))
+		(text "topLeftY[10..0]" (rect 145 75 235 94)(font "Intel Clear" (font_size 8)))
+		(line (pt 256 80)(pt 240 80)(line_width 3))
 	)
 	(parameter
 		"initial_X"
@@ -133,7 +133,7 @@ agreement for further details.
 		""
 	)
 	(drawing
-		(rectangle (rect 16 16 264 208))
+		(rectangle (rect 16 16 240 208))
 	)
-	(annotation_block (parameter)(rect 296 -64 396 16))
+	(annotation_block (parameter)(rect 272 -64 372 16))
 )

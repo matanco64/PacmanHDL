@@ -6,8 +6,17 @@ module map1_drawer (
 	input logic coinCollision,  // Marks collision with pacman and coin, relevant cell should be disabled.
 	
 	//Ghosts - inputs//
-	input logic [10:0] PinkyOffsetX,
-	input logic [10:0] PinkyOffsetY,
+	input logic [10:0] BlinkytopLeftX,
+	input logic [10:0] BlinkytopLeftY,
+	
+	input logic [10:0] PinkytopLeftX,
+	input logic [10:0] PinkytopLeftY,
+	
+	input logic [10:0] InkytopLeftX,
+	input logic [10:0] InkytopLeftY,
+	
+	input logic [10:0] ClydetopLeftX,
+	input logic [10:0] ClydetopLeftY,
 	
 	////
 	output logic drawingRequest, // output that the pixel should be displayed
@@ -15,7 +24,10 @@ module map1_drawer (
 	output logic [7:0] RGBout,  // rgb value from the bitmap
 	
 	//Ghosts - outputs// change if TILE_SIZE changes
-	output	logic [11:0] aroundPinky
+	output	logic [11:0] aroundBlinky,
+	output	logic [11:0] aroundPinky,
+	output	logic [11:0] aroundInky,
+	output	logic [11:0] aroundClyde
 );
 
 
@@ -39,10 +51,10 @@ module map1_drawer (
   localparam TILE_BITS = 3; // 8 types of tiles, 3 bits each - if changed, change the map encoding too
 
   localparam logic [7:0] TRANSPARENT_ENCODING = 8'h0;
-  localparam logic [1:0] EMPTY = 3'd0;
-  localparam logic [1:0] COIN = 3'd1;
-  localparam logic [1:0] WALL = 3'd2;
-  localparam logic [1:0] GHOST_WALL = 3'd3;
+  localparam logic [TILE_BITS-1:0] EMPTY = 3'd0;
+  localparam logic [TILE_BITS-1:0] COIN = 3'd1;
+  localparam logic [TILE_BITS-1:0] WALL = 3'd2;
+  localparam logic [TILE_BITS-1:0] GHOST_WALL = 3'd3;
   
 
   logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
@@ -94,23 +106,27 @@ logic [3:0] offsetY;
 
   // Ghosts
 	function automatic [4*TILE_BITS-1:0] aroundGhost(
-		 input [10:0] ghostOffsetX,
-		 input [10:0] ghostOffsetY
+		 input [10:0] ghostTopLeftX,
+		 input [10:0] ghostTopLeftY
 	);
 		 logic [10:0] gx, gy;
 		 begin
-			  gx = ghostOffsetX / TILE_SIZE;
-			  gy = ghostOffsetY / TILE_SIZE;
-			    aroundGhost = {
-					(gy > 0)                    ? pacmanMap[gy-1][gx] : WALL, // Up
-					(gy < MAP_HEIGHT_Y-1)       ? pacmanMap[gy+1][gx] : WALL, // Down
-					(gx > 0)                    ? pacmanMap[gy][gx-1] : WALL, // Left
-					(gx < MAP_WIDTH_X-1)        ? pacmanMap[gy][gx+1] : WALL  // Right
+			  gx = ghostTopLeftX / TILE_SIZE;
+			  gy = ghostTopLeftY / TILE_SIZE -1; // in y axis there is a gap row
+			  
+			    aroundGhost = { // bitmap is rotated!
+					(gy > 0)                    ? pacmanMap[gx][gy-1] : WALL, // Up
+					(gy < MAP_HEIGHT_Y-1)       ? pacmanMap[gx][gy+1] : WALL, // Down
+					(gx > 0)                    ? pacmanMap[gx-1][gy] : WALL, // Left
+					(gx < MAP_WIDTH_X-1)        ? pacmanMap[gx+1][gy] : WALL  // Right
 			    };
 		 end
 	endfunction
 	
-	assign aroundPinky = aroundGhost(PinkyOffsetX, PinkyOffsetY);
+	assign aroundBlinky = aroundGhost(BlinkytopLeftX, BlinkytopLeftY);
+	assign aroundPinky = aroundGhost(PinkytopLeftX, PinkytopLeftY);
+	assign aroundInky = aroundGhost(InkytopLeftX, InkytopLeftY);
+	assign aroundClyde = aroundGhost(ClydetopLeftX, ClydetopLeftY);
 
 always_ff@(posedge clk or negedge resetN)
 begin
