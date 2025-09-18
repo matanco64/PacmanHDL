@@ -21,7 +21,7 @@ agreement for further details.
 */
 (header "symbol" (version "1.1"))
 (symbol
-	(rect 16 16 264 160)
+	(rect 16 16 248 160)
 	(text "ghost_move" (rect 5 0 55 12)(font "Arial" ))
 	(text "inst" (rect 8 128 20 140)(font "Arial" ))
 	(port
@@ -48,37 +48,30 @@ agreement for further details.
 	(port
 		(pt 0 80)
 		(input)
-		(text "collision" (rect 0 0 28 12)(font "Arial" ))
-		(text "collision" (rect 21 75 49 87)(font "Arial" ))
-		(line (pt 0 80)(pt 16 80)(line_width 1))
+		(text "ghostSelect[1..0]" (rect 0 0 63 12)(font "Arial" ))
+		(text "ghostSelect[1..0]" (rect 21 75 84 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80)(line_width 3))
 	)
 	(port
 		(pt 0 96)
 		(input)
-		(text "ghostSelect[1..0]" (rect 0 0 63 12)(font "Arial" ))
-		(text "ghostSelect[1..0]" (rect 21 91 84 103)(font "Arial" ))
+		(text "aroundGhost[11..0]" (rect 0 0 73 12)(font "Arial" ))
+		(text "aroundGhost[11..0]" (rect 21 91 94 103)(font "Arial" ))
 		(line (pt 0 96)(pt 16 96)(line_width 3))
 	)
 	(port
-		(pt 248 32)
+		(pt 232 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 57 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 170 27 227 39)(font "Arial" ))
-		(line (pt 248 32)(pt 232 32)(line_width 3))
+		(text "topLeftX[10..0]" (rect 154 27 211 39)(font "Arial" ))
+		(line (pt 232 32)(pt 216 32)(line_width 3))
 	)
 	(port
-		(pt 248 48)
+		(pt 232 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 59 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 168 43 227 55)(font "Arial" ))
-		(line (pt 248 48)(pt 232 48)(line_width 3))
-	)
-	(port
-		(pt 248 64)
-		(output)
-		(text "currentDirection[3..0]" (rect 0 0 82 12)(font "Arial" ))
-		(text "currentDirection[3..0]" (rect 145 59 227 71)(font "Arial" ))
-		(line (pt 248 64)(pt 232 64)(line_width 3))
+		(text "topLeftY[10..0]" (rect 152 43 211 55)(font "Arial" ))
+		(line (pt 232 48)(pt 216 48)(line_width 3))
 	)
 	(parameter
 		"INITIAL_X"
@@ -91,7 +84,7 @@ agreement for further details.
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(drawing
-		(rectangle (rect 16 16 232 128)(line_width 1))
+		(rectangle (rect 16 16 216 128)(line_width 1))
 	)
-	(annotation_block (parameter)(rect 264 -64 364 16))
+	(annotation_block (parameter)(rect 248 -64 348 16))
 )

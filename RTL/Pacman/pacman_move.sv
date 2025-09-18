@@ -5,7 +5,7 @@ module	pacman_move	(
 					input	 logic startOfFrame,      //short pulse every start of frame 30Hz 
 					input	 logic [3:0] keyPadCode,   //move direction
 					input	 logic keyPadValid,        
-					input  logic collision,         //collision if smiley hits an object
+					input  logic collision,         // hits an object
 					input  logic [2:0] HitEdgeCode, 
 					output logic signed 	[10:0] topLeftX, // output the top left corner 
 					output logic signed	[10:0] topLeftY,  // can be negative , if the object is partliy outside
@@ -51,6 +51,7 @@ int Yspeed;
 	//			 404
 	//
 
+	// TO BE DELETED
 const logic [4:0] CORNER =	5'b10000; 
 const logic [3:0] TOP =		 4'b1000; 
 const logic [3:0] RIGHT =   4'b0100; 
@@ -78,11 +79,11 @@ begin
 	if (resetN == 1'b0) begin
 		SM_Motion <= IDLE_ST;
 		Xposition <= INITIAL_X*FIXED_POINT_MULTIPLIER;
+		Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER;
 		Xspeed <= 0;
 		Yspeed <= 0;
 		hit_reg <= 1'b0;
 		is_neg <= 1'b0;
-		Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER;
 		currentDirection <= INITIAL_DIRECTION;
 	end
 	else begin

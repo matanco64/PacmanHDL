@@ -8,7 +8,6 @@ module characterBitMap(
     input  logic [10:0] offsetX,// offset from top left position 
     input  logic [10:0] offsetY,
     input  logic        InsideRectangle, // pixel is within rectangle
-    input  logic [3:0]  inputDirection, // KeyCode from keyboard to derive direction
     input  logic        startOfFrame,
     input  logic [1:0]  characterSelect, // 2-bit selector: 00=Pacman, 01=Pinky, 10=Inky, 11=Blinky
 
