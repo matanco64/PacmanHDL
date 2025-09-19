@@ -87,7 +87,7 @@ agreement for further details.
 )
 (pin
 	(input)
-	(rect -512 744 -336 760)
+	(rect -512 752 -336 768)
 	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
 	(text "AUD_ADCDAT" (rect 9 0 83 12)(font "Arial" ))
 	(pt 176 8)
@@ -103,7 +103,7 @@ agreement for further details.
 )
 (pin
 	(input)
-	(rect -512 728 -336 744)
+	(rect -512 736 -336 752)
 	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
 	(text "KEY[3]" (rect 9 0 44 12)(font "Arial" ))
 	(pt 176 8)
@@ -231,7 +231,7 @@ agreement for further details.
 )
 (pin
 	(bidir)
-	(rect -16 728 160 744)
+	(rect -16 736 160 752)
 	(text "BIDIR" (rect 1 0 25 10)(font "Arial" (font_size 6)))
 	(text "AUDOUT[7..0]" (rect 90 0 161 12)(font "Arial" ))
 	(pt 0 8)
@@ -649,7 +649,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect -760 744 -520 856)
+	(rect -760 776 -520 888)
 	(text "melody_player_1" (rect 5 0 89 12)(font "Arial" ))
 	(text "inst13" (rect 8 96 37 108)(font "Arial" ))
 	(port
@@ -1003,7 +1003,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect 2552 64 2721 121))
 )
 (symbol
-	(rect 640 -24 904 168)
+	(rect 632 -24 896 168)
 	(text "Pacman_Player" (rect 5 0 97 19)(font "Intel Clear" (font_size 8)))
 	(text "inst1" (rect 8 171 30 188)(font "Intel Clear" ))
 	(port
@@ -1985,49 +1985,49 @@ agreement for further details.
 		(pt 256 32)
 		(output)
 		(text "drawingRequest" (rect 0 0 77 12)(font "Arial" ))
-		(text "drawingRequest" (rect 170 27 235 39)(font "Arial" ))
+		(text "drawingRequest" (rect 170 27 247 39)(font "Arial" ))
 		(line (pt 256 32)(pt 240 32))
 	)
 	(port
 		(pt 256 48)
 		(output)
 		(text "drawingCoin" (rect 0 0 59 12)(font "Arial" ))
-		(text "drawingCoin" (rect 186 43 235 55)(font "Arial" ))
+		(text "drawingCoin" (rect 186 43 245 55)(font "Arial" ))
 		(line (pt 256 48)(pt 240 48))
 	)
 	(port
 		(pt 256 64)
 		(output)
 		(text "RGBout[7..0]" (rect 0 0 64 12)(font "Arial" ))
-		(text "RGBout[7..0]" (rect 181 59 235 71)(font "Arial" ))
+		(text "RGBout[7..0]" (rect 181 59 245 71)(font "Arial" ))
 		(line (pt 256 64)(pt 240 64)(line_width 3))
 	)
 	(port
 		(pt 256 80)
 		(output)
 		(text "aroundBlinky[11..0]" (rect 0 0 95 12)(font "Arial" ))
-		(text "aroundBlinky[11..0]" (rect 155 75 235 87)(font "Arial" ))
+		(text "aroundBlinky[11..0]" (rect 155 75 250 87)(font "Arial" ))
 		(line (pt 256 80)(pt 240 80)(line_width 3))
 	)
 	(port
 		(pt 256 96)
 		(output)
 		(text "aroundPinky[11..0]" (rect 0 0 93 12)(font "Arial" ))
-		(text "aroundPinky[11..0]" (rect 157 91 235 103)(font "Arial" ))
+		(text "aroundPinky[11..0]" (rect 157 91 250 103)(font "Arial" ))
 		(line (pt 256 96)(pt 240 96)(line_width 3))
 	)
 	(port
 		(pt 256 112)
 		(output)
 		(text "aroundInky[11..0]" (rect 0 0 87 12)(font "Arial" ))
-		(text "aroundInky[11..0]" (rect 162 107 235 119)(font "Arial" ))
+		(text "aroundInky[11..0]" (rect 162 107 249 119)(font "Arial" ))
 		(line (pt 256 112)(pt 240 112)(line_width 3))
 	)
 	(port
 		(pt 256 128)
 		(output)
 		(text "aroundClyde[11..0]" (rect 0 0 94 12)(font "Arial" ))
-		(text "aroundClyde[11..0]" (rect 156 123 235 135)(font "Arial" ))
+		(text "aroundClyde[11..0]" (rect 156 123 250 135)(font "Arial" ))
 		(line (pt 256 128)(pt 240 128)(line_width 3))
 	)
 	(drawing
@@ -2372,7 +2372,7 @@ agreement for further details.
 	)
 	(parameter
 		"initial_X"
-		"224"
+		"208"
 		""
 	)
 	(parameter
@@ -2489,7 +2489,7 @@ agreement for further details.
 	)
 	(parameter
 		"initial_X"
-		"176"
+		"208"
 		""
 	)
 	(parameter
@@ -3050,78 +3050,15 @@ agreement for further details.
 	(pt 48 552)
 )
 (connector
-	(pt -376 776)
-	(pt -376 808)
-	(bus)
-)
-(connector
-	(pt -400 792)
-	(pt -400 824)
-)
-(connector
-	(pt -296 744)
-	(pt -296 736)
-)
-(connector
-	(pt -288 744)
-	(pt -296 744)
-)
-(connector
-	(pt -304 760)
-	(pt -304 752)
-)
-(connector
-	(pt -56 744)
-	(pt -56 736)
-	(bus)
-)
-(connector
-	(pt -64 744)
-	(pt -56 744)
-	(bus)
-)
-(connector
 	(text "keyPad[3..0]" (rect -832 864 -772 881)(font "Intel Clear" ))
 	(pt -808 888)
 	(pt -776 888)
 	(bus)
 )
 (connector
-	(text "tone[3..0]" (rect -462 760 -418 777)(font "Intel Clear" ))
-	(pt -520 776)
-	(pt -376 776)
-	(bus)
-)
-(connector
-	(pt -520 792)
-	(pt -400 792)
-)
-(connector
-	(pt -336 752)
-	(pt -304 752)
-)
-(connector
-	(pt -336 736)
-	(pt -296 736)
-)
-(connector
-	(pt -776 824)
-	(pt -776 888)
-	(bus)
-)
-(connector
-	(pt -776 888)
-	(pt -776 920)
-	(bus)
-)
-(connector
 	(pt -776 920)
 	(pt -288 920)
 	(bus)
-)
-(connector
-	(pt -304 760)
-	(pt -288 760)
 )
 (connector
 	(text "clk" (rect -328 760 -314 777)(font "Intel Clear" ))
@@ -3134,42 +3071,8 @@ agreement for further details.
 	(pt -288 792)
 )
 (connector
-	(pt -376 808)
-	(pt -288 808)
-	(bus)
-)
-(connector
-	(pt -400 824)
-	(pt -288 824)
-)
-(connector
-	(text "resetN" (rect -808 760 -778 777)(font "Intel Clear" ))
-	(pt -816 776)
-	(pt -760 776)
-)
-(connector
-	(text "clk" (rect -808 776 -794 793)(font "Intel Clear" ))
-	(pt -816 792)
-	(pt -760 792)
-)
-(connector
-	(text "keypadValid" (rect -808 792 -748 809)(font "Intel Clear" ))
-	(pt -816 808)
-	(pt -760 808)
-)
-(connector
-	(pt -776 824)
-	(pt -760 824)
-	(bus)
-)
-(connector
 	(pt -104 920)
 	(pt -8 920)
-	(bus)
-)
-(connector
-	(pt -56 736)
-	(pt -16 736)
 	(bus)
 )
 (connector
@@ -3209,11 +3112,6 @@ agreement for further details.
 	(text "clk" (rect 1322 8 1336 25)(font "Intel Clear" ))
 	(pt 1312 24)
 	(pt 1400 24)
-)
-(connector
-	(text "resetN" (rect 1322 24 1352 41)(font "Intel Clear" ))
-	(pt 1312 40)
-	(pt 1400 40)
 )
 (connector
 	(text "SelectBlinkey[1..0]" (rect 1226 120 1315 137)(font "Intel Clear" ))
@@ -3451,60 +3349,6 @@ agreement for further details.
 	(pt 1912 792)
 )
 (connector
-	(text "pixelX[10..0]" (rect 562 -8 622 4)(font "Arial" ))
-	(pt 552 8)
-	(pt 640 8)
-	(bus)
-)
-(connector
-	(text "pixelY[10..0]" (rect 562 8 624 20)(font "Arial" ))
-	(pt 552 24)
-	(pt 640 24)
-	(bus)
-)
-(connector
-	(text "clk" (rect 562 24 576 41)(font "Intel Clear" ))
-	(pt 552 40)
-	(pt 640 40)
-)
-(connector
-	(text "resetN" (rect 562 40 592 57)(font "Intel Clear" ))
-	(pt 552 56)
-	(pt 640 56)
-)
-(connector
-	(text "startOfFrame" (rect 562 56 625 73)(font "Intel Clear" ))
-	(pt 552 72)
-	(pt 640 72)
-)
-(connector
-	(text "keyPad[3..0]" (rect 558 72 618 89)(font "Intel Clear" ))
-	(pt 552 88)
-	(pt 640 88)
-	(bus)
-)
-(connector
-	(text "keyPadValid" (rect 562 88 623 105)(font "Intel Clear" ))
-	(pt 552 104)
-	(pt 640 104)
-)
-(connector
-	(text "collision" (rect 562 104 600 121)(font "Intel Clear" ))
-	(pt 552 120)
-	(pt 640 120)
-)
-(connector
-	(text "PacmanDR" (rect 912 -8 965 9)(font "Intel Clear" ))
-	(pt 904 8)
-	(pt 976 8)
-)
-(connector
-	(text "PacmanRGB[7..0]" (rect 913 8 996 25)(font "Intel Clear" ))
-	(pt 904 24)
-	(pt 976 24)
-	(bus)
-)
-(connector
 	(text "aroundPinky[11..0]" (rect 2065 152 2154 169)(font "Intel Clear" ))
 	(pt 2144 168)
 	(pt 2056 168)
@@ -3648,7 +3492,7 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "aroundBlinky[11..0]" (rect 1329 152 1422 169)(font "Intel Clear" ))
+	(text "aroundBlinky[11..0]" (rect 1321 152 1414 169)(font "Intel Clear" ))
 	(pt 1312 168)
 	(pt 1400 168)
 	(bus)
@@ -3780,6 +3624,118 @@ agreement for further details.
 	(pt 2360 424)
 	(bus)
 )
+(connector
+	(text "pixelX[10..0]" (rect 554 -8 614 4)(font "Arial" ))
+	(pt 544 8)
+	(pt 632 8)
+	(bus)
+)
+(connector
+	(text "pixelY[10..0]" (rect 554 8 616 20)(font "Arial" ))
+	(pt 544 24)
+	(pt 632 24)
+	(bus)
+)
+(connector
+	(text "clk" (rect 554 24 568 41)(font "Intel Clear" ))
+	(pt 544 40)
+	(pt 632 40)
+)
+(connector
+	(text "resetN" (rect 554 40 584 57)(font "Intel Clear" ))
+	(pt 544 56)
+	(pt 632 56)
+)
+(connector
+	(text "startOfFrame" (rect 554 56 617 73)(font "Intel Clear" ))
+	(pt 544 72)
+	(pt 632 72)
+)
+(connector
+	(text "keyPad[3..0]" (rect 550 72 610 89)(font "Intel Clear" ))
+	(pt 544 88)
+	(pt 632 88)
+	(bus)
+)
+(connector
+	(text "keyPadValid" (rect 554 88 615 105)(font "Intel Clear" ))
+	(pt 544 104)
+	(pt 632 104)
+)
+(connector
+	(text "collision" (rect 554 104 592 121)(font "Intel Clear" ))
+	(pt 544 120)
+	(pt 632 120)
+)
+(connector
+	(text "PacmanDR" (rect 904 -8 957 9)(font "Intel Clear" ))
+	(pt 896 8)
+	(pt 968 8)
+)
+(connector
+	(text "PacmanRGB[7..0]" (rect 905 8 988 25)(font "Intel Clear" ))
+	(pt 896 24)
+	(pt 968 24)
+	(bus)
+)
+(connector
+	(text "resetN" (rect 1338 24 1368 41)(font "Intel Clear" ))
+	(pt 1328 40)
+	(pt 1400 40)
+)
+(connector
+	(text "resetN" (rect -808 792 -778 809)(font "Intel Clear" ))
+	(pt -816 808)
+	(pt -760 808)
+)
+(connector
+	(text "clk" (rect -808 808 -794 825)(font "Intel Clear" ))
+	(pt -816 824)
+	(pt -760 824)
+)
+(connector
+	(text "keypadValid" (rect -808 824 -748 841)(font "Intel Clear" ))
+	(pt -816 840)
+	(pt -760 840)
+)
+(connector
+	(pt -776 856)
+	(pt -760 856)
+	(bus)
+)
+(connector
+	(text "tone[3..0]" (rect -462 792 -418 809)(font "Intel Clear" ))
+	(pt -520 808)
+	(pt -288 808)
+	(bus)
+)
+(connector
+	(pt -520 824)
+	(pt -288 824)
+)
+(connector
+	(pt -776 856)
+	(pt -776 888)
+	(bus)
+)
+(connector
+	(pt -776 888)
+	(pt -776 920)
+	(bus)
+)
+(connector
+	(pt -336 760)
+	(pt -288 760)
+)
+(connector
+	(pt -336 744)
+	(pt -288 744)
+)
+(connector
+	(pt -64 744)
+	(pt -16 744)
+	(bus)
+)
 (junction (pt -856 568))
 (junction (pt -776 888))
 (text "Output to 7Seg" (rect 72 880 162 899)(font "Intel Clear" (font_size 8)))
@@ -3801,6 +3757,7 @@ agreement for further details.
 (text "Background" (rect -392 408 -308 428)(font "Intel Clear" (font_size 10)(bold)))
 (text "Ramdon - UNUSED" (rect -896 408 -762 428)(font "Intel Clear" (font_size 10)(bold)))
 (text "Clyde" (rect 3304 -88 3338 -69)(font "Intel Clear" (font_size 8)(bold)))
+(text "resetN" (rect 1338 24 1368 41)(font "Intel Clear" ))
 (rectangle (rect -904 640 240 1016)(color 0 0 0)(line_width 3))
 (rectangle (rect 512 -96 1048 256)(color 0 0 0)(line_width 3))
 (rectangle (rect -408 160 240 400)(color 0 0 0)(line_width 3))
