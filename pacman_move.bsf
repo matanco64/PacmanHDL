@@ -21,7 +21,7 @@ agreement for further details.
 */
 (header "symbol" (version "1.1"))
 (symbol
-	(rect 16 16 272 192)
+	(rect 16 16 256 192)
 	(text "pacman_move" (rect 5 0 66 12)(font "Arial" ))
 	(text "inst" (rect 8 160 20 172)(font "Arial" ))
 	(port
@@ -74,25 +74,32 @@ agreement for further details.
 		(line (pt 0 128)(pt 16 128)(line_width 3))
 	)
 	(port
-		(pt 256 32)
+		(pt 240 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 57 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 178 27 235 39)(font "Arial" ))
-		(line (pt 256 32)(pt 240 32)(line_width 3))
+		(text "topLeftX[10..0]" (rect 162 27 219 39)(font "Arial" ))
+		(line (pt 240 32)(pt 224 32)(line_width 3))
 	)
 	(port
-		(pt 256 48)
+		(pt 240 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 59 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 176 43 235 55)(font "Arial" ))
-		(line (pt 256 48)(pt 240 48)(line_width 3))
+		(text "topLeftY[10..0]" (rect 160 43 219 55)(font "Arial" ))
+		(line (pt 240 48)(pt 224 48)(line_width 3))
 	)
 	(port
-		(pt 256 64)
+		(pt 240 64)
 		(output)
-		(text "currentDirection[3..0]" (rect 0 0 82 12)(font "Arial" ))
-		(text "currentDirection[3..0]" (rect 153 59 235 71)(font "Arial" ))
-		(line (pt 256 64)(pt 240 64)(line_width 3))
+		(text "curDirKey[3..0]" (rect 0 0 62 12)(font "Arial" ))
+		(text "curDirKey[3..0]" (rect 157 59 219 71)(font "Arial" ))
+		(line (pt 240 64)(pt 224 64)(line_width 3))
+	)
+	(port
+		(pt 240 80)
+		(output)
+		(text "curDir[1..0]" (rect 0 0 43 12)(font "Arial" ))
+		(text "curDir[1..0]" (rect 176 75 219 87)(font "Arial" ))
+		(line (pt 240 80)(pt 224 80)(line_width 3))
 	)
 	(parameter
 		"INITIAL_X"
@@ -105,7 +112,7 @@ agreement for further details.
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(drawing
-		(rectangle (rect 16 16 240 160)(line_width 1))
+		(rectangle (rect 16 16 224 160)(line_width 1))
 	)
-	(annotation_block (parameter)(rect 272 -64 372 16))
+	(annotation_block (parameter)(rect 256 -64 356 16))
 )

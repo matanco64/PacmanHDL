@@ -5,18 +5,19 @@ module	pacman_move	(
 					input	 logic startOfFrame,      //short pulse every start of frame 30Hz 
 					input	 logic [3:0] keyPadCode,   //move direction
 					input	 logic keyPadValid,        
-					input  logic collision,         // hits an object
+					input  logic collision,         //collision if smiley hits an object
 					input  logic [2:0] HitEdgeCode, 
 					output logic signed 	[10:0] topLeftX, // output the top left corner 
 					output logic signed	[10:0] topLeftY,  // can be negative , if the object is partliy outside
-					output logic [3:0] currentDirection
+					output logic [3:0] curDirKey,
+					output logic [3:0] curDir
 					
 );
 
 const int	FIXED_POINT_MULTIPLIER = 64;
 
-const int   OBJECT_WIDTH_X = 16;
-const int   OBJECT_HIGHT_Y = 16;
+const int   OBJECT_WIDTH_X = 32;
+const int   OBJECT_HIGHT_Y = 32;
 const int	SafetyMargin   = 16;
 const int	x_FRAME_LEFT	=	(SafetyMargin)* FIXED_POINT_MULTIPLIER; 
 const int	x_FRAME_RIGHT	=	(640 - SafetyMargin - OBJECT_WIDTH_X)* FIXED_POINT_MULTIPLIER; 
@@ -42,21 +43,11 @@ int Yposition;
 int Xspeed;
 int Yspeed;
 
-
-
-//edges 
-	//------------
-	//			 434
-	//			 1x2
-	//			 404
-	//
-
-	// TO BE DELETED
-const logic [4:0] CORNER =	5'b10000; 
-const logic [3:0] TOP =		 4'b1000; 
-const logic [3:0] RIGHT =   4'b0100; 
-const logic [3:0] LEFT =	 4'b0010; 
-const logic [3:0] BOTTOM =  4'b0001; 
+//const logic [4:0] CORNER =	5'b10000; 
+//const logic [3:0] TOP =		 4'b1000; 
+//const logic [3:0] RIGHT =   4'b0100; 
+//const logic [3:0] LEFT =	 4'b0010; 
+//const logic [3:0] BOTTOM =  4'b0001; 
 
 
 enum  logic [2:0] {IDLE_ST,         	// initial state
@@ -79,12 +70,12 @@ begin
 	if (resetN == 1'b0) begin
 		SM_Motion <= IDLE_ST;
 		Xposition <= INITIAL_X*FIXED_POINT_MULTIPLIER;
-		Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER;
 		Xspeed <= 0;
 		Yspeed <= 0;
 		hit_reg <= 1'b0;
 		is_neg <= 1'b0;
-		currentDirection <= INITIAL_DIRECTION;
+		Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER;
+		curDirKey <= INITIAL_DIRECTION;
 	end
 	else begin
 
@@ -98,7 +89,7 @@ begin
 					Yspeed  <= 0; 
 					Xposition <= INITIAL_X*FIXED_POINT_MULTIPLIER; 
 					Yposition <= INITIAL_Y*FIXED_POINT_MULTIPLIER; 
-					currentDirection <= INITIAL_DIRECTION;
+					curDirKey <= INITIAL_DIRECTION;
 					if (startOfFrame) 
 						SM_Motion <= MOVE_ST ;
 		
@@ -113,22 +104,22 @@ begin
 						UP_KEY: begin
 							Yspeed <= -MOVEMENT_SPEED;
 							Xspeed <= 0;
-							currentDirection <= UP_KEY;
+							curDirKey <= UP_KEY;
 						end
 						RIGHT_KEY: begin 
 							Xspeed <= MOVEMENT_SPEED;
 							Yspeed <= 0;
-							currentDirection <= RIGHT_KEY;
+							curDirKey <= RIGHT_KEY;
 						end
 						LEFT_KEY: begin
 							Xspeed <= -MOVEMENT_SPEED;
 							Yspeed <= 0;
-							currentDirection <= LEFT_KEY;
+							curDirKey <= LEFT_KEY;
 						end
 						DOWN_KEY: begin
 							Yspeed <= MOVEMENT_SPEED;
 							Xspeed <= 0;
-							currentDirection <= DOWN_KEY;
+							curDirKey <= DOWN_KEY;
 						end
 					endcase
 					
@@ -160,24 +151,6 @@ begin
 						Yspeed <= -Yspeed;
 						hit_reg <= 1'b0;
 						is_neg <= 1'b1;
-//						case(currentDirection)
-//							UP_KEY: begin
-//								Yspeed <= MOVEMENT_SPEED;
-//								Xspeed <= 0;
-//							end
-//							RIGHT_KEY: begin 
-//								Xspeed <= -MOVEMENT_SPEED;
-//								Yspeed <= 0;
-//							end
-//							LEFT_KEY: begin
-//								Xspeed <= MOVEMENT_SPEED;
-//								Yspeed <= 0;
-//							end
-//							DOWN_KEY: begin
-//								Yspeed <= -MOVEMENT_SPEED;
-//								Xspeed <= 0;
-//							end
-//						endcase
 						
 					end else if (!hit_reg && is_neg) begin
 						Xspeed <= 0;
@@ -236,6 +209,16 @@ begin
 
 assign 	topLeftX = Xposition / FIXED_POINT_MULTIPLIER ;   // note it must be 2^n 
 assign 	topLeftY = Yposition / FIXED_POINT_MULTIPLIER ;    
+
+always_comb begin
+    case (curDirKey)
+        UP_KEY: curDir = 2'd0;
+        DOWN_KEY: curDir = 2'd1;
+        LEFT_KEY: curDir = 2'd2;
+        RIGHT_KEY: curDir = 2'd3;
+        default: curDir = 2'd0; // fallback value if none match
+    endcase
+end
 
 	
 	
