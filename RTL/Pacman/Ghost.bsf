@@ -21,9 +21,9 @@ agreement for further details.
 */
 (header "symbol" (version "1.2"))
 (symbol
-	(rect 16 16 272 240)
+	(rect 16 16 272 272)
 	(text "Ghost" (rect 5 0 39 19)(font "Intel Clear" (font_size 8)))
-	(text "inst" (rect 8 203 24 220)(font "Intel Clear" ))
+	(text "inst" (rect 8 235 24 252)(font "Intel Clear" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -95,6 +95,27 @@ agreement for further details.
 		(line (pt 0 176)(pt 16 176)(line_width 3))
 	)
 	(port
+		(pt 0 192)
+		(input)
+		(text "pacmanX[10..0]" (rect 0 0 94 19)(font "Intel Clear" (font_size 8)))
+		(text "pacmanX[10..0]" (rect 21 187 115 206)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 192)(pt 16 192)(line_width 3))
+	)
+	(port
+		(pt 0 208)
+		(input)
+		(text "pacmanY[10..0]" (rect 0 0 94 19)(font "Intel Clear" (font_size 8)))
+		(text "pacmanY[10..0]" (rect 21 203 115 222)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 208)(pt 16 208)(line_width 3))
+	)
+	(port
+		(pt 0 224)
+		(input)
+		(text "pacmanDir[1..0]" (rect 0 0 95 19)(font "Intel Clear" (font_size 8)))
+		(text "pacmanDir[1..0]" (rect 21 219 116 238)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 224)(pt 16 224)(line_width 3))
+	)
+	(port
 		(pt 256 32)
 		(output)
 		(text "DR" (rect 0 0 17 19)(font "Intel Clear" (font_size 8)))
@@ -133,7 +154,7 @@ agreement for further details.
 		""
 	)
 	(drawing
-		(rectangle (rect 16 16 240 208))
+		(rectangle (rect 16 16 240 240))
 	)
 	(annotation_block (parameter)(rect 272 -64 372 16))
 )
