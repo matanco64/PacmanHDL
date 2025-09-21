@@ -93,13 +93,6 @@ logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] OriginalPacmanMap = { /
 logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] pacmanMap;
 logic [TILE_BITS-1:0] tile;
 
-// assign Utile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE - 2];
-// assign Dtile = pacmanMap[pixelX / TILE_SIZE][pixelY / TILE_SIZE];
-// assign Ltile = pacmanMap[pixelX / TILE_SIZE - 1][pixelY / TILE_SIZE];
-// assign Rtile = pacmanMap[pixelX / TILE_SIZE + 1][pixelY / TILE_SIZE];
-//logic	[7:0] RGBDraw;
-//maze_part maze_part ( .symbol(tile), .USymbol(Utile), .DSymbol(Dtile), .LSymbol(Ltile), .RSymbol(Rtile), .offsetX(pixelX % TILE_SIZE), .offsetY(pixelY % TILE_SIZE), .RGBout(RGBDraw));
-
 logic [3:0] offsetX;
 logic [3:0] offsetY;
 

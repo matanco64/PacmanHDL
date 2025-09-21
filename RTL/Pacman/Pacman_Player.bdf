@@ -474,28 +474,28 @@ agreement for further details.
 		(pt 240 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 158 27 219 39)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 158 27 231 39)(font "Arial" ))
 		(line (pt 240 32)(pt 224 32)(line_width 3))
 	)
 	(port
 		(pt 240 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 156 43 219 55)(font "Arial" ))
+		(text "topLeftY[10..0]" (rect 156 43 231 55)(font "Arial" ))
 		(line (pt 240 48)(pt 224 48)(line_width 3))
 	)
 	(port
 		(pt 240 64)
 		(output)
 		(text "curDirKey[3..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "curDirKey[3..0]" (rect 156 59 219 71)(font "Arial" ))
+		(text "curDirKey[3..0]" (rect 156 59 231 71)(font "Arial" ))
 		(line (pt 240 64)(pt 224 64)(line_width 3))
 	)
 	(port
 		(pt 240 80)
 		(output)
 		(text "curDir[1..0]" (rect 0 0 55 12)(font "Arial" ))
-		(text "curDir[1..0]" (rect 173 75 219 87)(font "Arial" ))
+		(text "curDir[1..0]" (rect 173 75 228 87)(font "Arial" ))
 		(line (pt 240 80)(pt 224 80)(line_width 3))
 	)
 	(parameter
@@ -511,7 +511,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 224 160))
 	)
-	(annotation_block (parameter)(rect 376 88 545 145))
+	(annotation_block (parameter)(rect 352 128 521 185))
 )
 (connector
 	(text "clk" (rect 1369 160 1383 177)(font "Intel Clear" ))

@@ -71,8 +71,6 @@ module ghost_move (
 
   // distances
   reg signed [31:0] distUp, distDown, distLeft, distRight;
-  reg signed [31:0] newX_up, newY_up, newX_down, newY_down;
-  reg signed [31:0] newX_left, newY_left, newX_right, newY_right;
   reg  [1:0] nextDir;
 
   // Random generator
@@ -80,26 +78,21 @@ module ghost_move (
   wire [1:0] rnd;
   assign rnd = lfsr[1:0];
 
-  // Direction checking signals
-  wire canMoveUp, canMoveDown, canMoveLeft, canMoveRight;
-  wire [TILE_BITS-1:0] tileUp, tileDown, tileLeft, tileRight;
-
-  assign tileUp = aroundGhost[11:9];
-  assign tileDown = aroundGhost[8:6];
-  assign tileLeft = aroundGhost[5:3];
-  assign tileRight = aroundGhost[2:0];
-
-  assign canMoveUp = (tileUp != WALL) && ((Yposition - MOVEMENT_SPEED) >= Y_FRAME_TOP);
-  assign canMoveDown = (tileDown != WALL) && ((Yposition + MOVEMENT_SPEED) <= Y_FRAME_BOTTOM);
-  assign canMoveLeft = (tileLeft != WALL) && ((Xposition - MOVEMENT_SPEED) >= X_FRAME_LEFT);
-  assign canMoveRight = (tileRight != WALL) && ((Xposition + MOVEMENT_SPEED) <= X_FRAME_RIGHT);
-
   // junction detection
   wire isJunction;
   assign isJunction = ((canMoveUp || canMoveDown) && (canMoveLeft || canMoveRight));
-  // wire aligned_to_grid;
-   assign aligned_to_grid = ((Xposition % (TILE_PIXELS)) == 0) && 
-                                 ((Yposition % (TILE_PIXELS)) == 0);
+  wire aligned_to_grid;
+  assign aligned_to_grid = (Xposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0) &&
+                         (Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0);
+
+
+  // Direction checking signals
+  wire canMoveUp, canMoveDown, canMoveLeft, canMoveRight;
+
+  assign canMoveUp    = (!aligned_to_grid || aroundGhost[11:9] != WALL); // NEED TO ADD SAFETY CHECKS FOR SCREEN EDGES
+  assign canMoveDown = (!aligned_to_grid || aroundGhost[8:6] != WALL);
+  assign canMoveLeft = (!aligned_to_grid || aroundGhost[5:3] != WALL);
+  assign canMoveRight = (!aligned_to_grid || aroundGhost[2:0] != WALL);
 
   // ---------------------------------------------------------------------------
   // functions
@@ -116,6 +109,9 @@ module ghost_move (
     endcase
   endfunction
 
+  function automatic [10:0] absDiff(input signed [10:0] a, b);
+    absDiff = (a > b) ? (a - b) : (b - a);
+  endfunction
   // ---------------------------------------------------------------------------
   // always_comb blocks
   // ---------------------------------------------------------------------------
@@ -217,24 +213,31 @@ module ghost_move (
 
   // Calculate potential new positions and their distances to target
   always_comb begin
-    newX_up = Xposition / FIXED_POINT_MULTIPLIER;
-    newY_up = (Yposition - MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
-    newX_down = Xposition / FIXED_POINT_MULTIPLIER;
-    newY_down = (Yposition + MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
-    newX_left = (Xposition - MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
-    newY_left = Yposition / FIXED_POINT_MULTIPLIER;
+    logic signed [31:0] newX_up, newY_up, newX_down, newY_down, baseX, baseY;
+    logic signed [31:0] newX_left, newY_left, newX_right, newY_right;
+
+    // Normalize positions
+    baseX = Xposition / FIXED_POINT_MULTIPLIER;
+    baseY = Yposition / FIXED_POINT_MULTIPLIER;
+
+    // New positions
+    newX_up    = baseX;
+    newY_up    = (Yposition - MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
+
+    newX_down  = baseX;
+    newY_down  = (Yposition + MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
+
+    newX_left  = (Xposition - MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
+    newY_left  = baseY;
+
     newX_right = (Xposition + MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
-    newY_right = Yposition / FIXED_POINT_MULTIPLIER;
+    newY_right = baseY;
 
     // Manhattan distance calculations
-    distUp = ((newX_up > targetX) ? (newX_up - targetX) : (targetX - newX_up)) +
-             ((newY_up > targetY) ? (newY_up - targetY) : (targetY - newY_up));
-    distDown = ((newX_down > targetX) ? (newX_down - targetX) : (targetX - newX_down)) +
-               ((newY_down > targetY) ? (newY_down - targetY) : (targetY - newY_down));
-    distLeft = ((newX_left > targetX) ? (newX_left - targetX) : (targetX - newX_left)) +
-               ((newY_left > targetY) ? (newY_left - targetY) : (targetY - newY_left));
-    distRight = ((newX_right > targetX) ? (newX_right - targetX) : (targetX - newX_right)) +
-                ((newY_right > targetY) ? (newY_right - targetY) : (targetY - newY_right));
+    distUp    = absDiff(newX_up,    targetX) + absDiff(newY_up,    targetY);
+    distDown  = absDiff(newX_down,  targetX) + absDiff(newY_down,  targetY);
+    distLeft  = absDiff(newX_left,  targetX) + absDiff(newY_left,  targetY);
+    distRight = absDiff(newX_right, targetX) + absDiff(newY_right, targetY);
   end
 
 
@@ -325,11 +328,6 @@ module ghost_move (
       // else if (canMoveLeft && (DIR_LEFT != opposite(lastDir))) nextDir = DIR_LEFT;
       // else if (canMoveRight && (DIR_RIGHT != opposite(lastDir))) nextDir = DIR_RIGHT;
 
-
-
-
-
-
     end
   end
 
@@ -339,83 +337,145 @@ module ghost_move (
     else lfsr <= {lfsr[6:0], lfsr[7] ^ lfsr[5] ^ lfsr[4] ^ lfsr[3]};
   end
 
+
+  enum logic [2:0] {
+    IDLE_ST,    // initial state
+    CHANGE_ST,
+    MOVE_ST
+  } SM_Motion;
+
   // Main state machine
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
-      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
-      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-      ghostDir <= DIR_LEFT;
-      lastDir <= DIR_LEFT;
-      currentMode <= CHASE_MODE;  // should start in scatter mode, but for simplicity start in chase
-      modeTimer <= 8'd90;
-      frightenedTimer <= 8'd0;
+      SM_Motion <= IDLE_ST;
 
-    end else if (startOfFrame) begin
+    end else begin
+      case (SM_Motion)
+        IDLE_ST: begin
+          Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+          Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+          ghostDir <= DIR_LEFT;
+          lastDir <= DIR_LEFT;
+          currentMode <= CHASE_MODE;  // should start in scatter mode, but for simplicity start in chase
+          modeTimer <= 8'd90;
+          frightenedTimer <= 8'd0;
 
-      // Update timers
-      if (modeTimer > 0) modeTimer <= modeTimer - 1;
-      if (frightenedTimer > 0) frightenedTimer <= frightenedTimer - 1;
-
-      // Mode management
-      if (forceMode == FRIGHTENED && currentMode != FRIGHTENED && currentMode != EATEN_MODE) begin
-        currentMode <= FRIGHTENED;
-        frightenedTimer <= 8'd240;
-        // Reverse direction
-        case (ghostDir)
-          DIR_UP: ghostDir <= DIR_DOWN;
-          DIR_DOWN: ghostDir <= DIR_UP;
-          DIR_LEFT: ghostDir <= DIR_RIGHT;
-          DIR_RIGHT: ghostDir <= DIR_LEFT;
-        endcase
-      end else if (frightenedTimer == 8'd0 && currentMode == FRIGHTENED) begin
-        currentMode <= CHASE_MODE;
-        modeTimer   <= 8'd150;
-      end else if (currentMode != FRIGHTENED && currentMode != EATEN_MODE) begin
-        if (modeTimer == 8'd0) begin
-          if (currentMode == SCATTER_MODE) begin
-            currentMode <= CHASE_MODE;
-            modeTimer   <= 8'd150;
-          end else begin
-            currentMode <= SCATTER_MODE;
-            modeTimer   <= 8'd90;
+          if (startOfFrame) SM_Motion <= CHANGE_ST;
+        end
+        CHANGE_ST: begin
+          if (startOfFrame) begin
+            // Direction changes at junctions or when stuck
+            if (aligned_to_grid) begin
+              // Check if we can move in current direction
+              case (ghostDir)
+                DIR_UP:
+                if (!canMoveUp || isJunction) begin
+                  lastDir  <= ghostDir;
+                  ghostDir <= nextDir;
+                end
+                DIR_DOWN:
+                if (!canMoveDown || isJunction) begin
+                  lastDir  <= ghostDir;
+                  ghostDir <= nextDir;
+                end
+                DIR_LEFT:
+                if (!canMoveLeft || isJunction) begin
+                  lastDir  <= ghostDir;
+                  ghostDir <= nextDir;
+                end
+                DIR_RIGHT:
+                if (!canMoveRight || isJunction) begin
+                  lastDir  <= ghostDir;
+                  ghostDir <= nextDir;
+                end
+              endcase
+            end
+            SM_Motion <= MOVE_ST;
           end
         end
-      end
 
-      // Direction changes at junctions or when stuck
-      if (aligned_to_grid) begin
-        // Check if we can move in current direction
-        case (ghostDir)
-          DIR_UP:
-          if (!canMoveUp || isJunction) begin
-            lastDir  <= ghostDir;
-            ghostDir <= nextDir;
+        MOVE_ST: begin
+          if (startOfFrame) begin
+            // Execute movement
+            case (ghostDir)
+              DIR_UP: if (canMoveUp) Yposition <= Yposition - MOVEMENT_SPEED;
+              DIR_DOWN: if (canMoveDown) Yposition <= Yposition + MOVEMENT_SPEED;
+              DIR_LEFT: if (canMoveLeft) Xposition <= Xposition - MOVEMENT_SPEED;
+              DIR_RIGHT: if (canMoveRight) Xposition <= Xposition + MOVEMENT_SPEED;
+            endcase
+            SM_Motion <= CHANGE_ST;
           end
-          DIR_DOWN:
-          if (!canMoveDown || isJunction) begin
-            lastDir  <= ghostDir;
-            ghostDir <= nextDir;
-          end
-          DIR_LEFT:
-          if (!canMoveLeft || isJunction) begin
-            lastDir  <= ghostDir;
-            ghostDir <= nextDir;
-          end
-          DIR_RIGHT:
-          if (!canMoveRight || isJunction) begin
-            lastDir  <= ghostDir;
-            ghostDir <= nextDir;
-          end
-        endcase
-      end
+        end
 
-      // Execute movement
-      case (ghostDir)
-        DIR_UP: if (canMoveUp) Yposition <= Yposition - MOVEMENT_SPEED;
-        DIR_DOWN: if (canMoveDown) Yposition <= Yposition + MOVEMENT_SPEED;
-        DIR_LEFT: if (canMoveLeft) Xposition <= Xposition - MOVEMENT_SPEED;
-        DIR_RIGHT: if (canMoveRight) Xposition <= Xposition + MOVEMENT_SPEED;
+
       endcase
+
+      // end else if (startOfFrame) begin
+
+      //   // // Update timers
+      //   // if (modeTimer > 0) modeTimer <= modeTimer - 1;
+      //   // if (frightenedTimer > 0) frightenedTimer <= frightenedTimer - 1;
+
+      //   // // Mode management
+      //   // if (forceMode == FRIGHTENED && currentMode != FRIGHTENED && currentMode != EATEN_MODE) begin
+      //   //   currentMode <= FRIGHTENED;
+      //   //   frightenedTimer <= 8'd240;
+      //   //   // Reverse direction
+      //   //   case (ghostDir)
+      //   //     DIR_UP: ghostDir <= DIR_DOWN;
+      //   //     DIR_DOWN: ghostDir <= DIR_UP;
+      //   //     DIR_LEFT: ghostDir <= DIR_RIGHT;
+      //   //     DIR_RIGHT: ghostDir <= DIR_LEFT;
+      //   //   endcase
+      //   // end else if (frightenedTimer == 8'd0 && currentMode == FRIGHTENED) begin
+      //   //   currentMode <= CHASE_MODE;
+      //   //   modeTimer   <= 8'd150;
+      //   // end else if (currentMode != FRIGHTENED && currentMode != EATEN_MODE) begin
+      //   //   if (modeTimer == 8'd0) begin
+      //   //     if (currentMode == SCATTER_MODE) begin
+      //   //       currentMode <= CHASE_MODE;
+      //   //       modeTimer   <= 8'd150;
+      //   //     end else begin
+      //   //       currentMode <= SCATTER_MODE;
+      //   //       modeTimer   <= 8'd90;
+      //   //     end
+      //   //   end
+      //   // end
+
+      //   // Direction changes at junctions or when stuck
+      //   if (aligned_to_grid) begin
+      //     // Check if we can move in current direction
+      //     case (ghostDir)
+      //       DIR_UP:
+      //       if (!canMoveUp || isJunction) begin
+      //         lastDir  <= ghostDir;
+      //         ghostDir <= nextDir;
+      //       end
+      //       DIR_DOWN:
+      //       if (!canMoveDown || isJunction) begin
+      //         lastDir  <= ghostDir;
+      //         ghostDir <= nextDir;
+      //       end
+      //       DIR_LEFT:
+      //       if (!canMoveLeft || isJunction) begin
+      //         lastDir  <= ghostDir;
+      //         ghostDir <= nextDir;
+      //       end
+      //       DIR_RIGHT:
+      //       if (!canMoveRight || isJunction) begin
+      //         lastDir  <= ghostDir;
+      //         ghostDir <= nextDir;
+      //       end
+      //     endcase
+      //   end
+
+      //   // Execute movement
+      //   case (ghostDir)
+      //     DIR_UP: if (canMoveUp) Yposition <= Yposition - MOVEMENT_SPEED;
+      //     DIR_DOWN: if (canMoveDown) Yposition <= Yposition + MOVEMENT_SPEED;
+      //     DIR_LEFT: if (canMoveLeft) Xposition <= Xposition - MOVEMENT_SPEED;
+      //     DIR_RIGHT: if (canMoveRight) Xposition <= Xposition + MOVEMENT_SPEED;
+      //   endcase
     end
   end
 
