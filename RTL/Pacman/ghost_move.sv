@@ -7,7 +7,7 @@ module ghost_move (
     input logic [10:0] pacmanX,
     input logic [10:0] pacmanY,
     input logic [1:0] pacmanDir,
-    input logic [1:0] forceMode,          // External mode control: 00=unused, 01=unused, 10=Frightened, 11=EATEN_MODE
+    input logic [1:0] forceMode,          // External mode control: 00=unused, 01=unused, 10=FRIGHTENED_M, 11=EATEN_M
     input logic [7:0] gameTimer,  // Currently unused - for future timing features
     input logic [7:0] gameState,  // Currently unused - for future game state - start, play, pause, turbo, game over
 
@@ -23,8 +23,10 @@ module ghost_move (
   parameter TILE_PIXELS = 16;
   parameter SAFETY_MARGIN = 16;
 
-  parameter [TILE_BITS-1:0] WALL = 3'd2;
   parameter [TILE_BITS-1:0] EMPTY = 3'd0;
+  parameter [TILE_BITS-1:0] WALL = 3'd2;
+  localparam logic [TILE_BITS-1:0] GHOST_WALL = 3'd3;
+  parameter [TILE_BITS-1:0] PORTAL = 3'd4;
 
   // Screen boundaries
   parameter X_FRAME_LEFT = (SAFETY_MARGIN) * FIXED_POINT_MULTIPLIER;
@@ -53,27 +55,19 @@ module ghost_move (
   parameter [1:0] DIR_LEFT = 2'b10;
   parameter [1:0] DIR_RIGHT = 2'b11;
 
-  parameter [1:0] SCATTER_MODE = 2'b00;
-  parameter [1:0] CHASE_MODE = 2'b01;
-  parameter [1:0] FRIGHTENED = 2'b10;
-  parameter [1:0] EATEN_MODE = 2'b11;
-
   // ---------------------------------------------------------------------------
   // Internal signals
   // ---------------------------------------------------------------------------
   reg signed [31:0] Xposition, Yposition;
   reg [1:0] ghostDir, lastDir;
-  reg [1:0] currentMode;
   reg [7:0] modeTimer;
   reg [7:0] frightenedTimer;
+  reg [1:0] prevMode;
 
   reg signed [31:0] targetX, targetY;
-
-  // distances
   reg signed [31:0] distUp, distDown, distLeft, distRight;
-  reg  [1:0] nextDir;
 
-  // Random generator
+  reg  [1:0] nextDir;
   reg  [7:0] lfsr;
   wire [1:0] rnd;
   assign rnd = lfsr[1:0];
@@ -85,14 +79,31 @@ module ghost_move (
   assign aligned_to_grid = (Xposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0) &&
                          (Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0);
 
+  // if speed is not a multiple of TILE_PIXELS:                      
+  // assign aligned_to_grid =
+  //   ((Xposition % (TILE_PIXELS*FIXED_POINT_MULTIPLIER)) < MOVEMENT_SPEED) &&
+  //   ((Yposition % (TILE_PIXELS*FIXED_POINT_MULTIPLIER)) < MOVEMENT_SPEED);
 
   // Direction checking signals
   wire canMoveUp, canMoveDown, canMoveLeft, canMoveRight;
 
-  assign canMoveUp    = (!aligned_to_grid || aroundGhost[11:9] != WALL); // NEED TO ADD SAFETY CHECKS FOR SCREEN EDGES
-  assign canMoveDown = (!aligned_to_grid || aroundGhost[8:6] != WALL);
-  assign canMoveLeft = (!aligned_to_grid || aroundGhost[5:3] != WALL);
-  assign canMoveRight = (!aligned_to_grid || aroundGhost[2:0] != WALL);
+  assign canMoveUp    = (!aligned_to_grid || (aroundGhost[11:9] != WALL && aroundGhost[11:9] != PORTAL));
+  assign canMoveDown  = (!aligned_to_grid || (aroundGhost[8:6] != WALL && aroundGhost[8:6] != PORTAL));
+  assign canMoveLeft  = (!aligned_to_grid || aroundGhost[5:3] != WALL);
+  assign canMoveRight = (!aligned_to_grid || (aroundGhost[2:0] != WALL&& aroundGhost[2:0] != GHOST_WALL));
+
+  enum logic [1:0] {  // ghost movement
+    IDLE_ST,
+    CHANGE_ST,
+    MOVE_ST
+  } SM_Motion;
+
+  enum logic [1:0] {  // ghost mode
+    SCATTER_M,
+    CHASE_M,
+    FRIGHTENED_M,
+    EATEN_M
+  } currMode;
 
   // ---------------------------------------------------------------------------
   // functions
@@ -109,9 +120,10 @@ module ghost_move (
     endcase
   endfunction
 
-  function automatic [10:0] absDiff(input signed [10:0] a, b);
+  function automatic signed [31:0] absDiff(input signed [31:0] a, input signed [31:0] b);
     absDiff = (a > b) ? (a - b) : (b - a);
   endfunction
+
   // ---------------------------------------------------------------------------
   // always_comb blocks
   // ---------------------------------------------------------------------------
@@ -141,15 +153,15 @@ module ghost_move (
 
   // Calculate target position based on mode and ghost type
   always_comb begin
-    case (currentMode)
-      SCATTER_MODE: begin
+    case (currMode)
+      SCATTER_M: begin
         targetX = homeX;
         targetY = homeY;
       end
 
-      CHASE_MODE: begin
+      CHASE_M: begin
         case (ghostSelect)
-          2'd0: begin  // Blinky - direct chase
+          2'd0: begin  // Blinky - direct CHASE_M
             targetX = pacmanX;
             targetY = pacmanY;
           end
@@ -171,7 +183,7 @@ module ghost_move (
                 targetX = pacmanX + 4 * TILE_PIXELS;
                 targetY = pacmanY;
               end
-              default: begin  // If no direction, just chase directly
+              default: begin  // If no direction, just CHASE_M directly
                 targetX = pacmanX;
                 targetY = pacmanY;
               end
@@ -199,12 +211,12 @@ module ghost_move (
         endcase
       end
 
-      FRIGHTENED: begin
+      FRIGHTENED_M: begin
         targetX = Xposition / FIXED_POINT_MULTIPLIER;
         targetY = Yposition / FIXED_POINT_MULTIPLIER;
       end
 
-      EATEN_MODE: begin
+      EATEN_M: begin
         targetX = INITIAL_X;
         targetY = INITIAL_Y;
       end
@@ -213,31 +225,38 @@ module ghost_move (
 
   // Calculate potential new positions and their distances to target
   always_comb begin
-    logic signed [31:0] newX_up, newY_up, newX_down, newY_down, baseX, baseY;
+    // local temporaries (pixel units)
+    logic signed [31:0] baseX, baseY;
+    logic signed [31:0] tileX, tileY;
+    logic signed [31:0] newX_up, newY_up, newX_down, newY_down;
     logic signed [31:0] newX_left, newY_left, newX_right, newY_right;
 
-    // Normalize positions
-    baseX = Xposition / FIXED_POINT_MULTIPLIER;
-    baseY = Yposition / FIXED_POINT_MULTIPLIER;
+    // Normalize to pixel coordinates (from fixed-point)
+    baseX      = Xposition / FIXED_POINT_MULTIPLIER;  // CHATGPT
+    baseY      = Yposition / FIXED_POINT_MULTIPLIER;  // CHATGPT
 
-    // New positions
-    newX_up    = baseX;
-    newY_up    = (Yposition - MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
+    // Determine current tile coordinates (integer tile indices)
+    tileX      = baseX / TILE_PIXELS;  // CHATGPT
+    tileY      = baseY / TILE_PIXELS;  // CHATGPT
 
-    newX_down  = baseX;
-    newY_down  = (Yposition + MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
+    // Neighbor TILE CENTERS (pixel coordinates) - 1 tile offset
+    newX_up    = tileX * TILE_PIXELS;  // same column
+    newY_up    = (tileY - 1) * TILE_PIXELS;  // one tile up
 
-    newX_left  = (Xposition - MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
-    newY_left  = baseY;
+    newX_down  = tileX * TILE_PIXELS;
+    newY_down  = (tileY + 1) * TILE_PIXELS;
 
-    newX_right = (Xposition + MOVEMENT_SPEED) / FIXED_POINT_MULTIPLIER;
-    newY_right = baseY;
+    newX_left  = (tileX - 1) * TILE_PIXELS;  // one tile left
+    newY_left  = tileY * TILE_PIXELS;
 
-    // Manhattan distance calculations
-    distUp    = absDiff(newX_up,    targetX) + absDiff(newY_up,    targetY);
-    distDown  = absDiff(newX_down,  targetX) + absDiff(newY_down,  targetY);
-    distLeft  = absDiff(newX_left,  targetX) + absDiff(newY_left,  targetY);
-    distRight = absDiff(newX_right, targetX) + absDiff(newY_right, targetY);
+    newX_right = (tileX + 1) * TILE_PIXELS;
+    newY_right = tileY * TILE_PIXELS;
+
+    // Manhattan distance from each candidate tile-center to the target (all in pixels)
+    distUp     = absDiff(newX_up, targetX) + absDiff(newY_up, targetY);  // CHATGPT
+    distDown   = absDiff(newX_down, targetX) + absDiff(newY_down, targetY);  // CHATGPT
+    distLeft   = absDiff(newX_left, targetX) + absDiff(newY_left, targetY);  // CHATGPT
+    distRight  = absDiff(newX_right, targetX) + absDiff(newY_right, targetY);  // CHATGPT
   end
 
 
@@ -260,7 +279,7 @@ module ghost_move (
 
     nextDir = ghostDir;
 
-    if (currentMode == FRIGHTENED) begin  // Random direction - frightened mode - the code is long for quartus compatibility
+    if (currMode == FRIGHTENED_M) begin  // Random direction - FRIGHTENED_M mode - the code is long for quartus compatibility
       case (rnd)
         2'b00:
         if (canMoveUp && (DIR_UP != opposite(ghostDir))) nextDir = DIR_UP;
@@ -303,33 +322,12 @@ module ghost_move (
         bestDir = DIR_RIGHT;
       end
       nextDir = bestDir;
-
-
-      // Best direction based on distance to target & avoiding U-turns - chase/scatter/eaten modes
-      // if (canMoveUp && (distUp <= distDown) && (distUp <= distLeft) && (distUp <= distRight) && (DIR_UP != opposite(
-      //         lastDir
-      //     )))
-      //   nextDir = DIR_UP;
-      // else if (canMoveDown && (distDown <= distUp) && (distDown <= distLeft) && (distDown <= distRight) && (DIR_DOWN != opposite(
-      //         lastDir
-      //     )))
-      //   nextDir = DIR_DOWN;
-      // else if (canMoveLeft && (distLeft <= distUp) && (distLeft <= distDown) && (distLeft <= distRight) && (DIR_LEFT != opposite(
-      //         lastDir
-      //     )))
-      //   nextDir = DIR_LEFT;
-      // else if (canMoveRight && (distRight <= distUp) && (distRight <= distDown) && (distRight <= distLeft) && (DIR_RIGHT != opposite(
-      //         lastDir
-      //     )))
-      //   nextDir = DIR_RIGHT;
-      // // Fallback - try any valid direction
-      // else if (canMoveUp && (DIR_UP != opposite(lastDir))) nextDir = DIR_UP;
-      // else if (canMoveDown && (DIR_DOWN != opposite(lastDir))) nextDir = DIR_DOWN;
-      // else if (canMoveLeft && (DIR_LEFT != opposite(lastDir))) nextDir = DIR_LEFT;
-      // else if (canMoveRight && (DIR_RIGHT != opposite(lastDir))) nextDir = DIR_RIGHT;
-
     end
   end
+
+  // ---------------------------------------------------------------------------
+  // always_ff blocks
+  // ---------------------------------------------------------------------------
 
   // Random number generator
   always_ff @(posedge clk or negedge resetN) begin
@@ -338,13 +336,7 @@ module ghost_move (
   end
 
 
-  enum logic [2:0] {
-    IDLE_ST,    // initial state
-    CHANGE_ST,
-    MOVE_ST
-  } SM_Motion;
-
-  // Main state machine
+  // Motion state machine
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
       SM_Motion <= IDLE_ST;
@@ -354,41 +346,51 @@ module ghost_move (
         IDLE_ST: begin
           Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
           Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-          ghostDir <= DIR_LEFT;
-          lastDir <= DIR_LEFT;
-          currentMode <= CHASE_MODE;  // should start in scatter mode, but for simplicity start in chase
-          modeTimer <= 8'd90;
-          frightenedTimer <= 8'd0;
+          ghostDir  <= DIR_LEFT;
+          lastDir   <= DIR_LEFT;
 
           if (startOfFrame) SM_Motion <= CHANGE_ST;
         end
+
         CHANGE_ST: begin
           if (startOfFrame) begin
-            // Direction changes at junctions or when stuck
-            if (aligned_to_grid) begin
-              // Check if we can move in current direction
-              case (ghostDir)
-                DIR_UP:
-                if (!canMoveUp || isJunction) begin
-                  lastDir  <= ghostDir;
-                  ghostDir <= nextDir;
-                end
-                DIR_DOWN:
-                if (!canMoveDown || isJunction) begin
-                  lastDir  <= ghostDir;
-                  ghostDir <= nextDir;
-                end
-                DIR_LEFT:
-                if (!canMoveLeft || isJunction) begin
-                  lastDir  <= ghostDir;
-                  ghostDir <= nextDir;
-                end
-                DIR_RIGHT:
-                if (!canMoveRight || isJunction) begin
-                  lastDir  <= ghostDir;
-                  ghostDir <= nextDir;
-                end
+            if (prevMode != currMode && currMode == FRIGHTENED_M) begin
+              case (ghostDir)  // Reverse direction on entering FRIGHTENED_M
+                DIR_UP:    ghostDir <= DIR_DOWN;
+                DIR_DOWN:  ghostDir <= DIR_UP;
+                DIR_LEFT:  ghostDir <= DIR_RIGHT;
+                DIR_RIGHT: ghostDir <= DIR_LEFT;
               endcase
+              prevMode <= currMode;
+            end else begin
+              // Direction changes at junctions or when stuck
+              if (aligned_to_grid) begin
+                // Check if we can move in current direction
+                case (ghostDir)
+                  DIR_UP:
+                  if (!canMoveUp || isJunction) begin
+                    lastDir  <= ghostDir;
+                    ghostDir <= nextDir;
+                  end
+                  DIR_DOWN:
+                  if (!canMoveDown || isJunction) begin
+                    lastDir  <= ghostDir;
+                    ghostDir <= nextDir;
+                  end
+                  DIR_LEFT:
+                  if (!canMoveLeft || isJunction) begin
+                    lastDir  <= ghostDir;
+                    ghostDir <= nextDir;
+                  end
+                  DIR_RIGHT:
+                  if (!canMoveRight || isJunction) begin
+                    lastDir  <= ghostDir;
+                    ghostDir <= nextDir;
+                  end
+                endcase
+              end
+              // update prevMode
+              prevMode <= currMode;
             end
             SM_Motion <= MOVE_ST;
           end
@@ -407,77 +409,62 @@ module ghost_move (
           end
         end
 
-
       endcase
 
-      // end else if (startOfFrame) begin
-
-      //   // // Update timers
-      //   // if (modeTimer > 0) modeTimer <= modeTimer - 1;
-      //   // if (frightenedTimer > 0) frightenedTimer <= frightenedTimer - 1;
-
-      //   // // Mode management
-      //   // if (forceMode == FRIGHTENED && currentMode != FRIGHTENED && currentMode != EATEN_MODE) begin
-      //   //   currentMode <= FRIGHTENED;
-      //   //   frightenedTimer <= 8'd240;
-      //   //   // Reverse direction
-      //   //   case (ghostDir)
-      //   //     DIR_UP: ghostDir <= DIR_DOWN;
-      //   //     DIR_DOWN: ghostDir <= DIR_UP;
-      //   //     DIR_LEFT: ghostDir <= DIR_RIGHT;
-      //   //     DIR_RIGHT: ghostDir <= DIR_LEFT;
-      //   //   endcase
-      //   // end else if (frightenedTimer == 8'd0 && currentMode == FRIGHTENED) begin
-      //   //   currentMode <= CHASE_MODE;
-      //   //   modeTimer   <= 8'd150;
-      //   // end else if (currentMode != FRIGHTENED && currentMode != EATEN_MODE) begin
-      //   //   if (modeTimer == 8'd0) begin
-      //   //     if (currentMode == SCATTER_MODE) begin
-      //   //       currentMode <= CHASE_MODE;
-      //   //       modeTimer   <= 8'd150;
-      //   //     end else begin
-      //   //       currentMode <= SCATTER_MODE;
-      //   //       modeTimer   <= 8'd90;
-      //   //     end
-      //   //   end
-      //   // end
-
-      //   // Direction changes at junctions or when stuck
-      //   if (aligned_to_grid) begin
-      //     // Check if we can move in current direction
-      //     case (ghostDir)
-      //       DIR_UP:
-      //       if (!canMoveUp || isJunction) begin
-      //         lastDir  <= ghostDir;
-      //         ghostDir <= nextDir;
-      //       end
-      //       DIR_DOWN:
-      //       if (!canMoveDown || isJunction) begin
-      //         lastDir  <= ghostDir;
-      //         ghostDir <= nextDir;
-      //       end
-      //       DIR_LEFT:
-      //       if (!canMoveLeft || isJunction) begin
-      //         lastDir  <= ghostDir;
-      //         ghostDir <= nextDir;
-      //       end
-      //       DIR_RIGHT:
-      //       if (!canMoveRight || isJunction) begin
-      //         lastDir  <= ghostDir;
-      //         ghostDir <= nextDir;
-      //       end
-      //     endcase
-      //   end
-
-      //   // Execute movement
-      //   case (ghostDir)
-      //     DIR_UP: if (canMoveUp) Yposition <= Yposition - MOVEMENT_SPEED;
-      //     DIR_DOWN: if (canMoveDown) Yposition <= Yposition + MOVEMENT_SPEED;
-      //     DIR_LEFT: if (canMoveLeft) Xposition <= Xposition - MOVEMENT_SPEED;
-      //     DIR_RIGHT: if (canMoveRight) Xposition <= Xposition + MOVEMENT_SPEED;
-      //   endcase
     end
   end
+
+
+  // Mode state machine
+  always_ff @(posedge clk or negedge resetN) begin
+    if (!resetN) begin
+      currMode        <= SCATTER_M;
+      modeTimer       <= 8'd90;
+      frightenedTimer <= 8'd0;
+    end else if (startOfFrame) begin
+
+      // Update timers
+      if (modeTimer > 0) modeTimer <= modeTimer - 1;
+      if (frightenedTimer > 0) frightenedTimer <= frightenedTimer - 1;
+
+      // FSM transitions
+      case (currMode)
+
+        SCATTER_M: begin
+          if (forceMode == FRIGHTENED_M) begin
+            currMode        <= FRIGHTENED_M;
+            frightenedTimer <= 8'd240;
+          end else if (modeTimer == 0) begin
+            currMode  <= CHASE_M;
+            modeTimer <= 8'd150;
+          end
+        end
+
+        CHASE_M: begin
+          if (forceMode == FRIGHTENED_M) begin
+            currMode        <= FRIGHTENED_M;
+            frightenedTimer <= 8'd240;
+          end else if (modeTimer == 0) begin
+            currMode  <= SCATTER_M;
+            modeTimer <= 8'd90;
+          end
+        end
+
+        FRIGHTENED_M: begin
+          if (frightenedTimer == 0) begin
+            currMode  <= CHASE_M;
+            modeTimer <= 8'd150;
+          end
+        end
+
+        EATEN_M: begin
+          // handled separately (e.g. reset position when reaching the pen)
+        end
+
+      endcase
+    end
+  end
+
 
   // Outputs
   assign topLeftX = Xposition / FIXED_POINT_MULTIPLIER;
