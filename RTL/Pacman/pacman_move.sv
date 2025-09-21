@@ -22,7 +22,7 @@ const int	SafetyMargin   = 16;
 const int	x_FRAME_LEFT	=	(SafetyMargin)* FIXED_POINT_MULTIPLIER; 
 const int	x_FRAME_RIGHT	=	(640 - SafetyMargin - OBJECT_WIDTH_X)* FIXED_POINT_MULTIPLIER; 
 const int	y_FRAME_TOP		=	(SafetyMargin) * FIXED_POINT_MULTIPLIER;
-const int	y_FRAME_BOTTOM	=	(480 -SafetyMargin - OBJECT_HIGHT_Y ) * FIXED_POINT_MULTIPLIER; //- OBJECT_HIGHT_Y
+const int	y_FRAME_BOTTOM	=	(480 -SafetyMargin) * FIXED_POINT_MULTIPLIER; //- OBJECT_HIGHT_Y
 
 
 localparam UP_KEY = 4'd8;
