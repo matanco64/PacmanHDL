@@ -7,6 +7,8 @@ module ghost_move (
     input logic [10:0] pacmanX,
     input logic [10:0] pacmanY,
     input logic [1:0] pacmanDir,
+	 
+	 input logic [2:0] collisionPacGhost,
     input logic [1:0] forceMode,          // External mode control: 00=unused, 01=unused, 10=FRIGHTENED_M, 11=EATEN_M
     input logic [7:0] gameTimer,  // Currently unused - for future timing features
     input logic [7:0] gameState,  // Currently unused - for future game state - start, play, pause, turbo, game over
@@ -22,17 +24,19 @@ module ghost_move (
   parameter MOVEMENT_SPEED = 16;
   parameter TILE_PIXELS = 16;
   parameter SAFETY_MARGIN = 16;
+  parameter SCREEN_HEIGHT = 480;
+  parameter SCREEN_WIDTH = 640;
 
   parameter [TILE_BITS-1:0] EMPTY = 3'd0;
   parameter [TILE_BITS-1:0] WALL = 3'd2;
-  localparam logic [TILE_BITS-1:0] GHOST_WALL = 3'd3;
+  parameter [TILE_BITS-1:0] GHOST_WALL = 3'd3;
   parameter [TILE_BITS-1:0] PORTAL = 3'd4;
 
-  // Screen boundaries
-  parameter X_FRAME_LEFT = (SAFETY_MARGIN) * FIXED_POINT_MULTIPLIER;
-  parameter X_FRAME_RIGHT = (640 - SAFETY_MARGIN - TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
-  parameter Y_FRAME_TOP = (SAFETY_MARGIN) * FIXED_POINT_MULTIPLIER;
-  parameter Y_FRAME_BOTTOM = (480 - SAFETY_MARGIN - TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
+  // time
+  parameter [10:0] SCATTER_TIME = 10'd210;  // 7 SEC
+  parameter [10:0] CHASE_TIME = 10'd600;  // 20 SEC
+  parameter [10:0] FRIGHTENED_TIME = 10'd180;  // 6 SEC
+  parameter IDLE_DELAY_FRAMES = 60;  // 2 sec
 
   // Home positions
   parameter BLINKY_HOME_X = 480;
@@ -62,6 +66,7 @@ module ghost_move (
   reg [1:0] ghostDir, lastDir;
   reg [7:0] modeTimer;
   reg [7:0] frightenedTimer;
+  reg [7:0] idleCounter;
   reg [1:0] prevMode;
 
   reg signed [31:0] targetX, targetY;
@@ -87,10 +92,10 @@ module ghost_move (
   // Direction checking signals
   wire canMoveUp, canMoveDown, canMoveLeft, canMoveRight;
 
-  assign canMoveUp    = (!aligned_to_grid || (aroundGhost[11:9] != WALL && aroundGhost[11:9] != PORTAL));
-  assign canMoveDown  = (!aligned_to_grid || (aroundGhost[8:6] != WALL && aroundGhost[8:6] != PORTAL));
-  assign canMoveLeft  = (!aligned_to_grid || aroundGhost[5:3] != WALL);
-  assign canMoveRight = (!aligned_to_grid || (aroundGhost[2:0] != WALL&& aroundGhost[2:0] != GHOST_WALL));
+  assign canMoveUp = (!aligned_to_grid || aroundGhost[11:9] != WALL);
+  assign canMoveDown = (!aligned_to_grid || aroundGhost[8:6] != WALL&& aroundGhost[8:6] != GHOST_WALL);
+  assign canMoveLeft = (!aligned_to_grid || aroundGhost[5:3] != WALL);
+  assign canMoveRight = (!aligned_to_grid || (aroundGhost[2:0] != WALL));
 
   enum logic [1:0] {  // ghost movement
     IDLE_ST,
@@ -339,17 +344,30 @@ module ghost_move (
   // Motion state machine
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
+      idleCounter <= 0;
+      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+      ghostDir <= DIR_UP;
+      lastDir <= DIR_UP;
       SM_Motion <= IDLE_ST;
-
+		
+	 end else if (collisionPacGhost !=3'b0)	begin
+	  idleCounter <= 0;
+      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+      ghostDir <= DIR_UP;
+      lastDir <= DIR_UP;
+      SM_Motion <= IDLE_ST;
+	
     end else begin
       case (SM_Motion)
         IDLE_ST: begin
-          Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
-          Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-          ghostDir  <= DIR_LEFT;
-          lastDir   <= DIR_LEFT;
-
-          if (startOfFrame) SM_Motion <= CHANGE_ST;
+          // Increment counter until delay is reached
+          if (idleCounter < IDLE_DELAY_FRAMES) idleCounter <= idleCounter + 1;
+          else if (startOfFrame) begin
+            idleCounter <= 0;
+            SM_Motion   <= CHANGE_ST;  // Start normal movement
+          end
         end
 
         CHANGE_ST: begin
@@ -368,12 +386,16 @@ module ghost_move (
                 // Check if we can move in current direction
                 case (ghostDir)
                   DIR_UP:
-                  if (!canMoveUp || isJunction) begin
+                  if (aroundGhost[11:9] == PORTAL) begin
+                    Yposition <= (SCREEN_HEIGHT - 2 * TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
+                  end else if (!canMoveUp || isJunction) begin
                     lastDir  <= ghostDir;
                     ghostDir <= nextDir;
                   end
                   DIR_DOWN:
-                  if (!canMoveDown || isJunction) begin
+                  if (aroundGhost[8:6] == PORTAL) begin
+                    Yposition <= (2* TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
+                  end else if (!canMoveDown || isJunction) begin
                     lastDir  <= ghostDir;
                     ghostDir <= nextDir;
                   end
@@ -419,8 +441,14 @@ module ghost_move (
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
       currMode        <= SCATTER_M;
-      modeTimer       <= 8'd90;
+      modeTimer       <= SCATTER_TIME;
       frightenedTimer <= 8'd0;
+		
+	end else if (collisionPacGhost !=3'b0)	begin 
+		currMode        <= SCATTER_M;
+      modeTimer       <= SCATTER_TIME;
+      frightenedTimer <= 8'd0;
+		
     end else if (startOfFrame) begin
 
       // Update timers
@@ -433,20 +461,20 @@ module ghost_move (
         SCATTER_M: begin
           if (forceMode == FRIGHTENED_M) begin
             currMode        <= FRIGHTENED_M;
-            frightenedTimer <= 8'd240;
+            frightenedTimer <= FRIGHTENED_TIME;
           end else if (modeTimer == 0) begin
             currMode  <= CHASE_M;
-            modeTimer <= 8'd150;
+            modeTimer <= CHASE_TIME;
           end
         end
 
         CHASE_M: begin
           if (forceMode == FRIGHTENED_M) begin
             currMode        <= FRIGHTENED_M;
-            frightenedTimer <= 8'd240;
+            frightenedTimer <= FRIGHTENED_TIME;
           end else if (modeTimer == 0) begin
             currMode  <= SCATTER_M;
-            modeTimer <= 8'd90;
+            modeTimer <= SCATTER_TIME;
           end
         end
 

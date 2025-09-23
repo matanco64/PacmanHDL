@@ -190,22 +190,6 @@ agreement for further details.
 )
 (pin
 	(input)
-	(rect 88 512 264 528)
-	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
-	(text "collision " (rect 9 0 51 12)(font "Arial" ))
-	(pt 176 8)
-	(drawing
-		(line (pt 92 12)(pt 117 12))
-		(line (pt 92 4)(pt 117 4))
-		(line (pt 121 8)(pt 176 8))
-		(line (pt 92 12)(pt 92 4))
-		(line (pt 117 4)(pt 121 8))
-		(line (pt 117 12)(pt 121 8))
-	)
-	(text "VCC" (rect 136 7 156 17)(font "Arial" (font_size 6)))
-)
-(pin
-	(input)
 	(rect 88 592 264 608)
 	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
 	(text "pacmanX[10..0]" (rect 5 0 79 17)(font "Intel Clear" ))
@@ -240,7 +224,7 @@ agreement for further details.
 	(input)
 	(rect 88 624 264 640)
 	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
-	(text "pacmanDir[1..0]" (rect 5 0 80 17)(font "Intel Clear" ))
+	(text "pacmanDir[1..0]" (rect 5 0 79 17)(font "Intel Clear" ))
 	(pt 176 8)
 	(drawing
 		(line (pt 92 12)(pt 117 12))
@@ -251,6 +235,22 @@ agreement for further details.
 		(line (pt 117 12)(pt 121 8))
 	)
 	(text "VCC" (rect 136 7 156 17)(font "Arial" (font_size 6)))
+)
+(pin
+	(input)
+	(rect 56 512 264 528)
+	(text "INPUT" (rect 165 0 193 10)(font "Arial" (font_size 6)))
+	(text "collisionPacGhost[2..0]" (rect 5 0 119 12)(font "Arial" ))
+	(pt 208 8)
+	(drawing
+		(line (pt 124 12)(pt 149 12))
+		(line (pt 124 4)(pt 149 4))
+		(line (pt 153 8)(pt 208 8))
+		(line (pt 124 12)(pt 124 4))
+		(line (pt 149 4)(pt 153 8))
+		(line (pt 149 12)(pt 153 8))
+	)
+	(text "VCC" (rect 168 7 188 17)(font "Arial" (font_size 6)))
 )
 (pin
 	(output)
@@ -489,7 +489,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 456 184 688 424)
+	(rect 456 184 704 424)
 	(text "ghost_move" (rect 5 0 66 12)(font "Arial" ))
 	(text "inst" (rect 8 224 25 236)(font "Arial" ))
 	(port
@@ -551,37 +551,44 @@ agreement for further details.
 	(port
 		(pt 0 160)
 		(input)
-		(text "forceMode[1..0]" (rect 0 0 77 12)(font "Arial" ))
-		(text "forceMode[1..0]" (rect 21 155 98 167)(font "Arial" ))
+		(text "collisionPacGhost[2..0]" (rect 0 0 113 12)(font "Arial" ))
+		(text "collisionPacGhost[2..0]" (rect 21 155 134 167)(font "Arial" ))
 		(line (pt 0 160)(pt 16 160)(line_width 3))
 	)
 	(port
 		(pt 0 176)
 		(input)
-		(text "gameTimer[7..0]" (rect 0 0 80 12)(font "Arial" ))
-		(text "gameTimer[7..0]" (rect 21 171 101 183)(font "Arial" ))
+		(text "forceMode[1..0]" (rect 0 0 77 12)(font "Arial" ))
+		(text "forceMode[1..0]" (rect 21 171 98 183)(font "Arial" ))
 		(line (pt 0 176)(pt 16 176)(line_width 3))
 	)
 	(port
 		(pt 0 192)
 		(input)
-		(text "gameState[7..0]" (rect 0 0 79 12)(font "Arial" ))
-		(text "gameState[7..0]" (rect 21 187 100 199)(font "Arial" ))
+		(text "gameTimer[7..0]" (rect 0 0 80 12)(font "Arial" ))
+		(text "gameTimer[7..0]" (rect 21 187 101 199)(font "Arial" ))
 		(line (pt 0 192)(pt 16 192)(line_width 3))
 	)
 	(port
-		(pt 232 32)
-		(output)
-		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 150 27 211 39)(font "Arial" ))
-		(line (pt 232 32)(pt 216 32)(line_width 3))
+		(pt 0 208)
+		(input)
+		(text "gameState[7..0]" (rect 0 0 79 12)(font "Arial" ))
+		(text "gameState[7..0]" (rect 21 203 100 215)(font "Arial" ))
+		(line (pt 0 208)(pt 16 208)(line_width 3))
 	)
 	(port
-		(pt 232 48)
+		(pt 248 32)
+		(output)
+		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 166 27 227 39)(font "Arial" ))
+		(line (pt 248 32)(pt 232 32)(line_width 3))
+	)
+	(port
+		(pt 248 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 148 43 211 55)(font "Arial" ))
-		(line (pt 232 48)(pt 216 48)(line_width 3))
+		(text "topLeftY[10..0]" (rect 164 43 227 55)(font "Arial" ))
+		(line (pt 248 48)(pt 232 48)(line_width 3))
 	)
 	(parameter
 		"FIXED_POINT_MULTIPLIER"
@@ -599,12 +606,7 @@ agreement for further details.
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
-		"OBJECT_WIDTH"
-		"16"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"OBJECT_HEIGHT"
+		"TILE_PIXELS"
 		"16"
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
@@ -614,33 +616,53 @@ agreement for further details.
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
-		"WALL"
-		"010"
+		"SCREEN_HEIGHT"
+		"480"
 		""
-		(type "PARAMETER_UNSIGNED_BIN")	)
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"SCREEN_WIDTH"
+		"640"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
 		"EMPTY"
 		"000"
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
-		"X_FRAME_LEFT"
+		"WALL"
+		"010"
 		""
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
+		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
-		"X_FRAME_RIGHT"
+		"GHOST_WALL"
+		"011"
 		""
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
+		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
-		"Y_FRAME_TOP"
+		"PORTAL"
+		"100"
 		""
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
+		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
-		"Y_FRAME_BOTTOM"
+		"SCATTER_TIME"
+		"00011010010"
 		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"CHASE_TIME"
+		"01001011000"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"FRIGHTENED_TIME"
+		"00010110100"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"IDLE_DELAY_FRAMES"
+		"60"
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
@@ -714,6 +736,36 @@ agreement for further details.
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
+		"OBJECT_WIDTH"
+		"16"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"OBJECT_HEIGHT"
+		"16"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"X_FRAME_LEFT"
+		""
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"X_FRAME_RIGHT"
+		""
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"Y_FRAME_TOP"
+		""
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"Y_FRAME_BOTTOM"
+		""
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
 		"SCATTER_MODE"
 		"00"
 		""
@@ -734,7 +786,7 @@ agreement for further details.
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(drawing
-		(rectangle (rect 16 16 216 224))
+		(rectangle (rect 16 16 232 224))
 	)
 	(annotation_block (parameter)(rect 456 112 638 169))
 )
@@ -754,20 +806,9 @@ agreement for further details.
 	(pt 400 472)
 )
 (connector
-	(text "collision " (rect 289 504 330 521)(font "Intel Clear" ))
-	(pt 264 520)
-	(pt 400 520)
-)
-(connector
-	(text "keyPadValid" (rect 294 488 355 505)(font "Intel Clear" ))
+	(text "keyPadValid" (rect 286 488 347 505)(font "Intel Clear" ))
 	(pt 264 504)
 	(pt 400 504)
-)
-(connector
-	(text "KeyPadCode[3..0]" (rect 292 472 378 489)(font "Intel Clear" ))
-	(pt 264 488)
-	(pt 400 488)
-	(bus)
 )
 (connector
 	(text "pixelX[10..0]" (rect 290 520 349 537)(font "Intel Clear" ))
@@ -911,18 +952,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "topLeftX[10..0]" (rect 702 200 772 217)(font "Intel Clear" ))
-	(pt 688 216)
-	(pt 784 216)
-	(bus)
-)
-(connector
-	(text "topLeftY[10..0]" (rect 702 216 772 233)(font "Intel Clear" ))
-	(pt 688 232)
-	(pt 784 232)
-	(bus)
-)
-(connector
 	(text "pacmanX[10..0]" (rect 362 280 436 297)(font "Intel Clear" ))
 	(pt 352 296)
 	(pt 456 296)
@@ -956,5 +985,35 @@ agreement for further details.
 	(text "pacmanDir[1..0]" (rect 365 312 439 329)(font "Intel Clear" ))
 	(pt 456 328)
 	(pt 352 328)
+	(bus)
+)
+(connector
+	(text "collisionPacGhost[2..0]" (rect 286 504 393 521)(font "Intel Clear" ))
+	(pt 264 520)
+	(pt 400 520)
+	(bus)
+)
+(connector
+	(text "KeyPadCode[3..0]" (rect 292 472 378 489)(font "Intel Clear" ))
+	(pt 264 488)
+	(pt 400 488)
+	(bus)
+)
+(connector
+	(text "collisionPacGhost[2..0]" (rect 366 328 473 345)(font "Intel Clear" ))
+	(pt 456 344)
+	(pt 352 344)
+	(bus)
+)
+(connector
+	(text "topLeftX[10..0]" (rect 718 200 788 217)(font "Intel Clear" ))
+	(pt 704 216)
+	(pt 800 216)
+	(bus)
+)
+(connector
+	(text "topLeftY[10..0]" (rect 718 216 788 233)(font "Intel Clear" ))
+	(pt 704 232)
+	(pt 800 232)
 	(bus)
 )
