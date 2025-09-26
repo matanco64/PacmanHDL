@@ -21,7 +21,7 @@ module map1_drawer (
     input logic [10:0] pactopLeftX,
     input logic [10:0] pactopLeftY,
 
-    ////
+    //outputs//
     output logic drawingRequest,  // output that the pixel should be displayed
     output logic drawingCoin,  // ouput Whether a coin is drawn or not
     output logic [7:0] RGBout,  // rgb value from the bitmap
@@ -31,21 +31,9 @@ module map1_drawer (
     output logic [11:0] aroundPinky,
     output logic [11:0] aroundInky,
     output logic [11:0] aroundClyde,
-	 output logic [11:0] aroundPac
-);
-
-
-  // ---- Coordinates for spawns (0-based: x in [0..27], y in [0..30]) ----
-  // Pac-Man spawns below the house, centered.
-  localparam int PAC_X = 13;
-  localparam int PAC_Y = 23;
-
-  // Ghosts start inside the house (roughly center area).
-  // 3=Blinky, 4=Pinky, 5=Inky, 6=Clyde
-  localparam int BLINKY_X = 13, BLINKY_Y = 14;
-  localparam int PINKY_X = 13, PINKY_Y = 15;
-  localparam int INKY_X = 12, INKY_Y = 15;
-  localparam int CLYDE_X = 14, CLYDE_Y = 15;
+	 output logic [11:0] aroundPac,
+	 output logic [8:0] coinsTot
+	 );
 
   localparam MAP_HEIGHT_Y = 31;
   localparam MAP_WIDTH_X = 28;
@@ -106,6 +94,25 @@ module map1_drawer (
   logic [3:0] offsetX;
   logic [3:0] offsetY;
 
+  // ---------------------------------------------------------------------------
+  // functions
+  // ---------------------------------------------------------------------------
+
+  // count coins in start map
+  function automatic int countCoins(input logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] map);
+    int total;
+    begin
+      total = 0;
+      for (int y = 0; y < MAP_HEIGHT_Y; y++) begin
+        for (int x = 0; x < MAP_WIDTH_X; x++) begin
+          if (map[y][x] == COIN)
+            total++;
+        end
+      end
+      return total;
+    end
+  endfunction
+
   // Ghosts
   function automatic [4*TILE_BITS-1:0] aroundGhost(input [10:0] ghostTopLeftX,
                                                    input [10:0] ghostTopLeftY);
@@ -129,12 +136,16 @@ module map1_drawer (
   assign aroundClyde  = aroundGhost(ClydetopLeftX, ClydetopLeftY);
   assign aroundPac  = aroundGhost(pactopLeftX, pactopLeftY);
 
+  // ---------------------------------------------------------------------------
+  // always_ff blocks
+  // ---------------------------------------------------------------------------
 
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
       RGBout <= 8'b0;
       drawingRequest <= 1'b0;
       pacmanMap <= OriginalPacmanMap;
+      coinsTot <= countCoins(OriginalPacmanMap);
     end else begin
       RGBout <= TRANSPARENT_ENCODING;
       drawingRequest <= 1'b0;

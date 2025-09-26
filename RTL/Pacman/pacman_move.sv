@@ -10,15 +10,13 @@ module pacman_move (
     input logic       collision_pac_wall,
     input logic [2:0] collision_pac_ghost, // 0=no 1=B 2=P 3=I 4=C
 
-
-    input logic [ 2:0] HitEdgeCode,
     input logic [11:0] aroundPac,
+    input logic [ 2:0] gameState,
 
     output logic signed [10:0] topLeftX,  // output the top left corner 
     output logic signed [10:0] topLeftY,  // can be negative , if the object is partliy outside
     output logic [3:0] curDirKey,
     output logic [1:0] curDir
-
 );
 
 
@@ -31,6 +29,16 @@ module pacman_move (
   parameter SCREEN_HEIGHT = 480;
   parameter SCREEN_WIDTH = 640;
   parameter TILE_PIXELS = 16;
+
+  // game states
+  parameter RESET_ST = 3'b000;
+  parameter START_WAIT_ST = 3'b001;
+  parameter PLAYING_ST = 3'b010;
+  parameter PAUSED_ST = 3'b011;
+  parameter GHOST_HIT_ST = 3'b100;
+  parameter WIN_ST = 3'b101;
+  parameter LOSE_ST = 3'b110;
+  parameter POWER_UP_ST = 3'b111;
 
   localparam UP_KEY = 4'd8;
   localparam INITIAL_DIRECTION = UP_KEY;
@@ -72,6 +80,7 @@ module pacman_move (
   assign canTurn = ((Xposition / FIXED_POINT_MULTIPLIER) % 16) == 0 && ((Yposition / FIXED_POINT_MULTIPLIER) % 16) == 0;
 
 
+
   always_ff @(posedge clk or negedge resetN) begin
     if (resetN == 1'b0) begin
       SM_Motion <= IDLE_ST;
@@ -91,6 +100,12 @@ module pacman_move (
       is_neg <= 1'b0;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
       curDirKey <= INITIAL_DIRECTION;
+		
+	  end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST) begin
+      // Pacman stands still in START or PAUSE
+      Xspeed <= 0;
+      Yspeed <= 0;
+      SM_Motion <= MOVE_ST;
 
     end else begin
 

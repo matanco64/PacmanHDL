@@ -33,18 +33,6 @@ agreement for further details.
 	)
 )
 (global
-	(rect -56 536 232 576)
-	(parameter)
-	(text "PARAM" (rect 3 -1 46 13)(font "Arial" (font_size 8)))
-	(text "DEFAULT VALUE" (rect 141 0 229 12)(font "Arial" ))
-	(text "WIDTH" (rect 3 16 40 30)(font "Arial" (font_size 8)))
-	(text " NAME" (rect 108 0 142 12)(font "Arial" ))
-	(text "48" (rect 141 16 155 30)(font "Arial" (font_size 8)))
-	(drawing
-		(line (pt 138 40)(pt 138 0))
-	)
-)
-(global
 	(rect -56 576 232 616)
 	(parameter)
 	(text "PARAM" (rect 3 -1 46 13)(font "Arial" (font_size 8)))
@@ -52,6 +40,18 @@ agreement for further details.
 	(text "HEIGHT" (rect 3 16 45 30)(font "Arial" (font_size 8)))
 	(text " NAME" (rect 108 0 142 12)(font "Arial" ))
 	(text "48" (rect 141 16 155 30)(font "Arial" (font_size 8)))
+	(drawing
+		(line (pt 138 40)(pt 138 0))
+	)
+)
+(global
+	(rect -56 536 232 576)
+	(parameter)
+	(text "PARAM" (rect 3 -1 46 13)(font "Arial" (font_size 8)))
+	(text "DEFAULT VALUE" (rect 141 0 229 12)(font "Arial" ))
+	(text "WIDTH" (rect 3 16 40 30)(font "Arial" (font_size 8)))
+	(text " NAME" (rect 108 0 142 12)(font "Arial" ))
+	(text "96" (rect 141 16 155 30)(font "Arial" (font_size 8)))
 	(drawing
 		(line (pt 138 40)(pt 138 0))
 	)
@@ -156,7 +156,7 @@ agreement for further details.
 	(input)
 	(rect -48 432 120 448)
 	(text "INPUT" (rect 125 0 153 10)(font "Arial" (font_size 6)))
-	(text "currLives[2..0]" (rect 5 0 72 17)(font "Intel Clear" ))
+	(text "currLives[2..0]" (rect 5 0 71 17)(font "Intel Clear" ))
 	(pt 168 8)
 	(drawing
 		(line (pt 84 12)(pt 109 12))
@@ -337,14 +337,14 @@ agreement for further details.
 		(pt 224 32)
 		(output)
 		(text "drawingRequest" (rect 0 0 77 12)(font "Arial" ))
-		(text "drawingRequest" (rect 138 27 203 39)(font "Arial" ))
+		(text "drawingRequest" (rect 138 27 215 39)(font "Arial" ))
 		(line (pt 224 32)(pt 208 32))
 	)
 	(port
 		(pt 224 48)
 		(output)
 		(text "RGBout[7..0]" (rect 0 0 64 12)(font "Arial" ))
-		(text "RGBout[7..0]" (rect 149 43 203 55)(font "Arial" ))
+		(text "RGBout[7..0]" (rect 149 43 213 55)(font "Arial" ))
 		(line (pt 224 48)(pt 208 48)(line_width 3))
 	)
 	(drawing

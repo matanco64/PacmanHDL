@@ -240,7 +240,7 @@ agreement for further details.
 	(input)
 	(rect 56 512 264 528)
 	(text "INPUT" (rect 165 0 193 10)(font "Arial" (font_size 6)))
-	(text "collisionPacGhost[2..0]" (rect 5 0 119 12)(font "Arial" ))
+	(text "collisionPacGhost[2..0]" (rect 5 0 118 12)(font "Arial" ))
 	(pt 208 8)
 	(drawing
 		(line (pt 124 12)(pt 149 12))
@@ -489,7 +489,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 456 184 704 424)
+	(rect 456 160 704 400)
 	(text "ghost_move" (rect 5 0 66 12)(font "Arial" ))
 	(text "inst" (rect 8 224 25 236)(font "Arial" ))
 	(port
@@ -580,14 +580,14 @@ agreement for further details.
 		(pt 248 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 166 27 227 39)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 166 27 239 39)(font "Arial" ))
 		(line (pt 248 32)(pt 232 32)(line_width 3))
 	)
 	(port
 		(pt 248 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 164 43 227 55)(font "Arial" ))
+		(text "topLeftY[10..0]" (rect 164 43 239 55)(font "Arial" ))
 		(line (pt 248 48)(pt 232 48)(line_width 3))
 	)
 	(parameter
@@ -788,7 +788,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 232 224))
 	)
-	(annotation_block (parameter)(rect 456 112 638 169))
+	(annotation_block (parameter)(rect 456 88 638 145))
 )
 (connector
 	(text "clk" (rect 288 424 302 441)(font "Intel Clear" ))
@@ -832,33 +832,6 @@ agreement for further details.
 	(text "aroundGhost[11..0]" (rect 291 568 380 585)(font "Intel Clear" ))
 	(pt 264 584)
 	(pt 400 584)
-	(bus)
-)
-(connector
-	(text "clk" (rect 360 200 374 217)(font "Intel Clear" ))
-	(pt 352 216)
-	(pt 456 216)
-)
-(connector
-	(text "resetN" (rect 358 216 388 233)(font "Intel Clear" ))
-	(pt 352 232)
-	(pt 456 232)
-)
-(connector
-	(text "startOfFrame" (rect 360 232 423 249)(font "Intel Clear" ))
-	(pt 352 248)
-	(pt 456 248)
-)
-(connector
-	(text "ghostSelect[1..0]" (rect 363 248 442 265)(font "Intel Clear" ))
-	(pt 352 264)
-	(pt 456 264)
-	(bus)
-)
-(connector
-	(text "aroundGhost[11..0]" (rect 363 264 452 281)(font "Intel Clear" ))
-	(pt 352 280)
-	(pt 456 280)
 	(bus)
 )
 (connector
@@ -952,18 +925,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "pacmanX[10..0]" (rect 362 280 436 297)(font "Intel Clear" ))
-	(pt 352 296)
-	(pt 456 296)
-	(bus)
-)
-(connector
-	(text "pacmanY[10..0]" (rect 362 296 436 313)(font "Intel Clear" ))
-	(pt 352 312)
-	(pt 456 312)
-	(bus)
-)
-(connector
 	(text "pacmanX[10..0]" (rect 291 584 365 601)(font "Intel Clear" ))
 	(pt 400 600)
 	(pt 264 600)
@@ -982,12 +943,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "pacmanDir[1..0]" (rect 365 312 439 329)(font "Intel Clear" ))
-	(pt 456 328)
-	(pt 352 328)
-	(bus)
-)
-(connector
 	(text "collisionPacGhost[2..0]" (rect 286 504 393 521)(font "Intel Clear" ))
 	(pt 264 520)
 	(pt 400 520)
@@ -1000,20 +955,65 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "collisionPacGhost[2..0]" (rect 366 328 473 345)(font "Intel Clear" ))
-	(pt 456 344)
-	(pt 352 344)
+	(text "clk" (rect 360 176 374 193)(font "Intel Clear" ))
+	(pt 352 192)
+	(pt 456 192)
+)
+(connector
+	(text "resetN" (rect 358 192 388 209)(font "Intel Clear" ))
+	(pt 352 208)
+	(pt 456 208)
+)
+(connector
+	(text "startOfFrame" (rect 360 208 423 225)(font "Intel Clear" ))
+	(pt 352 224)
+	(pt 456 224)
+)
+(connector
+	(text "ghostSelect[1..0]" (rect 363 224 442 241)(font "Intel Clear" ))
+	(pt 352 240)
+	(pt 456 240)
 	(bus)
 )
 (connector
-	(text "topLeftX[10..0]" (rect 718 200 788 217)(font "Intel Clear" ))
-	(pt 704 216)
-	(pt 800 216)
+	(text "aroundGhost[11..0]" (rect 363 240 452 257)(font "Intel Clear" ))
+	(pt 352 256)
+	(pt 456 256)
 	(bus)
 )
 (connector
-	(text "topLeftY[10..0]" (rect 718 216 788 233)(font "Intel Clear" ))
-	(pt 704 232)
-	(pt 800 232)
+	(text "pacmanX[10..0]" (rect 362 256 436 273)(font "Intel Clear" ))
+	(pt 352 272)
+	(pt 456 272)
+	(bus)
+)
+(connector
+	(text "pacmanY[10..0]" (rect 362 272 436 289)(font "Intel Clear" ))
+	(pt 352 288)
+	(pt 456 288)
+	(bus)
+)
+(connector
+	(text "pacmanDir[1..0]" (rect 365 288 439 305)(font "Intel Clear" ))
+	(pt 456 304)
+	(pt 352 304)
+	(bus)
+)
+(connector
+	(text "collisionPacGhost[2..0]" (rect 366 304 473 321)(font "Intel Clear" ))
+	(pt 456 320)
+	(pt 352 320)
+	(bus)
+)
+(connector
+	(text "topLeftX[10..0]" (rect 718 176 788 193)(font "Intel Clear" ))
+	(pt 704 192)
+	(pt 800 192)
+	(bus)
+)
+(connector
+	(text "topLeftY[10..0]" (rect 718 192 788 209)(font "Intel Clear" ))
+	(pt 704 208)
+	(pt 800 208)
 	(bus)
 )
