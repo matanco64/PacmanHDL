@@ -185,6 +185,13 @@ agreement for further details.
 		(text "aroundPac[11..0]" (rect 171 139 235 151)(font "Arial" ))
 		(line (pt 256 144)(pt 240 144)(line_width 3))
 	)
+	(port
+		(pt 256 160)
+		(output)
+		(text "coinsTot[8..0]" (rect 0 0 53 12)(font "Arial" ))
+		(text "coinsTot[8..0]" (rect 182 155 235 167)(font "Arial" ))
+		(line (pt 256 160)(pt 240 160)(line_width 3))
+	)
 	(drawing
 		(rectangle (rect 16 16 240 288)(line_width 1))
 	)

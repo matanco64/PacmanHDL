@@ -82,13 +82,9 @@ module ghost_move (
   assign isJunction = ((canMoveUp || canMoveDown) && (canMoveLeft || canMoveRight));
   wire aligned_to_grid;
   assign aligned_to_grid = (Xposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0) &&
-                         (Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0);
+                         (Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0);   // if speed is not a multiple of TILE_PIXELS:  cahnge ==0 to < MOVEMENT_SPEED
 
-  // if speed is not a multiple of TILE_PIXELS:                      
-  // assign aligned_to_grid =
-  //   ((Xposition % (TILE_PIXELS*FIXED_POINT_MULTIPLIER)) < MOVEMENT_SPEED) &&
-  //   ((Yposition % (TILE_PIXELS*FIXED_POINT_MULTIPLIER)) < MOVEMENT_SPEED);
-
+             
   // Direction checking signals
   wire canMoveUp, canMoveDown, canMoveLeft, canMoveRight;
 
@@ -444,7 +440,7 @@ module ghost_move (
       modeTimer       <= SCATTER_TIME;
       frightenedTimer <= 8'd0;
 		
-	end else if (collisionPacGhost !=3'b0)	begin 
+	end else if (collisionPacGhost !=3'b0)	begin // collision
 		currMode        <= SCATTER_M;
       modeTimer       <= SCATTER_TIME;
       frightenedTimer <= 8'd0;

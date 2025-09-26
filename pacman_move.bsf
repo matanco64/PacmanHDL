@@ -76,15 +76,15 @@ agreement for further details.
 	(port
 		(pt 0 144)
 		(input)
-		(text "HitEdgeCode[2..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "HitEdgeCode[2..0]" (rect 21 139 94 151)(font "Arial" ))
+		(text "aroundPac[11..0]" (rect 0 0 64 12)(font "Arial" ))
+		(text "aroundPac[11..0]" (rect 21 139 85 151)(font "Arial" ))
 		(line (pt 0 144)(pt 16 144)(line_width 3))
 	)
 	(port
 		(pt 0 160)
 		(input)
-		(text "aroundPac[11..0]" (rect 0 0 64 12)(font "Arial" ))
-		(text "aroundPac[11..0]" (rect 21 155 85 167)(font "Arial" ))
+		(text "gameState[2..0]" (rect 0 0 62 12)(font "Arial" ))
+		(text "gameState[2..0]" (rect 21 155 83 167)(font "Arial" ))
 		(line (pt 0 160)(pt 16 160)(line_width 3))
 	)
 	(port

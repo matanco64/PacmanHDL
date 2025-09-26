@@ -23,15 +23,15 @@ set_location_assignment PIN_AF14 -to CLOCK_50
 #============================================================
 # KEY
 #============================================================
-set_location_assignment PIN_AJ4 -to resetN_pin  ; # KEY[0]
-set_location_assignment PIN_AK4 -to KEY[1]
-set_location_assignment PIN_AA14 -to KEY[2]
-set_location_assignment PIN_AA15 -to KEY[3]
+set_location_assignment PIN_AJ4 -to resetN_key0 ; # KEY[0]
+set_location_assignment PIN_AK4 -to startN_key1 ; #KEY[1]
+set_location_assignment PIN_AA14 -to KEY[2];
+set_location_assignment PIN_AA15 -to volume_key3 ;#KEY[3]
 
 #============================================================
 # SW
 #============================================================
-set_location_assignment PIN_AB30 -to SW[0] ; #SW[0]
+set_location_assignment PIN_AB30 -to pauseN_SW0; #SW[0]
 set_location_assignment PIN_Y27 -to SW[1] ; #SW[1]
 set_location_assignment PIN_AB28 -to SW[2] ; #SW[2]
 set_location_assignment PIN_AC30 -to SW[3] ; #SW[3]
@@ -44,7 +44,7 @@ set_location_assignment PIN_AA30 -to SW[9] ;#ENABLE_SOF --if want to stop smiley
 
 
 #============================================================
-# LED
+# RED LEDS
 #============================================================ 
 set_location_assignment PIN_AA24 -to ball_toggle ;#LEDR[0]
 set_location_assignment PIN_AB23 -to ir_write
