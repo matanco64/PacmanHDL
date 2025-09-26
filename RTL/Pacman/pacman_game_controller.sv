@@ -13,6 +13,7 @@ module pacman_game_controller (
     input logic       clydeDR,
     input logic       oneSec,
     input logic [8:0] coinsTot,
+    input logic [8:0] coinsCollected,
 
     output logic       collision_pac_wall,
     output logic       collision_pac_coin,
@@ -51,12 +52,12 @@ module pacman_game_controller (
   logic [9:0] totalScore;
   logic       ghost_flag;
   logic       coin_flag;
-  logic [8:0] coinCollected;
 
   // Collision detection
-  assign collision_pac_wall  = pacDR && wallsDR;
-  assign collision_pac_coin  = pacDR && coinDR;
+  assign collision_pac_wall = pacDR && wallsDR;
+  assign collision_pac_coin = pacDR && coinDR;
   assign collision_pac_power = pacDR && powerDR;
+  assign totalScore =coinsCollected;
 
   // ------------------------------------------------------------
   // Collision detection (combinational, latched later per-frame)
@@ -73,32 +74,35 @@ module pacman_game_controller (
 
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
-      totalScore    <= 10'd0;
-      coinCollected <= 9'd0;
-      coin_flag     <= 1'b0;
-      ghost_flag    <= 1'b0;
-    end else begin
-
-      if (startOfFrame) begin
-        coin_flag  <= 1'b0;
-        ghost_flag <= 1'b0;
+      ghost_flag <= 1'b0;
+      currLives  <= START_HEARTS;
+    end else if (collision_pac_ghost != 3'd0 && !ghost_flag) begin
+      ghost_flag <= 1'b1;
+      if (currentState == PLAYING_ST) begin
+        currLives <= (currLives > 0) ? currLives - 1 : 0;
+      end else if (currentState == POWER_UP_ST) begin
+        //			  totalScore <= totalScore + 100;
       end
-
-      if (collision_pac_ghost != 3'd0 && !ghost_flag) begin
-        ghost_flag <= 1'b1;
-        if (currentState == POWER_UP_ST) begin
-          totalScore <= totalScore + 100;
-        end
-      end
-
-      if (collision_pac_coin && !coin_flag) begin
-        coinCollected <= coinCollected + 1;
-        totalScore    <= totalScore + 1;
-        coin_flag <= 1'b1;
-      end
-
     end
   end
+
+//  always_ff @(posedge clk or negedge resetN) begin
+//    if (!resetN) begin
+//      coin_flag <= 1'b0;
+//      totalScore <= 0;
+//    end else begin
+//
+//      if (startOfFrame) begin
+//        coin_flag <= 1'b0;
+//      end
+//
+//      if (collision_with_coin && !coin_flag) begin
+//        totalScore <= totalScore + 1;
+//        coin_flag <= 1'b1;
+//      end
+//
+//    end
+//  end
 
 
 
@@ -110,15 +114,8 @@ module pacman_game_controller (
       currentState     <= RESET_ST;
       lastState        <= RESET_ST;
       prePausedState   <= RESET_ST;
-
-      currLives        <= START_HEARTS;
-      //      totalScore       <= 10'd0;
       stateCounter     <= 8'd0;
       powerPelletTimer <= 8'd0;
-
-      //      coinCollected    <= 9'd0;
-      //      coin_flag        <= 1'b0;
-      //      ghost_flag       <= 1'b0;
 
       datainL          <= 4'd0;
       datainH          <= 4'd0;
@@ -138,19 +135,13 @@ module pacman_game_controller (
       if (startOfFrame) begin
         lastState <= currentState;
 
-        // Reset frame flags
-        //        coin_flag  <= 1'b0;
-        //        ghost_flag <= 1'b0;
 
         case (currentState)
 
           RESET_ST: begin
             currentState     <= pauseN ? START_WAIT_ST : PAUSED_ST;
-            currLives        <= START_HEARTS;
-            //            totalScore       <= 10'd0;
             stateCounter     <= 8'd0;
             powerPelletTimer <= 8'd0;
-            //            coinCollected    <= 9'd0;
 
             datainL          <= 4'd5;
             datainH          <= 4'd0;
@@ -172,20 +163,12 @@ module pacman_game_controller (
           PLAYING_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
             else if (collision_pac_ghost != 3'd0) currentState <= GHOST_HIT_ST;
-            else if (coinCollected == coinsTot) currentState <= WIN_ST;
+            else if (coinsCollected == coinsTot) currentState <= WIN_ST;
             else if (collision_pac_power) currentState <= POWER_UP_ST;
-
-            //            if (collision_pac_coin && !coin_flag) begin
-            //              coinCollected <= coinCollected + 1;
-            //              totalScore    <= totalScore + 1;
-            //              coin_flag     <= 1'b1;
-            //            end
           end
 
           GHOST_HIT_ST: begin
             currentState <= (!pauseN) ? PAUSED_ST : (currLives > 1) ? START_WAIT_ST : LOSE_ST;
-
-            if (lastState != GHOST_HIT_ST && currLives > 0) currLives <= currLives - 1;
           end
 
           POWER_UP_ST: begin
@@ -199,16 +182,6 @@ module pacman_game_controller (
               startCountN      <= 1'b0;
             end
 
-            //            if (collision_pac_ghost != 3'd0 && !ghost_flag) begin
-            //              totalScore <= totalScore + 50;
-            //              ghost_flag <= 1'b1;
-            //            end
-            //
-            //            if (collision_pac_coin && !coin_flag) begin
-            //              coinCollected <= coinCollected + 1;
-            //              totalScore    <= totalScore + 1;
-            //              coin_flag     <= 1'b1;
-            //            end
           end
 
           WIN_ST:  if (pauseN) currentState <= RESET_ST;
