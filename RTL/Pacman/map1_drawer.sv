@@ -4,6 +4,7 @@ module map1_drawer (
     input logic signed [10:0] pixelX,  //  current VGA pixel 
     input logic signed [10:0] pixelY,
     input logic coinCollision,  // Marks collision with pacman and coin, relevant cell should be disabled.
+	 input logic powerCollision,
 
     //Ghosts - inputs//
     input logic [10:0] BlinkytopLeftX,
@@ -32,7 +33,8 @@ module map1_drawer (
     output logic [11:0] aroundInky,
     output logic [11:0] aroundClyde,
 	 output logic [11:0] aroundPac,
-	 output logic [8:0]  coinsTot
+	 output logic [8:0]  coinsTot,
+	 output logic [8:0]  coinsCollected
 	 );
 
   localparam MAP_HEIGHT_Y = 31;
@@ -93,7 +95,8 @@ module map1_drawer (
 
   logic [3:0] offsetX;
   logic [3:0] offsetY;
-
+  logic coinFlag;
+  
   // ---------------------------------------------------------------------------
   // functions
   // ---------------------------------------------------------------------------
@@ -141,11 +144,14 @@ module map1_drawer (
   // ---------------------------------------------------------------------------
 
   always_ff @(posedge clk or negedge resetN) begin
+  
     if (!resetN) begin
       RGBout <= 8'b0;
       drawingRequest <= 1'b0;
       pacmanMap <= OriginalPacmanMap;
       coinsTot <= countCoins(OriginalPacmanMap);
+		coinsCollected <= 0;
+		coinFlag <= 0;
     end else begin
       RGBout <= TRANSPARENT_ENCODING;
       drawingRequest <= 1'b0;
@@ -177,8 +183,12 @@ module map1_drawer (
               drawingCoin <= 1'b1;
             end
             if (coinCollision) begin
-              pacmanMap[pactopLeftX/TILE_SIZE][pactopLeftY/TILE_SIZE-1] <= EMPTY;
-            end
+              pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY; 
+				  if(!coinFlag) begin
+				  		coinFlag <= 1'b1;
+						coinsCollected <= coinsCollected +1;
+				  end
+            end else coinFlag <= 1'b0;
           end
 
           default: begin
