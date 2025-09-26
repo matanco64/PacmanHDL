@@ -32,7 +32,7 @@ module map1_drawer (
     output logic [11:0] aroundInky,
     output logic [11:0] aroundClyde,
 	 output logic [11:0] aroundPac,
-	 output logic [8:0] coinsTot
+	 output logic [8:0]  coinsTot
 	 );
 
   localparam MAP_HEIGHT_Y = 31;
@@ -177,7 +177,7 @@ module map1_drawer (
               drawingCoin <= 1'b1;
             end
             if (coinCollision) begin
-              pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
+              pacmanMap[pactopLeftX/TILE_SIZE][pactopLeftY/TILE_SIZE-1] <= EMPTY;
             end
           end
 

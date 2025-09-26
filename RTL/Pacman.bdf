@@ -3030,7 +3030,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 2112 1056 2368 1328)
+	(rect 2112 1040 2368 1312)
 	(text "pacman_game_controller" (rect 5 0 127 12)(font "Arial" ))
 	(text "inst32" (rect 8 256 37 268)(font "Arial" ))
 	(port
@@ -4633,99 +4633,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "clk" (rect 2042 1072 2056 1089)(font "Intel Clear" ))
-	(pt 2032 1088)
-	(pt 2112 1088)
-)
-(connector
-	(text "resetN" (rect 2042 1088 2072 1105)(font "Intel Clear" ))
-	(pt 2032 1104)
-	(pt 2112 1104)
-)
-(connector
-	(text "startOfFrame" (rect 2042 1120 2105 1137)(font "Intel Clear" ))
-	(pt 2032 1136)
-	(pt 2112 1136)
-)
-(connector
-	(text "pauseN" (rect 2042 1104 2077 1121)(font "Intel Clear" ))
-	(pt 2032 1120)
-	(pt 2112 1120)
-)
-(connector
-	(text "MapDR" (rect 2048 1152 2083 1169)(font "Intel Clear" ))
-	(pt 2032 1168)
-	(pt 2112 1168)
-)
-(connector
-	(text "CoinsDR" (rect 2048 1168 2088 1185)(font "Intel Clear" ))
-	(pt 2032 1184)
-	(pt 2112 1184)
-)
-(connector
-	(text "BlinkyDR" (rect 2042 1200 2086 1217)(font "Intel Clear" ))
-	(pt 2032 1216)
-	(pt 2112 1216)
-)
-(connector
-	(text "PinkyDR" (rect 2042 1216 2083 1233)(font "Intel Clear" ))
-	(pt 2032 1232)
-	(pt 2112 1232)
-)
-(connector
-	(text "InkyDR" (rect 2042 1232 2076 1249)(font "Intel Clear" ))
-	(pt 2032 1248)
-	(pt 2112 1248)
-)
-(connector
-	(text "ClydeDR" (rect 2042 1248 2084 1265)(font "Intel Clear" ))
-	(pt 2032 1264)
-	(pt 2112 1264)
-)
-(connector
-	(text "PacmanDR" (rect 2048 1136 2101 1153)(font "Intel Clear" ))
-	(pt 2032 1152)
-	(pt 2112 1152)
-)
-(connector
-	(text "coinsTot[8..0]" (rect 2041 1280 2103 1297)(font "Intel Clear" ))
-	(pt 2112 1296)
-	(pt 2032 1296)
-	(bus)
-)
-(connector
-	(text "one_sec" (rect 2042 1264 2080 1281)(font "Intel Clear" ))
-	(pt 2112 1280)
-	(pt 2032 1280)
-)
-(connector
-	(text "collisionPacWall" (rect 2378 1072 2458 1089)(font "Intel Clear" ))
-	(pt 2368 1088)
-	(pt 2448 1088)
-)
-(connector
-	(text "collisionPacCoin" (rect 2378 1088 2455 1105)(font "Intel Clear" ))
-	(pt 2368 1104)
-	(pt 2448 1104)
-)
-(connector
-	(text "collisionPacPower" (rect 2378 1104 2465 1121)(font "Intel Clear" ))
-	(pt 2368 1120)
-	(pt 2448 1120)
-)
-(connector
-	(text "collisionPacGhost[2..0]" (rect 2377 1120 2484 1137)(font "Intel Clear" ))
-	(pt 2368 1136)
-	(pt 2448 1136)
-	(bus)
-)
-(connector
-	(text "gameState[2..0]" (rect 2377 1136 2452 1153)(font "Intel Clear" ))
-	(pt 2368 1152)
-	(pt 2448 1152)
-	(bus)
-)
-(connector
 	(pt -640 3280)
 	(pt -608 3280)
 )
@@ -4760,11 +4667,6 @@ agreement for further details.
 	(pt -752 504)
 )
 (connector
-	(text "GND" (rect 1962 1184 1983 1201)(font "Intel Clear" ))
-	(pt 1896 1200)
-	(pt 2112 1200)
-)
-(connector
 	(text "startCount" (rect 1194 1096 1243 1113)(font "Intel Clear" ))
 	(pt 1264 1112)
 	(pt 1184 1112)
@@ -4773,53 +4675,6 @@ agreement for further details.
 	(text "VCC" (rect -672 550 -655 571)(font "Intel Clear" )(vertical))
 	(pt -656 536)
 	(pt -656 584)
-)
-(connector
-	(text "currLives[2..0]" (rect 2378 1168 2444 1185)(font "Intel Clear" ))
-	(pt 2368 1184)
-	(pt 2448 1184)
-	(bus)
-)
-(connector
-	(text "Score0[3..0]" (rect 2378 1184 2433 1201)(font "Intel Clear" ))
-	(pt 2368 1200)
-	(pt 2448 1200)
-	(bus)
-)
-(connector
-	(text "Score1[3..0]" (rect 2378 1200 2433 1217)(font "Intel Clear" ))
-	(pt 2368 1216)
-	(pt 2448 1216)
-	(bus)
-)
-(connector
-	(text "Score2[3..0]" (rect 2378 1216 2433 1233)(font "Intel Clear" ))
-	(pt 2368 1232)
-	(pt 2448 1232)
-	(bus)
-)
-(connector
-	(text "datainL[3..0]" (rect 2378 1232 2437 1249)(font "Intel Clear" ))
-	(pt 2368 1248)
-	(pt 2448 1248)
-	(bus)
-)
-(connector
-	(text "datainH[3..0]" (rect 2378 1248 2438 1265)(font "Intel Clear" ))
-	(pt 2368 1264)
-	(pt 2448 1264)
-	(bus)
-)
-(connector
-	(text "startCount" (rect 2378 1264 2427 1281)(font "Intel Clear" ))
-	(pt 2448 1280)
-	(pt 2368 1280)
-)
-(connector
-	(text "gameStateFor6Seg[3..0]" (rect 2377 1152 2491 1169)(font "Intel Clear" ))
-	(pt 2368 1168)
-	(pt 2448 1168)
-	(bus)
 )
 (connector
 	(text "VCC" (rect 2627 1128 2648 1145)(font "Intel Clear" ))
@@ -4835,6 +4690,151 @@ agreement for further details.
 (connector
 	(pt 2848 1128)
 	(pt 2920 1128)
+	(bus)
+)
+(connector
+	(text "clk" (rect 2042 1056 2056 1073)(font "Intel Clear" ))
+	(pt 2032 1072)
+	(pt 2112 1072)
+)
+(connector
+	(text "resetN" (rect 2042 1072 2072 1089)(font "Intel Clear" ))
+	(pt 2032 1088)
+	(pt 2112 1088)
+)
+(connector
+	(text "startOfFrame" (rect 2042 1104 2105 1121)(font "Intel Clear" ))
+	(pt 2032 1120)
+	(pt 2112 1120)
+)
+(connector
+	(text "pauseN" (rect 2042 1088 2077 1105)(font "Intel Clear" ))
+	(pt 2032 1104)
+	(pt 2112 1104)
+)
+(connector
+	(text "MapDR" (rect 2048 1136 2083 1153)(font "Intel Clear" ))
+	(pt 2032 1152)
+	(pt 2112 1152)
+)
+(connector
+	(text "CoinsDR" (rect 2048 1152 2088 1169)(font "Intel Clear" ))
+	(pt 2032 1168)
+	(pt 2112 1168)
+)
+(connector
+	(text "BlinkyDR" (rect 2042 1184 2086 1201)(font "Intel Clear" ))
+	(pt 2032 1200)
+	(pt 2112 1200)
+)
+(connector
+	(text "PinkyDR" (rect 2042 1200 2083 1217)(font "Intel Clear" ))
+	(pt 2032 1216)
+	(pt 2112 1216)
+)
+(connector
+	(text "InkyDR" (rect 2042 1216 2076 1233)(font "Intel Clear" ))
+	(pt 2032 1232)
+	(pt 2112 1232)
+)
+(connector
+	(text "ClydeDR" (rect 2042 1232 2084 1249)(font "Intel Clear" ))
+	(pt 2032 1248)
+	(pt 2112 1248)
+)
+(connector
+	(text "PacmanDR" (rect 2048 1120 2101 1137)(font "Intel Clear" ))
+	(pt 2032 1136)
+	(pt 2112 1136)
+)
+(connector
+	(text "coinsTot[8..0]" (rect 2041 1264 2103 1281)(font "Intel Clear" ))
+	(pt 2112 1280)
+	(pt 2032 1280)
+	(bus)
+)
+(connector
+	(text "one_sec" (rect 2042 1248 2080 1265)(font "Intel Clear" ))
+	(pt 2112 1264)
+	(pt 2032 1264)
+)
+(connector
+	(text "collisionPacWall" (rect 2378 1056 2458 1073)(font "Intel Clear" ))
+	(pt 2368 1072)
+	(pt 2448 1072)
+)
+(connector
+	(text "collisionPacCoin" (rect 2378 1072 2455 1089)(font "Intel Clear" ))
+	(pt 2368 1088)
+	(pt 2448 1088)
+)
+(connector
+	(text "collisionPacPower" (rect 2378 1088 2465 1105)(font "Intel Clear" ))
+	(pt 2368 1104)
+	(pt 2448 1104)
+)
+(connector
+	(text "collisionPacGhost[2..0]" (rect 2377 1104 2484 1121)(font "Intel Clear" ))
+	(pt 2368 1120)
+	(pt 2448 1120)
+	(bus)
+)
+(connector
+	(text "gameState[2..0]" (rect 2377 1120 2452 1137)(font "Intel Clear" ))
+	(pt 2368 1136)
+	(pt 2448 1136)
+	(bus)
+)
+(connector
+	(text "GND" (rect 1962 1168 1983 1185)(font "Intel Clear" ))
+	(pt 1896 1184)
+	(pt 2112 1184)
+)
+(connector
+	(text "currLives[2..0]" (rect 2378 1152 2444 1169)(font "Intel Clear" ))
+	(pt 2368 1168)
+	(pt 2448 1168)
+	(bus)
+)
+(connector
+	(text "Score0[3..0]" (rect 2378 1168 2433 1185)(font "Intel Clear" ))
+	(pt 2368 1184)
+	(pt 2448 1184)
+	(bus)
+)
+(connector
+	(text "Score1[3..0]" (rect 2378 1184 2433 1201)(font "Intel Clear" ))
+	(pt 2368 1200)
+	(pt 2448 1200)
+	(bus)
+)
+(connector
+	(text "Score2[3..0]" (rect 2378 1200 2433 1217)(font "Intel Clear" ))
+	(pt 2368 1216)
+	(pt 2448 1216)
+	(bus)
+)
+(connector
+	(text "datainL[3..0]" (rect 2378 1216 2437 1233)(font "Intel Clear" ))
+	(pt 2368 1232)
+	(pt 2448 1232)
+	(bus)
+)
+(connector
+	(text "datainH[3..0]" (rect 2378 1232 2438 1249)(font "Intel Clear" ))
+	(pt 2368 1248)
+	(pt 2448 1248)
+	(bus)
+)
+(connector
+	(text "startCount" (rect 2378 1248 2427 1265)(font "Intel Clear" ))
+	(pt 2448 1264)
+	(pt 2368 1264)
+)
+(connector
+	(text "gameStateFor6Seg[3..0]" (rect 2377 1136 2491 1153)(font "Intel Clear" ))
+	(pt 2368 1152)
+	(pt 2448 1152)
 	(bus)
 )
 (junction (pt -776 888))
