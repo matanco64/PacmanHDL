@@ -14,6 +14,7 @@ module pacman_game_controller (
     input logic       oneSec,
     input logic [8:0] coinsTot,
     input logic [8:0] coinsCollected,
+    input logic [8:0] powCollected,
 
     output logic       collision_pac_wall,
     output logic       collision_pac_coin,
@@ -51,13 +52,15 @@ module pacman_game_controller (
   logic [7:0] powerPelletTimer;
   logic [9:0] totalScore;
   logic       ghost_flag;
-  logic       coin_flag;
+
+  logic [5:0] ghostEaten;
+
 
   // Collision detection
   assign collision_pac_wall = pacDR && wallsDR;
   assign collision_pac_coin = pacDR && coinDR;
   assign collision_pac_power = pacDR && powerDR;
-  assign totalScore =coinsCollected;
+  assign totalScore = coinsCollected + (ghostEaten * 50) + (powCollected * 10);
 
   // ------------------------------------------------------------
   // Collision detection (combinational, latched later per-frame)
@@ -76,35 +79,27 @@ module pacman_game_controller (
     if (!resetN) begin
       ghost_flag <= 1'b0;
       currLives  <= START_HEARTS;
-    end else if (collision_pac_ghost != 3'd0 && !ghost_flag) begin
-      ghost_flag <= 1'b1;
-      if (currentState == PLAYING_ST) begin
-        currLives <= (currLives > 0) ? currLives - 1 : 0;
-      end else if (currentState == POWER_UP_ST) begin
-        //			  totalScore <= totalScore + 100;
+      ghostEaten <= 0;
+
+    end else if (currentState == RESET_ST) begin
+      ghost_flag <= 1'b0;
+      currLives  <= START_HEARTS;
+      ghostEaten <= 0;
+    end else begin
+
+      if (startOfFrame) ghost_flag <= 1'b0;
+
+      if (collision_pac_ghost != 3'd0 && !ghost_flag) begin
+        ghost_flag <= 1'b1;
+        if (currentState == PLAYING_ST) begin
+          currLives <= (currLives > 0) ? currLives - 1 : 0;
+        end else if (currentState == POWER_UP_ST) begin
+          ghostEaten <= ghostEaten + 1;
+        end
       end
+
     end
   end
-
-//  always_ff @(posedge clk or negedge resetN) begin
-//    if (!resetN) begin
-//      coin_flag <= 1'b0;
-//      totalScore <= 0;
-//    end else begin
-//
-//      if (startOfFrame) begin
-//        coin_flag <= 1'b0;
-//      end
-//
-//      if (collision_with_coin && !coin_flag) begin
-//        totalScore <= totalScore + 1;
-//        coin_flag <= 1'b1;
-//      end
-//
-//    end
-//  end
-
-
 
   // ------------------------------------------------------------
   // Sequential FSM and counters

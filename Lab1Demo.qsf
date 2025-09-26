@@ -383,6 +383,6 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[4]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3
-set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE POWER"
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name OPTIMIZATION_MODE BALANCED
 set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 0.3
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

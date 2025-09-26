@@ -21,9 +21,9 @@ agreement for further details.
 */
 (header "symbol" (version "1.1"))
 (symbol
-	(rect 16 16 248 480)
+	(rect 16 16 248 512)
 	(text "objects_mux" (rect 5 0 55 12)(font "Arial" ))
-	(text "inst" (rect 8 448 20 460)(font "Arial" ))
+	(text "inst" (rect 8 480 20 492)(font "Arial" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -202,9 +202,16 @@ agreement for further details.
 	(port
 		(pt 0 432)
 		(input)
+		(text "powerDR" (rect 0 0 38 12)(font "Arial" ))
+		(text "powerDR" (rect 21 427 59 439)(font "Arial" ))
+		(line (pt 0 432)(pt 16 432)(line_width 1))
+	)
+	(port
+		(pt 0 448)
+		(input)
 		(text "MapRGB[7..0]" (rect 0 0 59 12)(font "Arial" ))
-		(text "MapRGB[7..0]" (rect 21 427 80 439)(font "Arial" ))
-		(line (pt 0 432)(pt 16 432)(line_width 3))
+		(text "MapRGB[7..0]" (rect 21 443 80 455)(font "Arial" ))
+		(line (pt 0 448)(pt 16 448)(line_width 3))
 	)
 	(port
 		(pt 232 32)
@@ -214,6 +221,6 @@ agreement for further details.
 		(line (pt 232 32)(pt 216 32)(line_width 3))
 	)
 	(drawing
-		(rectangle (rect 16 16 216 448)(line_width 1))
+		(rectangle (rect 16 16 216 480)(line_width 1))
 	)
 )
