@@ -13,7 +13,7 @@ module bomb
 	input logic startN, 
 	input logic pauseN, 
 	input logic OneSecPulse, 
-	input logic timerEnd,
+	input logic tc,
 	
 	output logic countLoadN, 
 	output logic countEnable, 
@@ -28,6 +28,7 @@ module bomb
 	logic [2:0] timer;
  	
 //--------------------------------------------------------------------------------------------
+
 //  syncronous code:  executed once every clock to update the current state 
 always @(posedge clk or negedge resetN)
    begin
@@ -73,7 +74,7 @@ always @(posedge clk or negedge resetN)
 					  SMbomb <= s_pause;
 				 else if (startN == 1'b0) 
 					SMbomb <= s_arm;   
-				 else if (timerEnd == 1'b1)
+				 else if (tc == 1'b1)
 					  SMbomb <= s_idle;
 			end
 
