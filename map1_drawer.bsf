@@ -202,8 +202,8 @@ agreement for further details.
 	(port
 		(pt 264 176)
 		(output)
-		(text "coinsTot[8..0]" (rect 0 0 53 12)(font "Arial" ))
-		(text "coinsTot[8..0]" (rect 190 171 243 183)(font "Arial" ))
+		(text "coinsPowTot[8..0]" (rect 0 0 69 12)(font "Arial" ))
+		(text "coinsPowTot[8..0]" (rect 174 171 243 183)(font "Arial" ))
 		(line (pt 264 176)(pt 248 176)(line_width 3))
 	)
 	(port

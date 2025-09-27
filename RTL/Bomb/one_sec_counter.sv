@@ -8,7 +8,6 @@
  
  module one_sec_counter      	
 	(
-   // Input, Output Ports
 	input  logic clk, 
 	input  logic resetN, 
 	input  logic turbo,
@@ -49,8 +48,8 @@ parameter logic SIMULATION_MODE = 0 ;// to update in outside table: 1 for simula
 				oneSecCount <= oneSecCount + 1;
 				one_sec		<= 1'b0;
 			end
-		end // else clk
+		end 
 		
-	end // always
+	end
 	
 endmodule

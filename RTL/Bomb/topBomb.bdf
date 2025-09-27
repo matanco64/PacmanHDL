@@ -333,7 +333,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 760 624 920 736)
+	(rect 312 208 472 320)
 	(text "one_sec_counter" (rect 5 0 88 12)(font "Arial" ))
 	(text "inst5" (rect 8 96 31 108)(font "Arial" ))
 	(port
@@ -372,7 +372,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 144 96))
 	)
-	(annotation_block (parameter)(rect 760 584 980 622))
+	(annotation_block (parameter)(rect 312 168 532 206))
 )
 (symbol
 	(rect 752 192 952 368)
@@ -453,7 +453,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 760 376 960 520)
+	(rect 752 368 952 512)
 	(text "bomb" (rect 5 0 32 12)(font "Arial" ))
 	(text "inst2" (rect 8 128 31 140)(font "Arial" ))
 	(port
@@ -615,26 +615,6 @@ agreement for further details.
 	(pt 1432 688)
 )
 (connector
-	(text "turbo" (rect 688 672 712 689)(font "Intel Clear" ))
-	(pt 760 688)
-	(pt 680 688)
-)
-(connector
-	(text "clk" (rect 688 640 702 657)(font "Intel Clear" ))
-	(pt 680 656)
-	(pt 760 656)
-)
-(connector
-	(text "resetN" (rect 688 656 718 673)(font "Intel Clear" ))
-	(pt 680 672)
-	(pt 760 672)
-)
-(connector
-	(text "oneSec" (rect 930 640 964 657)(font "Intel Clear" ))
-	(pt 920 656)
-	(pt 1008 656)
-)
-(connector
 	(text "startN" (rect 440 440 468 457)(font "Intel Clear" ))
 	(pt 416 456)
 	(pt 504 456)
@@ -660,56 +640,6 @@ agreement for further details.
 	(text "pauseN" (rect 438 456 473 473)(font "Intel Clear" ))
 	(pt 416 472)
 	(pt 504 472)
-)
-(connector
-	(text "clk" (rect 696 392 710 409)(font "Intel Clear" ))
-	(pt 760 408)
-	(pt 688 408)
-)
-(connector
-	(text "resetN" (rect 696 408 726 425)(font "Intel Clear" ))
-	(pt 760 424)
-	(pt 688 424)
-)
-(connector
-	(text "countEnable" (rect 970 408 1029 425)(font "Intel Clear" ))
-	(pt 960 424)
-	(pt 1048 424)
-)
-(connector
-	(text "lampEnable" (rect 970 424 1027 441)(font "Intel Clear" ))
-	(pt 960 440)
-	(pt 1048 440)
-)
-(connector
-	(text "countLoadN" (rect 970 392 1026 409)(font "Intel Clear" ))
-	(pt 960 408)
-	(pt 1048 408)
-)
-(connector
-	(text "oneSec" (rect 692 456 726 473)(font "Intel Clear" ))
-	(pt 760 472)
-	(pt 688 472)
-)
-(connector
-	(text "tc" (rect 698 472 706 489)(font "Intel Clear" ))
-	(pt 760 488)
-	(pt 688 488)
-)
-(connector
-	(text "startN" (rect 692 424 720 441)(font "Intel Clear" ))
-	(pt 760 440)
-	(pt 688 440)
-)
-(connector
-	(text "show88" (rect 970 440 1006 457)(font "Intel Clear" ))
-	(pt 960 456)
-	(pt 1048 456)
-)
-(connector
-	(text "pauseN" (rect 692 440 727 457)(font "Intel Clear" ))
-	(pt 760 456)
-	(pt 688 456)
 )
 (connector
 	(text "clk" (rect 680 208 694 225)(font "Intel Clear" ))
@@ -764,6 +694,76 @@ agreement for further details.
 	(text "tc" (rect 962 240 970 257)(font "Intel Clear" ))
 	(pt 952 256)
 	(pt 1048 256)
+)
+(connector
+	(text "clk" (rect 688 384 702 401)(font "Intel Clear" ))
+	(pt 752 400)
+	(pt 680 400)
+)
+(connector
+	(text "resetN" (rect 688 400 718 417)(font "Intel Clear" ))
+	(pt 752 416)
+	(pt 680 416)
+)
+(connector
+	(text "oneSec" (rect 684 448 718 465)(font "Intel Clear" ))
+	(pt 752 464)
+	(pt 680 464)
+)
+(connector
+	(text "tc" (rect 690 464 698 481)(font "Intel Clear" ))
+	(pt 752 480)
+	(pt 680 480)
+)
+(connector
+	(text "startN" (rect 684 416 712 433)(font "Intel Clear" ))
+	(pt 752 432)
+	(pt 680 432)
+)
+(connector
+	(text "pauseN" (rect 684 432 719 449)(font "Intel Clear" ))
+	(pt 752 448)
+	(pt 680 448)
+)
+(connector
+	(text "countLoadN" (rect 962 384 1018 401)(font "Intel Clear" ))
+	(pt 952 400)
+	(pt 1040 400)
+)
+(connector
+	(text "countEnable" (rect 962 400 1021 417)(font "Intel Clear" ))
+	(pt 952 416)
+	(pt 1040 416)
+)
+(connector
+	(text "lampEnable" (rect 962 416 1019 433)(font "Intel Clear" ))
+	(pt 952 432)
+	(pt 1040 432)
+)
+(connector
+	(text "show88" (rect 962 432 998 449)(font "Intel Clear" ))
+	(pt 952 448)
+	(pt 1040 448)
+)
+(connector
+	(text "turbo" (rect 240 256 264 273)(font "Intel Clear" ))
+	(pt 312 272)
+	(pt 232 272)
+)
+(connector
+	(text "clk" (rect 240 224 254 241)(font "Intel Clear" ))
+	(pt 232 240)
+	(pt 312 240)
+)
+(connector
+	(text "resetN" (rect 240 240 270 257)(font "Intel Clear" ))
+	(pt 232 256)
+	(pt 312 256)
+)
+(connector
+	(text "oneSec" (rect 482 224 516 241)(font "Intel Clear" ))
+	(pt 472 240)
+	(pt 560 240)
 )
 (text "Outputs to be used in simulations" (rect 1352 632 1590 652)(font "Intel Clear" (font_size 10)))
 (text "Bomp schematic top level  " (rect 784 32 1244 75)(font "Intel Clear" (font_size 24)))

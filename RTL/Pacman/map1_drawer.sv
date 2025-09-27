@@ -34,7 +34,7 @@ module map1_drawer (
     output logic [11:0] aroundInky,
     output logic [11:0] aroundClyde,
     output logic [11:0] aroundPac,
-    output logic [ 8:0] coinsTot,
+    output logic [ 8:0] coinsPowTot, // pow and coins!
     output logic [ 8:0] coinsCollected,
     output logic [ 8:0] powerCollected
 );
@@ -59,10 +59,9 @@ module map1_drawer (
   localparam logic [TILE_BITS-1:0] PORTAL = 4;
   localparam logic [TILE_BITS-1:0] POWER = 5;
 
-
-  logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
+    logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
     { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
-    { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
+    { 3'd2, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd2, 3'd2, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd2 },
     { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
     { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
     { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
@@ -75,10 +74,10 @@ module map1_drawer (
     { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
     { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
     { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd3, 3'd0, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
-    { 3'd4, 3'd0, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd3, 3'd0, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd0, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd0, 3'd4 },
+    { 3'd4, 3'd0, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd3, 3'd0, 3'd2, 3'd2, 3'd2, 3'd5, 3'd2, 3'd2, 3'd0, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd0, 3'd4 },
     { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd3, 3'd0, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
     { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
-    { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
+    { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
     { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
     { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
     { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
@@ -90,7 +89,7 @@ module map1_drawer (
     { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
     { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
     { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
+    { 3'd2, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd1, 3'd1, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd2 },
     { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 }
   };
 
@@ -114,7 +113,7 @@ module map1_drawer (
       total = 0;
       for (int y = 0; y < MAP_HEIGHT_Y; y++) begin
         for (int x = 0; x < MAP_WIDTH_X; x++) begin
-          if (map[y][x] == COIN) total++;
+          if (map[y][x] == COIN || map[y][x] == POWER) total++;
         end
       end
       return total;
@@ -143,6 +142,7 @@ module map1_drawer (
   assign aroundInky = aroundGhost(InkytopLeftX, InkytopLeftY);
   assign aroundClyde = aroundGhost(ClydetopLeftX, ClydetopLeftY);
   assign aroundPac = aroundGhost(pactopLeftX, pactopLeftY);
+  
 
   // ---------------------------------------------------------------------------
   // always_ff blocks
@@ -154,7 +154,7 @@ module map1_drawer (
       RGBout <= 8'b0;
       drawingRequest <= 1'b0;
       pacmanMap <= OriginalPacmanMap;
-      coinsTot <= countCoins(OriginalPacmanMap);
+      coinsPowTot <= countCoins(OriginalPacmanMap);
       coinsCollected <= 0;
       powerCollected <= 0;
       coinFlag <= 0;
@@ -201,7 +201,7 @@ module map1_drawer (
           POWER: begin
             offsetX = pixelX % TILE_SIZE;
             offsetY = pixelY % TILE_SIZE;
-            if (offsetX >= 5 && offsetX < 11 && offsetY >= 5 && offsetY < 11) begin
+            if (offsetX >= 4 && offsetX < 12 && offsetY >= 4 && offsetY < 12) begin
               RGBout <= POW_COLOR;
               drawingPow <= 1'b1;
             end
