@@ -62,8 +62,8 @@ agreement for further details.
 	(port
 		(pt 0 112)
 		(input)
-		(text "timerEnd" (rect 0 0 36 12)(font "Arial" ))
-		(text "timerEnd" (rect 21 107 57 119)(font "Arial" ))
+		(text "tc" (rect 0 0 7 12)(font "Arial" ))
+		(text "tc" (rect 21 107 28 119)(font "Arial" ))
 		(line (pt 0 112)(pt 16 112)(line_width 1))
 	)
 	(port

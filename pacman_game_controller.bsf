@@ -21,9 +21,9 @@ agreement for further details.
 */
 (header "symbol" (version "1.1"))
 (symbol
-	(rect 16 16 288 320)
+	(rect 16 16 288 352)
 	(text "pacman_game_controller" (rect 5 0 106 12)(font "Arial" ))
-	(text "inst" (rect 8 288 20 300)(font "Arial" ))
+	(text "inst" (rect 8 320 20 332)(font "Arial" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -118,23 +118,30 @@ agreement for further details.
 	(port
 		(pt 0 240)
 		(input)
-		(text "coinsPowTot[8..0]" (rect 0 0 69 12)(font "Arial" ))
-		(text "coinsPowTot[8..0]" (rect 21 235 90 247)(font "Arial" ))
-		(line (pt 0 240)(pt 16 240)(line_width 3))
+		(text "timerEnd" (rect 0 0 36 12)(font "Arial" ))
+		(text "timerEnd" (rect 21 235 57 247)(font "Arial" ))
+		(line (pt 0 240)(pt 16 240)(line_width 1))
 	)
 	(port
 		(pt 0 256)
 		(input)
-		(text "coinsCollected[8..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "coinsCollected[8..0]" (rect 21 251 96 263)(font "Arial" ))
+		(text "coinsPowTot[8..0]" (rect 0 0 69 12)(font "Arial" ))
+		(text "coinsPowTot[8..0]" (rect 21 251 90 263)(font "Arial" ))
 		(line (pt 0 256)(pt 16 256)(line_width 3))
 	)
 	(port
 		(pt 0 272)
 		(input)
-		(text "powCollected[8..0]" (rect 0 0 70 12)(font "Arial" ))
-		(text "powCollected[8..0]" (rect 21 267 91 279)(font "Arial" ))
+		(text "coinsCollected[8..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "coinsCollected[8..0]" (rect 21 267 96 279)(font "Arial" ))
 		(line (pt 0 272)(pt 16 272)(line_width 3))
+	)
+	(port
+		(pt 0 288)
+		(input)
+		(text "powCollected[8..0]" (rect 0 0 70 12)(font "Arial" ))
+		(text "powCollected[8..0]" (rect 21 283 91 295)(font "Arial" ))
+		(line (pt 0 288)(pt 16 288)(line_width 3))
 	)
 	(port
 		(pt 272 32)
@@ -228,6 +235,6 @@ agreement for further details.
 		(line (pt 272 224)(pt 256 224)(line_width 1))
 	)
 	(drawing
-		(rectangle (rect 16 16 256 288)(line_width 1))
+		(rectangle (rect 16 16 256 320)(line_width 1))
 	)
 )
