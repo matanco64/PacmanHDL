@@ -184,7 +184,7 @@ agreement for further details.
 	(input)
 	(rect -104 488 72 504)
 	(text "INPUT" (rect 133 0 161 10)(font "Arial" (font_size 6)))
-	(text "gameState[2..0]" (rect 5 0 81 17)(font "Intel Clear" ))
+	(text "gameState[2..0]" (rect 5 0 80 17)(font "Intel Clear" ))
 	(pt 176 8)
 	(drawing
 		(line (pt 92 12)(pt 117 12))
@@ -519,28 +519,28 @@ agreement for further details.
 		(pt 256 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 174 27 235 39)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 174 27 247 39)(font "Arial" ))
 		(line (pt 256 32)(pt 240 32)(line_width 3))
 	)
 	(port
 		(pt 256 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 172 43 235 55)(font "Arial" ))
+		(text "topLeftY[10..0]" (rect 172 43 247 55)(font "Arial" ))
 		(line (pt 256 48)(pt 240 48)(line_width 3))
 	)
 	(port
 		(pt 256 64)
 		(output)
 		(text "curDirKey[3..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "curDirKey[3..0]" (rect 172 59 235 71)(font "Arial" ))
+		(text "curDirKey[3..0]" (rect 172 59 247 71)(font "Arial" ))
 		(line (pt 256 64)(pt 240 64)(line_width 3))
 	)
 	(port
 		(pt 256 80)
 		(output)
 		(text "curDir[1..0]" (rect 0 0 55 12)(font "Arial" ))
-		(text "curDir[1..0]" (rect 189 75 235 87)(font "Arial" ))
+		(text "curDir[1..0]" (rect 189 75 244 87)(font "Arial" ))
 		(line (pt 256 80)(pt 240 80)(line_width 3))
 	)
 	(parameter
@@ -589,16 +589,6 @@ agreement for further details.
 	(annotation_block (parameter)(rect 328 40 534 211))
 )
 (connector
-	(text "clk" (rect 1369 160 1383 177)(font "Intel Clear" ))
-	(pt 1360 176)
-	(pt 1416 176)
-)
-(connector
-	(text "resetN" (rect 1362 176 1392 193)(font "Intel Clear" ))
-	(pt 1360 192)
-	(pt 1416 192)
-)
-(connector
 	(pt 1080 208)
 	(pt 1416 208)
 	(bus)
@@ -611,11 +601,6 @@ agreement for further details.
 (connector
 	(pt 1080 240)
 	(pt 1416 240)
-)
-(connector
-	(text "startOfFrame" (rect 1338 256 1401 273)(font "Intel Clear" ))
-	(pt 1416 272)
-	(pt 1320 272)
 )
 (connector
 	(pt 1664 176)
@@ -671,12 +656,6 @@ agreement for further details.
 	(text "resetN" (rect 773 208 803 225)(font "Intel Clear" ))
 	(pt 856 224)
 	(pt 768 224)
-)
-(connector
-	(text "DirKey[3..0]" (rect 1337 240 1392 257)(font "Intel Clear" ))
-	(pt 1328 256)
-	(pt 1416 256)
-	(bus)
 )
 (connector
 	(text "pacmanDir[1..0]" (rect 2082 256 2156 273)(font "Intel Clear" ))
@@ -786,5 +765,26 @@ agreement for further details.
 	(pt 248 400)
 	(pt 328 400)
 	(bus)
+)
+(connector
+	(text "clk" (rect 1345 160 1359 177)(font "Intel Clear" ))
+	(pt 1416 176)
+	(pt 1336 176)
+)
+(connector
+	(text "resetN" (rect 1346 176 1376 193)(font "Intel Clear" ))
+	(pt 1416 192)
+	(pt 1336 192)
+)
+(connector
+	(text "DirKey[3..0]" (rect 1345 240 1400 257)(font "Intel Clear" ))
+	(pt 1416 256)
+	(pt 1336 256)
+	(bus)
+)
+(connector
+	(text "startOfFrame" (rect 1346 256 1409 273)(font "Intel Clear" ))
+	(pt 1416 272)
+	(pt 1336 272)
 )
 (text " " (rect 320 320 322 337)(font "Intel Clear" ))

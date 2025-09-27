@@ -10,6 +10,7 @@ module characterBitMap(
     input  logic        InsideRectangle, // pixel is within rectangle
     input  logic        startOfFrame,
     input  logic [1:0]  characterSelect, // 2-bit selector: 00=Pacman, 01=Pinky, 10=Inky, 11=Blinky
+	 input logic [ 2:0]  gameState,
 
     output logic        drawingRequest, // pixel should be displayed
     output logic [7:0]  RGBout,        // RGB value from the bitmap 
@@ -93,72 +94,88 @@ logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] clyde = {
 	{8'he3,8'hfc,8'hfc,8'he3,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'hfc,8'hfc,8'he3,8'hfc,8'hfc,8'hfc,8'he3},
 	{8'he3,8'hfc,8'hfc,8'he3,8'he3,8'hfc,8'he3,8'he3,8'he3,8'hfc,8'hfc,8'he3,8'he3,8'hfc,8'he3,8'he3},
 	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
+	
+logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] power = {
+	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'he3,8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3},
+	{8'he3,8'h07,8'h07,8'h07,8'h07,8'hfc,8'hfc,8'h07,8'h07,8'hfc,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3},
+	{8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3},
+	{8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3},
+	{8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3},
+	{8'he3,8'h07,8'h07,8'h07,8'hfc,8'hfc,8'h07,8'hfc,8'hfc,8'h07,8'hfc,8'hfc,8'h07,8'h07,8'h07,8'he3},
+	{8'he3,8'h07,8'h07,8'hfc,8'h07,8'h07,8'hfc,8'h07,8'h07,8'hfc,8'h07,8'h07,8'hfc,8'h07,8'h07,8'he3},
+	{8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3},
+	{8'he3,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3},
+	{8'he3,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3,8'he3,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3},
+	{8'he3,8'h07,8'h07,8'he3,8'he3,8'h07,8'he3,8'he3,8'he3,8'h07,8'h07,8'he3,8'he3,8'h07,8'he3,8'he3},
+	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
 
 // -----------------------------------------------------------------------------
-// Helper direction names
-localparam logic [3:0] DIR_RIGHT = 4'd6;
-localparam logic [3:0] DIR_UP    = 4'd8;
-localparam logic [3:0] DIR_LEFT  = 4'd4;
-localparam logic [3:0] DIR_DOWN  = 4'd2;
 
-logic [10:0] srcX, srcY;                 
-logic [10:0] displayWidth, displayHeight; 
-logic        localInside;
+  localparam [2:0] POWER_UP_ST = 3'b111;
 
-// compute mapping and bounding box depending on direction
-always_comb begin
+  logic [10:0] srcX, srcY;
+  logic [10:0] displayWidth, displayHeight;
+  logic localInside;
+
+  // compute mapping and bounding box depending on direction
+  always_comb begin
     // default values
-    displayWidth  = OBJECT_WIDTH_X;
+    displayWidth = OBJECT_WIDTH_X;
     displayHeight = OBJECT_HEIGHT_Y;
     srcX = offsetX;
     srcY = offsetY;
 
     // compute inside rectangle flag
     localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
-end
+  end
 
-// -----------------------------------------------------------------------------
-// Pacman animation
-logic [3:0] frameCnt;
-logic       mouthOpen;
+  // -----------------------------------------------------------------------------
+  // Pacman animation
+  logic [3:0] frameCnt;
+  logic       mouthOpen;
 
-always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
+      frameCnt  <= 4'd0;
+      mouthOpen <= 1'b0;
+    end else if (startOfFrame) begin
+      frameCnt <= frameCnt + 1;
+      if (frameCnt == 4'd7) begin
         frameCnt  <= 4'd0;
-        mouthOpen <= 1'b0;
+        mouthOpen <= ~mouthOpen;
+      end
     end
-    else if (startOfFrame) begin
-        frameCnt <= frameCnt + 1;
-        if (frameCnt == 4'd7) begin
-            frameCnt  <= 4'd0;
-            mouthOpen <= ~mouthOpen;
-        end
-    end
-end
+  end
 
-// -----------------------------------------------------------------------------
-// Synchronous output
-always_ff @(posedge clk or negedge resetN) begin
+  // -----------------------------------------------------------------------------
+  // Synchronous output
+  always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
-        RGBout      <= 8'h00;
-        HitEdgeCode <= 3'h0;
-    end
-    else begin
-        RGBout      <= TRANSPARENT_ENCODING;
-        HitEdgeCode <= 3'h0;
+      RGBout      <= 8'h00;
+      HitEdgeCode <= 3'h0;
+    end else begin
+      RGBout      <= TRANSPARENT_ENCODING;
+      HitEdgeCode <= 3'h0;
 
-        if (localInside && (srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y)) begin
-            case (characterSelect)
-                2'b00: RGBout <= blinky[srcY][srcX];
-                2'b01: RGBout <= pinky[srcY][srcX];
-                2'b10: RGBout <= inky[srcY][srcX];
-                2'b11: RGBout <= clyde[srcY][srcX];
-                default: RGBout <= TRANSPARENT_ENCODING;
-            endcase
-        end
-    end
-end
+      if (localInside && (srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y)) begin
 
-assign drawingRequest = (RGBout != TRANSPARENT_ENCODING) ? 1'b1 : 1'b0;
+        case (characterSelect)
+          2'b00:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : blinky[srcY][srcX];
+          2'b01:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : pinky[srcY][srcX];
+          2'b10:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : inky[srcY][srcX];
+          2'b11:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : clyde[srcY][srcX];
+          default: RGBout <= TRANSPARENT_ENCODING;
+        endcase
+
+      end
+    end
+  end
+
+  assign drawingRequest = (RGBout != TRANSPARENT_ENCODING) ? 1'b1 : 1'b0;
 
 endmodule
+

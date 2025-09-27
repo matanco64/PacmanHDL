@@ -24,7 +24,7 @@ module bomb
 //-------------------------------------------------------------------------------------------
 
 // state machine declaration 
-   enum logic [2:0] {s_idle,s_arm, s_run, s_pause, s_lampOff, s_lampOn} SMbomb;
+   enum logic [2:0] {s_idle,s_arm, s_run, s_pause, s_end, s_lampOff, s_lampOn} SMbomb;
 	logic [2:0] timer;
  	
 //--------------------------------------------------------------------------------------------
@@ -34,24 +34,22 @@ always @(posedge clk or negedge resetN)
    begin
 	   
    if ( !resetN ) begin // Asynchronic reset
-		SMbomb <= s_idle;
-		countLoadN <= 1'b1;
+		SMbomb 		<= s_idle;
+		countLoadN 	<= 1'b1;
 		countEnable <= 1'b0;
 		lampEnable  <= 1'b0;
-		show88 <= 1'b0;
+		show88 		<= 1'b0;
 		end 
 
    
 	else 		// Synchronic logic FSM
 		begin
 		// default outputs 
-		countLoadN <= 1'b1;
+		countLoadN 	<= 1'b1;
 		countEnable <= 1'b0;
 		lampEnable  <= 1'b1;
-		show88 <= 1'b0;
+		show88 		<= 1'b0;
 		
-	
-	
 	case (SMbomb) // logically defining what is the next state, and the ouptput
 		
 //      ======		

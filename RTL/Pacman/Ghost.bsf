@@ -21,9 +21,9 @@ agreement for further details.
 */
 (header "symbol" (version "1.2"))
 (symbol
-	(rect 16 16 296 272)
+	(rect 16 16 296 304)
 	(text "Ghost" (rect 5 0 39 19)(font "Intel Clear" (font_size 8)))
-	(text "inst" (rect 8 235 24 252)(font "Intel Clear" ))
+	(text "inst" (rect 8 267 24 284)(font "Intel Clear" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -116,6 +116,13 @@ agreement for further details.
 		(line (pt 0 224)(pt 16 224)(line_width 3))
 	)
 	(port
+		(pt 0 240)
+		(input)
+		(text "gameState[2..0]" (rect 0 0 95 19)(font "Intel Clear" (font_size 8)))
+		(text "gameState[2..0]" (rect 21 235 116 254)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 240)(pt 16 240)(line_width 3))
+	)
+	(port
 		(pt 280 32)
 		(output)
 		(text "DR" (rect 0 0 17 19)(font "Intel Clear" (font_size 8)))
@@ -154,7 +161,7 @@ agreement for further details.
 		""
 	)
 	(drawing
-		(rectangle (rect 16 16 264 240))
+		(rectangle (rect 16 16 264 272))
 	)
 	(annotation_block (parameter)(rect 296 -64 396 16))
 )
