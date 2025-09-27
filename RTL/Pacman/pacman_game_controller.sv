@@ -34,14 +34,12 @@ module pacman_game_controller (
 );
 
   localparam START_HEARTS = 4;
-  
-  localparam [3:0] TIME_RESET_L = 5; 
-  localparam [3:0] TIME_RESET_H = 0;
-  localparam [3:0] TIME_POWER_L = 5;
-  localparam [3:0] TIME_POWER_H = 1;
+
+  localparam [3:0] TIME_POWER_L = 8;
+  localparam [3:0] TIME_POWER_H = 0;
   localparam [3:0] TIME_START_L = 3;
   localparam [3:0] TIME_START_H = 0;
-  
+
 
   typedef enum logic [2:0] {
     RESET_ST      = 3'b000,
@@ -67,7 +65,7 @@ module pacman_game_controller (
   // Collision detection
   assign collision_pac_wall = pacDR && wallsDR;
   assign collision_pac_coin = pacDR && coinDR;
-//  assign collision_pac_power = pacDR && powerDR;
+  assign collision_pac_power = pacDR && powerDR;  // for map
   assign totalScore = coinsCollected + (ghostEaten * 50) + (powCollected * 10);
 
   // ------------------------------------------------------------
@@ -109,19 +107,16 @@ module pacman_game_controller (
     end
   end
 
-  
-  always_ff @(posedge clk or negedge resetN) begin
-		 if (!resetN) begin
-			  collision_pac_power <= 1'b0;
-		 end else begin
-			  if (startOfFrame) begin
-					collision_pac_power <= 1'b0; // clear at the start of new frame
-			  end else if (pacDR && powerDR) begin	
-					collision_pac_power <= 1'b1; // hold until frame ends
-			  end
-		 end
-	end
 
+  logic collision_pac_power_reg;
+
+  always_ff @(posedge clk or negedge resetN) begin
+    if (!resetN) collision_pac_power_reg <= 1'b0;
+    else begin
+      if (startOfFrame) collision_pac_power_reg <= 1'b0;  // clear at the start of frame
+      else if (pacDR && powerDR) collision_pac_power_reg <= 1'b1;
+    end
+  end
   // ------------------------------------------------------------
   // Sequential FSM and counters
   // ------------------------------------------------------------
@@ -131,11 +126,11 @@ module pacman_game_controller (
       lastState        <= RESET_ST;
       prePausedState   <= RESET_ST;
 
-      startCountN      <= 1'b1; // no counting
-		datainL          <= 4'd0; 
+      startCountN      <= 1'b1;  // no counting
+      datainL          <= 4'd0;
       datainH          <= 4'd0;
-		
-		stateCounter     <= 8'd0; // REMOVE!!! & CHANGE LOGIC
+
+      stateCounter     <= 8'd0;  // REMOVE!!! & CHANGE LOGIC
       powerPelletTimer <= 8'd0;
 
     end else begin
@@ -156,12 +151,12 @@ module pacman_game_controller (
         case (currentState)
 
           RESET_ST: begin
-            currentState     <= pauseN ? START_WAIT_ST : PAUSED_ST;
-//            startCountN      <= 1'b0; // start
-//				datainL          <= TIME_RESET_L;
-//            datainH          <= TIME_RESET_H;
-//				stateCounter     <= TIME_RESET_L + 10 *TIME_RESET_H ;// REMOVE!!! & CHANGE LOGIC
-//				powerPelletTimer <= 8'd0;
+            currentState <= pauseN ? START_WAIT_ST : PAUSED_ST;
+            //            startCountN      <= 1'b0; // start
+            //				datainL          <= TIME_RESET_L;
+            //            datainH          <= TIME_RESET_H;
+            //				stateCounter     <= TIME_RESET_L + 10 *TIME_RESET_H ;// REMOVE!!! & CHANGE LOGIC
+            //				powerPelletTimer <= 8'd0;
           end
 
           START_WAIT_ST: begin
@@ -169,11 +164,11 @@ module pacman_game_controller (
             else if (stateCounter == 0 && lastState == START_WAIT_ST) currentState <= PLAYING_ST;
 
             if (lastState != START_WAIT_ST) begin
-				
-				  startCountN  <= 1'b0;
+
+              startCountN  <= 1'b0;
               datainL      <= TIME_START_L;
               datainH      <= TIME_START_H;
-				  stateCounter <= TIME_START_L + 10* TIME_START_H; // REMOVE!!! & CHANGE LOGIC
+              stateCounter <= TIME_START_L + 10 * TIME_START_H;  // REMOVE!!! & CHANGE LOGIC
 
             end
           end
@@ -182,7 +177,7 @@ module pacman_game_controller (
             if (!pauseN) currentState <= PAUSED_ST;
             else if (collision_pac_ghost != 3'd0) currentState <= GHOST_HIT_ST;
             else if (coinsCollected + powCollected == coinsPowTot) currentState <= WIN_ST;
-            else if (collision_pac_power) currentState <= POWER_UP_ST;
+            else if (collision_pac_power_reg) currentState <= POWER_UP_ST;
           end
 
           GHOST_HIT_ST: begin
@@ -191,16 +186,14 @@ module pacman_game_controller (
 
           POWER_UP_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-				if (lastState != POWER_UP_ST) begin // 1st enter
-				
-				  startCountN  <= 1'b0;
-              datainL      <= TIME_POWER_L;
-              datainH      <= TIME_POWER_H;
-				  powerPelletTimer <= TIME_POWER_L + 10* TIME_POWER_H; // REMOVE!!! & CHANGE LOGIC
+            if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
+              startCountN      <= 1'b0;
+              datainL          <= TIME_POWER_L;
+              datainH          <= TIME_POWER_H;
+              powerPelletTimer <= TIME_POWER_L + 10 * TIME_POWER_H;  // REMOVE!!! & CHANGE LOGIC
 
-            end else if (powerPelletTimer == 0) // +2st enter
-					currentState <= PLAYING_ST;
-       
+            end else if (powerPelletTimer == 0)   // +2st enter
+              currentState <= PLAYING_ST;
           end
 
           WIN_ST:  if (pauseN) currentState <= RESET_ST;

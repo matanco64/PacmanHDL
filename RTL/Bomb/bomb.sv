@@ -59,19 +59,20 @@ always @(posedge clk or negedge resetN)
 				lampEnable  <= 1'b0;
 				countLoadN <= 1'b0; // load
 				if (startN == 1'b0) 
-					SMbomb <= s_run; 
+					SMbomb <= s_arm; 
 			end // idle
 			
-//			s_arm: begin
-//				 countLoadN <= 1'b0;  // load
-////				 if (startN == 1'b1)  // originaly start when button unpressed - removed because the input isnt a btn
-//					  SMbomb <= s_run;
-//			end
+			s_arm: begin
+				 countLoadN <= 1'b0;  // load
+				 SMbomb <= s_run;
+			end
 
 			s_run: begin
 				 countEnable <= 1'b1; // counting
 				 if (pauseN == 1'b0)
 					  SMbomb <= s_pause;
+				 else if (startN == 1'b0) 
+					SMbomb <= s_arm;   
 				 else if (timerEnd == 1'b1)
 					  SMbomb <= s_idle;
 			end
@@ -91,17 +92,17 @@ always @(posedge clk or negedge resetN)
 //					SMbomb <= s_run;
 //			end
 
-			s_lampOff: begin
-				 lampEnable <= 1'b0;
-				 if (OneSecPulse)
-					  SMbomb <= s_lampOn;
-			end
-
-			s_lampOn: begin
-				 show88 <= 1'b1;
-				 if (OneSecPulse)
-					  SMbomb <= s_lampOff;
-			end					
+//			s_lampOff: begin
+//				 lampEnable <= 1'b0;
+//				 if (OneSecPulse)
+//					  SMbomb <= s_lampOn;
+//			end
+//
+//			s_lampOn: begin
+//				 show88 <= 1'b1;
+//				 if (OneSecPulse)
+//					  SMbomb <= s_lampOff;
+//			end					
 
 //  		  =========		
 			  default : begin   
