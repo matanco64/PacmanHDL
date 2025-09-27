@@ -24,7 +24,7 @@ module bomb
 //-------------------------------------------------------------------------------------------
 
 // state machine declaration 
-   enum logic [2:0] {s_idle, s_run, s_pause, s_lampOff, s_lampOn} SMbomb;
+   enum logic [2:0] {s_idle,s_arm, s_run, s_pause, s_lampOff, s_lampOn} SMbomb;
 	logic [2:0] timer;
  	
 //--------------------------------------------------------------------------------------------
@@ -57,13 +57,14 @@ always @(posedge clk or negedge resetN)
 			s_idle: begin
 //      ======		
 				lampEnable  <= 1'b0;
+				countLoadN <= 1'b0; // load
 				if (startN == 1'b0) 
 					SMbomb <= s_run; 
 			end // idle
 			
 //			s_arm: begin
 //				 countLoadN <= 1'b0;  // load
-//				 if (startN == 1'b1)
+////				 if (startN == 1'b1)  // originaly start when button unpressed - removed because the input isnt a btn
 //					  SMbomb <= s_run;
 //			end
 
@@ -72,7 +73,7 @@ always @(posedge clk or negedge resetN)
 				 if (pauseN == 1'b0)
 					  SMbomb <= s_pause;
 				 else if (timerEnd == 1'b1)
-					  SMbomb <= s_lampOff;
+					  SMbomb <= s_idle;
 			end
 
 			s_pause: begin
