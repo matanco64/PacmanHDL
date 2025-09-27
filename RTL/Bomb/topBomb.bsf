@@ -21,9 +21,9 @@ agreement for further details.
 */
 (header "symbol" (version "1.2"))
 (symbol
-	(rect 16 16 216 208)
+	(rect 16 16 216 176)
 	(text "topBomb" (rect 5 0 60 19)(font "Intel Clear" (font_size 8)))
-	(text "inst" (rect 8 171 24 188)(font "Intel Clear" ))
+	(text "inst" (rect 8 139 24 156)(font "Intel Clear" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -111,25 +111,11 @@ agreement for further details.
 	(port
 		(pt 200 112)
 		(output)
-		(text "countLoadN" (rect 0 0 70 19)(font "Intel Clear" (font_size 8)))
-		(text "countLoadN" (rect 109 107 179 126)(font "Intel Clear" (font_size 8)))
+		(text "timerEnd" (rect 0 0 54 19)(font "Intel Clear" (font_size 8)))
+		(text "timerEnd" (rect 125 107 179 126)(font "Intel Clear" (font_size 8)))
 		(line (pt 200 112)(pt 184 112))
 	)
-	(port
-		(pt 200 128)
-		(output)
-		(text "countEnable" (rect 0 0 71 19)(font "Intel Clear" (font_size 8)))
-		(text "countEnable" (rect 108 123 179 142)(font "Intel Clear" (font_size 8)))
-		(line (pt 200 128)(pt 184 128))
-	)
-	(port
-		(pt 200 144)
-		(output)
-		(text "lampEnable" (rect 0 0 70 19)(font "Intel Clear" (font_size 8)))
-		(text "lampEnable" (rect 109 139 179 158)(font "Intel Clear" (font_size 8)))
-		(line (pt 200 144)(pt 184 144))
-	)
 	(drawing
-		(rectangle (rect 16 16 184 176))
+		(rectangle (rect 16 16 184 144))
 	)
 )
