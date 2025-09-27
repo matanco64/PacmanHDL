@@ -91,15 +91,15 @@ module pacman_move (
       is_neg <= 1'b0;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
       curDirKey <= INITIAL_DIRECTION;
-    end else if (collision_pac_ghost != 3'b0) begin  // thoch ghost
-      SM_Motion <= IDLE_ST;
-      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
-      Xspeed <= 0;
-      Yspeed <= 0;
-      hit_reg <= 1'b0;
-      is_neg <= 1'b0;
-      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-      curDirKey <= INITIAL_DIRECTION;
+//    end else if (collision_pac_ghost != 3'b0) begin  // thoch ghost
+//      SM_Motion <= IDLE_ST;
+//      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+//      Xspeed <= 0;
+//      Yspeed <= 0;
+//      hit_reg <= 1'b0;
+//      is_neg <= 1'b0;
+//      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+//      curDirKey <= INITIAL_DIRECTION;
 		
 	  end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST) begin
       // Pacman stands still in START or PAUSE

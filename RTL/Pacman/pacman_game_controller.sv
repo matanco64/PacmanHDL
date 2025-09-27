@@ -34,7 +34,7 @@ module pacman_game_controller (
     output logic       startCountN
 );
 
-  localparam START_HEARTS = 4;
+  localparam START_HEARTS = 3;
 
   localparam [3:0] TIME_POWER_L = 8;
   localparam [3:0] TIME_POWER_H = 0;
@@ -55,13 +55,11 @@ module pacman_game_controller (
 
   // Internal registers
   game_state_t currentState, lastState, prePausedState;
-  logic [7:0] stateCounter;
-//  logic [7:0] powerPelletTimer;
-  logic [9:0] totalScore;
+
   logic       ghost_flag;
-
+  
   logic [5:0] ghostEaten;
-
+  logic [9:0] totalScore;
 
   // Collision detection
   assign collision_pac_wall = pacDR && wallsDR;
@@ -108,16 +106,25 @@ module pacman_game_controller (
     end
   end
 
-
+  // sticky logic - up for frame
   logic collision_pac_power_reg;
+  logic timerEnd_reg;
 
-  always_ff @(posedge clk or negedge resetN) begin
-    if (!resetN) collision_pac_power_reg <= 1'b0;
-    else begin
-      if (startOfFrame) collision_pac_power_reg <= 1'b0;  // clear at the start of frame
-      else if (pacDR && powerDR) collision_pac_power_reg <= 1'b1;
-    end
-  end
+	 always_ff @(posedge clk or negedge resetN) begin
+	  if (!resetN) begin
+		 collision_pac_power_reg <= 1'b0;
+		 timerEnd_reg <= 1'b0;
+	  end else begin
+
+		 if (startOfFrame) collision_pac_power_reg <= 1'b0;  // clear at the start of frame
+		 else if (pacDR && powerDR) collision_pac_power_reg <= 1'b1;
+
+		 if (startOfFrame) timerEnd_reg <= 1'b0;
+		 else if (timerEnd) timerEnd_reg <= 1'b1;
+
+	  end
+	end
+
   // ------------------------------------------------------------
   // Sequential FSM and counters
   // ------------------------------------------------------------
@@ -131,18 +138,9 @@ module pacman_game_controller (
       datainL          <= 4'd0;
       datainH          <= 4'd0;
 
-//      stateCounter     <= 8'd0;  // REMOVE!!! & CHANGE LOGIC
-//      powerPelletTimer <= 8'd0;
-
     end else begin
       // default
       startCountN <= 1'b1;
-
-      // Timers tick once per second - SHOULD BE REMOVED - ONLY BOMB COUNTER
-//      if (oneSec) begin
-//        if (stateCounter > 0) stateCounter <= stateCounter - 8'd1;
-//        if (powerPelletTimer > 0) powerPelletTimer <= powerPelletTimer - 8'd1;
-//      end
 
       // State machine updates once per frame
       if (startOfFrame) begin
@@ -157,14 +155,13 @@ module pacman_game_controller (
 
           START_WAIT_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-            else if (timerEnd == 0 && lastState == START_WAIT_ST) currentState <= PLAYING_ST;
+            else if (timerEnd_reg && lastState == START_WAIT_ST) currentState <= PLAYING_ST;
 
             if (lastState != START_WAIT_ST) begin
 
               startCountN  <= 1'b0;
               datainL      <= TIME_START_L;
               datainH      <= TIME_START_H;
-//              stateCounter <= TIME_START_L + 10 * TIME_START_H;  // REMOVE!!! & CHANGE LOGIC
 
             end
           end
@@ -186,9 +183,8 @@ module pacman_game_controller (
               startCountN      <= 1'b0;
               datainL          <= TIME_POWER_L;
               datainH          <= TIME_POWER_H;
-//              powerPelletTimer <= TIME_POWER_L + 10 * TIME_POWER_H;  // REMOVE!!! & CHANGE LOGIC
 
-            end else if (timerEnd == 0)   // +2st enter
+            end else if (timerEnd_reg)   // +2st enter
               currentState <= PLAYING_ST;
           end
 

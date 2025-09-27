@@ -74,6 +74,13 @@ agreement for further details.
 		(line (pt 0 128)(pt 16 128)(line_width 3))
 	)
 	(port
+		(pt 0 144)
+		(input)
+		(text "gameState[2..0]" (rect 0 0 62 12)(font "Arial" ))
+		(text "gameState[2..0]" (rect 21 139 83 151)(font "Arial" ))
+		(line (pt 0 144)(pt 16 144)(line_width 3))
+	)
+	(port
 		(pt 256 32)
 		(output)
 		(text "drawingRequest" (rect 0 0 63 12)(font "Arial" ))

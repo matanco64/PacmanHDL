@@ -10,8 +10,7 @@ module ghost_move (
 	 
 	 input logic [2:0] collisionPacGhost,
     input logic [1:0] forceMode,          // External mode control: 00=unused, 01=unused, 10=FRIGHTENED_M, 11=EATEN_M
-    input logic [7:0] gameTimer,  // Currently unused - for future timing features
-    input logic [7:0] gameState,  // Currently unused - for future game state - start, play, pause, turbo, game over
+    input logic [2:0] gameState,  // Currently unused - for future game state - start, play, pause, turbo, game over
 
     output logic signed [10:0] topLeftX,
     output logic signed [10:0] topLeftY
@@ -347,13 +346,13 @@ module ghost_move (
       lastDir <= DIR_UP;
       SM_Motion <= IDLE_ST;
 		
-	 end else if (collisionPacGhost !=3'b0)	begin
-	  idleCounter <= 0;
-      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
-      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-      ghostDir <= DIR_UP;
-      lastDir <= DIR_UP;
-      SM_Motion <= IDLE_ST;
+//	 end else if (collisionPacGhost !=3'b0)	begin
+//	  idleCounter <= 0;
+//      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+//      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+//      ghostDir <= DIR_UP;
+//      lastDir <= DIR_UP;
+//      SM_Motion <= IDLE_ST;
 	
     end else begin
       case (SM_Motion)
