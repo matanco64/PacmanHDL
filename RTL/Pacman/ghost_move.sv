@@ -346,13 +346,13 @@ module ghost_move (
       lastDir <= DIR_UP;
       SM_Motion <= IDLE_ST;
 		
-//	 end else if (collisionPacGhost !=3'b0)	begin
-//	  idleCounter <= 0;
-//      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
-//      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-//      ghostDir <= DIR_UP;
-//      lastDir <= DIR_UP;
-//      SM_Motion <= IDLE_ST;
+	 end else if (collisionPacGhost !=3'b0)	begin
+	  idleCounter <= 0;
+      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+      ghostDir <= DIR_UP;
+      lastDir <= DIR_UP;
+      SM_Motion <= IDLE_ST;
 	
     end else begin
       case (SM_Motion)

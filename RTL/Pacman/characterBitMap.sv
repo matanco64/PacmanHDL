@@ -11,15 +11,20 @@ module characterBitMap(
     input  logic        startOfFrame,
     input  logic [1:0]  characterSelect, // 2-bit selector: 00=Pacman, 01=Pinky, 10=Inky, 11=Blinky
 	 input logic [ 2:0]  gameState,
+    input logic [3:0] 	countL,
+    input logic [3:0] 	countH,
 
     output logic        drawingRequest, // pixel should be displayed
-    output logic [7:0]  RGBout,        // RGB value from the bitmap 
-    output logic [2:0]  HitEdgeCode
+    output logic [7:0]  RGBout        // RGB value from the bitmap 
 );
 
 localparam int OBJECT_HEIGHT_Y = 16;
 localparam int OBJECT_WIDTH_X  = 16;
 localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
+
+  localparam logic [7:0] COLOR1 = 8'hCA; // power mode ghost color1
+  localparam logic [7:0] COLOR2 = 8'hFF;
+
 
 // -----------------------------------------------------------------------------
 // Ghosts bitmaps
@@ -97,20 +102,20 @@ logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] clyde = {
 	
 logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] power = {
 	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3,8'he3},
-	{8'he3,8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3},
-	{8'he3,8'h07,8'h07,8'h07,8'h07,8'hfc,8'hfc,8'h07,8'h07,8'hfc,8'h07,8'h07,8'h07,8'h07,8'he3,8'he3},
-	{8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3},
-	{8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3},
-	{8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3},
-	{8'he3,8'h07,8'h07,8'h07,8'hfc,8'hfc,8'h07,8'hfc,8'hfc,8'h07,8'hfc,8'hfc,8'h07,8'h07,8'h07,8'he3},
-	{8'he3,8'h07,8'h07,8'hfc,8'h07,8'h07,8'hfc,8'h07,8'h07,8'hfc,8'h07,8'h07,8'hfc,8'h07,8'h07,8'he3},
-	{8'he3,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'h07,8'he3},
-	{8'he3,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3},
-	{8'he3,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3,8'he3,8'h07,8'h07,8'he3,8'h07,8'h07,8'h07,8'he3},
-	{8'he3,8'h07,8'h07,8'he3,8'he3,8'h07,8'he3,8'he3,8'he3,8'h07,8'h07,8'he3,8'he3,8'h07,8'he3,8'he3},
+	{8'he3,8'he3,8'he3,8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3,8'he3,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3,8'he3,8'he3},
+	{8'he3,8'he3,8'hCA,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hCA,8'he3,8'he3},
+	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hCA,8'he3,8'he3},
+	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3},
+	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3},
+	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3},
+	{8'he3,8'hCA,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hFF,8'hFF,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hCA,8'he3},
+	{8'he3,8'hCA,8'hCA,8'hFF,8'hCA,8'hCA,8'hFF,8'hCA,8'hCA,8'hFF,8'hCA,8'hCA,8'hFF,8'hCA,8'hCA,8'he3},
+	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3},
+	{8'he3,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3},
+	{8'he3,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3,8'he3,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3},
+	{8'he3,8'hCA,8'hCA,8'he3,8'he3,8'hCA,8'he3,8'he3,8'he3,8'hCA,8'hCA,8'he3,8'he3,8'hCA,8'he3,8'he3},
 	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
 
 // -----------------------------------------------------------------------------
@@ -133,48 +138,49 @@ logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] power = {
     localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
   end
 
-  // -----------------------------------------------------------------------------
-  // Pacman animation
-  logic [3:0] frameCnt;
-  logic       mouthOpen;
 
-  always_ff @(posedge clk or negedge resetN) begin
-    if (!resetN) begin
-      frameCnt  <= 4'd0;
-      mouthOpen <= 1'b0;
-    end else if (startOfFrame) begin
-      frameCnt <= frameCnt + 1;
-      if (frameCnt == 4'd7) begin
-        frameCnt  <= 4'd0;
-        mouthOpen <= ~mouthOpen;
-      end
-    end
-  end
 
-  // -----------------------------------------------------------------------------
-  // Synchronous output
-  always_ff @(posedge clk or negedge resetN) begin
-    if (!resetN) begin
-      RGBout      <= 8'h00;
-      HitEdgeCode <= 3'h0;
-    end else begin
-      RGBout      <= TRANSPARENT_ENCODING;
-      HitEdgeCode <= 3'h0;
+  // ---------------------------------------------------------------------------
+  // ghost map
+  // ---------------------------------------------------------------------------
+  
+	always_ff @(posedge clk or negedge resetN) begin
+	  if (!resetN) begin
+		 RGBout <= TRANSPARENT_ENCODING;
+	  end else begin
+		 RGBout <= TRANSPARENT_ENCODING;  // Default
 
-      if (localInside && (srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y)) begin
+		 if (localInside && (srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y)) begin
+			if (gameState == POWER_UP_ST) begin
+			  // --- Power pellet mode ---
+			  RGBout <= power[srcY][srcX];
 
-        case (characterSelect)
-          2'b00:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : blinky[srcY][srcX];
-          2'b01:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : pinky[srcY][srcX];
-          2'b10:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : inky[srcY][srcX];
-          2'b11:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : clyde[srcY][srcX];
-          default: RGBout <= TRANSPARENT_ENCODING;
-        endcase
+			 // --- flickering mode ---
+			  if ((countH == 4'd0) && (countL <= 4'd4) && countL[0]) begin // Alternate every second using countL LSB
+				  RGBout <= power[srcY][srcX] == COLOR1 ? COLOR2 :
+						 power[srcY][srcX] == COLOR2 ? COLOR1 :
+						 power[srcY][srcX] ; // Keep other colors unchanged
+			  end
+			end else begin
+			  // --- Normal mode ---
+			  case (characterSelect)
+				 2'b00:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : blinky[srcY][srcX];
+				 2'b01:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : pinky[srcY][srcX];
+				 2'b10:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : inky[srcY][srcX];
+				 2'b11:   RGBout <= (gameState == POWER_UP_ST) ? power[srcY][srcX] : clyde[srcY][srcX];
+				 default: RGBout <= TRANSPARENT_ENCODING;
+			  endcase
+			end
+		 end
+	  end
+	end
 
-      end
-    end
-  end
 
+	
+  // ---------------------------------------------------------------------------
+  // outputs
+  // ---------------------------------------------------------------------------
+  
   assign drawingRequest = (RGBout != TRANSPARENT_ENCODING) ? 1'b1 : 1'b0;
 
 endmodule

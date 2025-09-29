@@ -21,9 +21,9 @@ agreement for further details.
 */
 (header "symbol" (version "1.2"))
 (symbol
-	(rect 16 16 296 304)
+	(rect 16 16 296 336)
 	(text "Ghost" (rect 5 0 39 19)(font "Intel Clear" (font_size 8)))
-	(text "inst" (rect 8 267 24 284)(font "Intel Clear" ))
+	(text "inst" (rect 8 299 24 316)(font "Intel Clear" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -123,6 +123,20 @@ agreement for further details.
 		(line (pt 0 240)(pt 16 240)(line_width 3))
 	)
 	(port
+		(pt 0 256)
+		(input)
+		(text "countL[3..0]" (rect 0 0 69 19)(font "Intel Clear" (font_size 8)))
+		(text "countL[3..0]" (rect 21 251 90 270)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 256)(pt 16 256)(line_width 3))
+	)
+	(port
+		(pt 0 272)
+		(input)
+		(text "countH[3..0]" (rect 0 0 71 19)(font "Intel Clear" (font_size 8)))
+		(text "countH[3..0]" (rect 21 267 92 286)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 272)(pt 16 272)(line_width 3))
+	)
+	(port
 		(pt 280 32)
 		(output)
 		(text "DR" (rect 0 0 17 19)(font "Intel Clear" (font_size 8)))
@@ -161,7 +175,7 @@ agreement for further details.
 		""
 	)
 	(drawing
-		(rectangle (rect 16 16 264 272))
+		(rectangle (rect 16 16 264 304))
 	)
 	(annotation_block (parameter)(rect 296 -64 396 16))
 )
