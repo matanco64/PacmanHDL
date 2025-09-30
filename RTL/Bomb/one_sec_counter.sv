@@ -25,7 +25,7 @@ parameter logic SIMULATION_MODE = 0 ;// to update in outside table: 1 for simula
 	localparam oneSecVal= SIMULATION_MODE ? oneSecVal_SIM : oneSecVal_REAL ; //select what to use 
 //       ----------------------------------------------	
 	
-	assign sec = turbo ? oneSecVal/10 : oneSecVal;  // it is legal to devide by 10, as it is done by the compiler not by logic (actual transistors) 
+	assign sec = turbo ? oneSecVal/5 : oneSecVal;  // it is legal to devide by 10, as it is done by the compiler not by logic (actual transistors) 
 
 
 	

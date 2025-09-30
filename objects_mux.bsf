@@ -209,9 +209,16 @@ agreement for further details.
 	(port
 		(pt 0 448)
 		(input)
+		(text "fruitDR" (rect 0 0 30 12)(font "Arial" ))
+		(text "fruitDR" (rect 21 443 51 455)(font "Arial" ))
+		(line (pt 0 448)(pt 16 448)(line_width 1))
+	)
+	(port
+		(pt 0 464)
+		(input)
 		(text "MapRGB[7..0]" (rect 0 0 59 12)(font "Arial" ))
-		(text "MapRGB[7..0]" (rect 21 443 80 455)(font "Arial" ))
-		(line (pt 0 448)(pt 16 448)(line_width 3))
+		(text "MapRGB[7..0]" (rect 21 459 80 471)(font "Arial" ))
+		(line (pt 0 464)(pt 16 464)(line_width 3))
 	)
 	(port
 		(pt 232 32)

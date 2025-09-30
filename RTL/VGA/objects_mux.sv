@@ -36,10 +36,11 @@ module	objects_mux	(
 					input		logic heartDR, 
 					input		logic	[7:0] heartRGB,	
 			  
-		  
+		   // Map
 					input		logic MapDR, 
 					input		logic CoinDR, 
 					input		logic powerDR, 
+					input		logic fruitDR, 
 					input		logic	[7:0] MapRGB,
 			  
 				   output	logic	[7:0] RGBOut
@@ -76,7 +77,7 @@ begin
 			RGBOut <= ScoreTxtRGB;
 			
 		// map	
-		else if (MapDR || CoinDR || powerDR)
+		else if (MapDR || CoinDR || powerDR || fruitDR)
 			RGBOut <= MapRGB;
 		else if (heartDR)
 			RGBOut <= heartRGB;		
