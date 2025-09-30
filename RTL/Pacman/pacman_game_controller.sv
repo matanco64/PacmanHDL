@@ -3,23 +3,29 @@ module pacman_game_controller (
     input logic       resetN,
     input logic       pauseN,
     input logic       startOfFrame,
+	 input logic       oneSec,
+	 input logic		 timerEnd,
+	 
+	 // DR
     input logic       pacDR,
     input logic       wallsDR,
     input logic       coinDR,
     input logic       powerDR,
+	 input logic       fruitDR,
     input logic       blinkeyDR,
     input logic       pinkeyDR,
     input logic       inkyDR,
     input logic       clydeDR,
-    input logic       oneSec,
-	 input logic		 timerEnd,
+	 
     input logic [8:0] coinsPowTot,
     input logic [8:0] coinsCollected,
     input logic [8:0] powCollected,
+	 input logic [8:0] fruitsCollected,
 
     output logic       collision_pac_wall,
     output logic       collision_pac_coin,
     output logic       collision_pac_power,
+	 output logic       collision_pac_fruit,
     output logic [2:0] collision_pac_ghost,
 
     output logic [2:0] gameState,
@@ -64,8 +70,9 @@ module pacman_game_controller (
   // Collision detection
   assign collision_pac_wall = pacDR && wallsDR;
   assign collision_pac_coin = pacDR && coinDR;
+  assign collision_pac_fruit = pacDR && fruitDR;
   assign collision_pac_power = pacDR && powerDR;  // for map
-  assign totalScore = coinsCollected + (ghostEaten * 50) + (powCollected * 10);
+  assign totalScore = coinsCollected + (ghostEaten * 50) + (powCollected * 10) + (fruitsCollected*30);
 
   // ------------------------------------------------------------
   // Collision detection (combinational, latched later per-frame)

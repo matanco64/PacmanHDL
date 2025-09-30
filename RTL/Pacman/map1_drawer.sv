@@ -3,9 +3,12 @@ module map1_drawer (
     input logic resetN,
     input logic signed [10:0] pixelX,  //  current VGA pixel 
     input logic signed [10:0] pixelY,
+	 input logic [7:0] rnd,
+	 
+	 // Collisions
     input logic coinCollision,
     input logic powerCollision,
-    // input logic fruitCollision,
+    input logic fruitCollision,
 
     //Ghosts - inputs//
     input logic [10:0] BlinkytopLeftX,
@@ -38,7 +41,8 @@ module map1_drawer (
     output logic [11:0] aroundPac,
     output logic [8:0] coinsPowTot,  // pow and coins!
     output logic [8:0] coinsCollected,
-    output logic [8:0] powerCollected
+    output logic [8:0] powerCollected,
+	 output logic [8:0] fruitsCollected
 );
 
   localparam MAP_HEIGHT_Y = 31;
@@ -65,6 +69,7 @@ module map1_drawer (
   localparam logic [6:0] FRUIT_THRESH = 10;  // Percentage to place fruit
   logic [10:0] fruitX, fruitY;  // tile coords where fruit is placed
   logic fruitSpawned;  // signal to place fruit
+  
 
       logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
       { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
@@ -125,6 +130,7 @@ module map1_drawer (
   logic [3:0] offsetY;
   logic coinFlag;
   logic powFlag;
+  logic fruitFlag;
 
   // ---------------------------------------------------------------------------
   // functions
@@ -184,6 +190,7 @@ module map1_drawer (
       powerCollected <= 0;
       coinFlag <= 0;
       powFlag <= 0;
+		fruitFlag <= 0;
       fruitSpawned <= 0;
       fruitX <= 0;
       fruitY <= 0;
@@ -262,7 +269,15 @@ module map1_drawer (
             offsetX = pixelX % TILE_SIZE;
             offsetY = pixelY % TILE_SIZE;
             RGBout  <= cherryMap[offsetY][offsetX];
-            fruitDR <= (RGBout != TRANSPARENT_ENCODING) ? 1'b1 : 1'b0;
+            fruitDR <= (RGBout != TRANSPARENT_ENCODING && (offsetX < TILE_SIZE) && (offsetY < TILE_SIZE)) ? 1'b1 : 1'b0;
+				
+				if (fruitCollision) begin
+              pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
+              if (!fruitFlag) begin
+                fruitFlag <= 1'b1;
+                fruitsCollected <= fruitsCollected + 1;
+              end
+            end else coinFlag <= 1'b0;
           end
 
 
