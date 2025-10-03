@@ -12,6 +12,7 @@ module pacman_move (
 
     input logic [11:0] aroundPac,
     input logic [ 2:0] gameState,
+	 input logic [ 1:0] speedChange, // 0=normal, 1=fast, 2=slow
 
     output logic signed [10:0] topLeftX,  // output the top left corner 
     output logic signed [10:0] topLeftY,  // can be negative , if the object is partliy outside
@@ -46,9 +47,7 @@ module pacman_move (
   localparam LEFT_KEY = 4'd4;
   localparam DOWN_KEY = 4'd2;
 
-  const int MOVEMENT_SPEED = 64;
   const int FIXED_POINT_MULTIPLIER = 64;
-
   const int OBJECT_WIDTH_X = 32;
   const int OBJECT_HIGHT_Y = 32;
   const int SafetyMargin = 16;
@@ -56,7 +55,9 @@ module pacman_move (
   const int x_FRAME_RIGHT = (640 - TILE_PIXELS - OBJECT_WIDTH_X) * FIXED_POINT_MULTIPLIER;
   const int y_FRAME_TOP = (TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
   const int y_FRAME_BOTTOM = (480 - TILE_PIXELS) * FIXED_POINT_MULTIPLIER;  //- OBJECT_HIGHT_Y
+  const int NORMAL_SPEED = 64;
 
+  int speed;
   int Xposition;
   int Yposition;
   int Xspeed;
@@ -90,8 +91,9 @@ module pacman_move (
       hit_reg <= 1'b0;
       is_neg <= 1'b0;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+		speed <= NORMAL_SPEED;
       curDirKey <= INITIAL_DIRECTION;
-    end else if (collision_pac_ghost != 3'b0) begin  // thoch ghost
+    end else if (collision_pac_ghost != 3'b0 && gameState != POWER_UP_ST) begin  // thoch ghost
       SM_Motion <= IDLE_ST;
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
       Xspeed <= 0;
@@ -101,14 +103,22 @@ module pacman_move (
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
       curDirKey <= INITIAL_DIRECTION;
 		
-	  end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST) begin
+	  end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST) begin 
       // Pacman stands still in START or PAUSE
       Xspeed <= 0;
       Yspeed <= 0;
       SM_Motion <= MOVE_ST;
 
     end else begin
-
+	 
+		// handle speed next do turbo - all in different ff block
+		case (speedChange)
+			0: speed <= NORMAL_SPEED;
+			1: speed <= NORMAL_SPEED*2;
+			2: speed <= NORMAL_SPEED/2;
+			default: speed <= NORMAL_SPEED;
+		endcase
+		
       case (SM_Motion)
 
         //------------
@@ -131,22 +141,22 @@ module pacman_move (
           if (keyPadValid && !is_neg && canTurn) begin
             case (keyPadCode)
               UP_KEY: begin
-                Yspeed <= -MOVEMENT_SPEED;
+                Yspeed <= -speed;
                 Xspeed <= 0;
                 curDirKey <= UP_KEY;
               end
               RIGHT_KEY: begin
-                Xspeed <= MOVEMENT_SPEED;
+                Xspeed <= speed;
                 Yspeed <= 0;
                 curDirKey <= RIGHT_KEY;
               end
               LEFT_KEY: begin
-                Xspeed <= -MOVEMENT_SPEED;
+                Xspeed <= -speed;
                 Yspeed <= 0;
                 curDirKey <= LEFT_KEY;
               end
               DOWN_KEY: begin
-                Yspeed <= MOVEMENT_SPEED;
+                Yspeed <= speed;
                 Xspeed <= 0;
                 curDirKey <= DOWN_KEY;
               end
