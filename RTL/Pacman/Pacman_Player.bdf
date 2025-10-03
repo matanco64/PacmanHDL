@@ -197,6 +197,22 @@ agreement for further details.
 	(text "VCC" (rect 136 7 156 17)(font "Arial" (font_size 6)))
 )
 (pin
+	(input)
+	(rect -104 504 80 520)
+	(text "INPUT" (rect 141 0 169 10)(font "Arial" (font_size 6)))
+	(text "speedChange[1..0]" (rect 5 0 94 17)(font "Intel Clear" ))
+	(pt 184 8)
+	(drawing
+		(line (pt 100 12)(pt 125 12))
+		(line (pt 100 4)(pt 125 4))
+		(line (pt 129 8)(pt 184 8))
+		(line (pt 100 12)(pt 100 4))
+		(line (pt 125 4)(pt 129 8))
+		(line (pt 125 12)(pt 129 8))
+	)
+	(text "VCC" (rect 144 7 164 17)(font "Arial" (font_size 6)))
+)
+(pin
 	(output)
 	(rect 2168 168 2344 184)
 	(text "OUTPUT" (rect 1 0 39 10)(font "Arial" (font_size 6)))
@@ -516,31 +532,38 @@ agreement for further details.
 		(line (pt 0 160)(pt 16 160)(line_width 3))
 	)
 	(port
+		(pt 0 176)
+		(input)
+		(text "speedChange[1..0]" (rect 0 0 93 12)(font "Arial" ))
+		(text "speedChange[1..0]" (rect 21 171 114 183)(font "Arial" ))
+		(line (pt 0 176)(pt 16 176)(line_width 3))
+	)
+	(port
 		(pt 256 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 174 27 247 39)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 174 27 235 39)(font "Arial" ))
 		(line (pt 256 32)(pt 240 32)(line_width 3))
 	)
 	(port
 		(pt 256 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 172 43 247 55)(font "Arial" ))
+		(text "topLeftY[10..0]" (rect 172 43 235 55)(font "Arial" ))
 		(line (pt 256 48)(pt 240 48)(line_width 3))
 	)
 	(port
 		(pt 256 64)
 		(output)
 		(text "curDirKey[3..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "curDirKey[3..0]" (rect 172 59 247 71)(font "Arial" ))
+		(text "curDirKey[3..0]" (rect 172 59 235 71)(font "Arial" ))
 		(line (pt 256 64)(pt 240 64)(line_width 3))
 	)
 	(port
 		(pt 256 80)
 		(output)
 		(text "curDir[1..0]" (rect 0 0 55 12)(font "Arial" ))
-		(text "curDir[1..0]" (rect 189 75 244 87)(font "Arial" ))
+		(text "curDir[1..0]" (rect 189 75 235 87)(font "Arial" ))
 		(line (pt 256 80)(pt 240 80)(line_width 3))
 	)
 	(parameter
@@ -583,6 +606,46 @@ agreement for further details.
 		"16"
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"RESET_ST"
+		"000"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"START_WAIT_ST"
+		"001"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"PLAYING_ST"
+		"010"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"PAUSED_ST"
+		"011"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"GHOST_HIT_ST"
+		"100"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"WIN_ST"
+		"101"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"LOSE_ST"
+		"110"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"POWER_UP_ST"
+		"111"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
 	(drawing
 		(rectangle (rect 16 16 240 192))
 	)
@@ -676,12 +739,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "aroundPac[11..0]" (rect 82 464 162 481)(font "Intel Clear" ))
-	(pt 72 480)
-	(pt 152 480)
-	(bus)
-)
-(connector
 	(text "collisionPacGhost[2..0]" (rect 81 352 188 369)(font "Intel Clear" ))
 	(pt 72 368)
 	(pt 152 368)
@@ -755,12 +812,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "gameState[2..0]" (rect 82 480 157 497)(font "Intel Clear" ))
-	(pt 72 496)
-	(pt 152 496)
-	(bus)
-)
-(connector
 	(text "gameState[2..0]" (rect 258 384 333 401)(font "Intel Clear" ))
 	(pt 248 400)
 	(pt 328 400)
@@ -786,5 +837,23 @@ agreement for further details.
 	(text "startOfFrame" (rect 1346 256 1409 273)(font "Intel Clear" ))
 	(pt 1416 272)
 	(pt 1336 272)
+)
+(connector
+	(text "aroundPac[11..0]" (rect 82 464 162 481)(font "Intel Clear" ))
+	(pt 72 480)
+	(pt 152 480)
+	(bus)
+)
+(connector
+	(text "speedChange[1..0]" (rect 90 496 178 513)(font "Intel Clear" ))
+	(pt 80 512)
+	(pt 168 512)
+	(bus)
+)
+(connector
+	(text "speedChange[1..0]" (rect 258 400 346 417)(font "Intel Clear" ))
+	(pt 328 416)
+	(pt 248 416)
+	(bus)
 )
 (text " " (rect 320 320 322 337)(font "Intel Clear" ))
