@@ -4,7 +4,7 @@ module map1_drawer (
     input logic signed [10:0] pixelX,  //  current VGA pixel 
     input logic signed [10:0] pixelY,
     input logic [7:0] rnd,
-	 input logic oneSec,
+    input logic oneSec,
 
     // Collisions
     input logic coinCollision,
@@ -44,7 +44,7 @@ module map1_drawer (
     output logic [8:0] coinsCollected,
     output logic [8:0] powerCollected,
     output logic [8:0] fruitsCollected,
-	 output logic [1:0] pacSpeedChange // 0=normal, 1=fast, 2=slow
+    output logic [1:0] pacSpeedChange  // 0=normal, 1=fast, 2=slow
 );
 
   localparam MAP_HEIGHT_Y = 31;
@@ -60,20 +60,26 @@ module map1_drawer (
   localparam TILE_BITS = 4; // 16 types of tiles, 4 bits each - if changed, change the map encoding too
 
   localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
-  
+
   localparam logic [TILE_BITS-1:0] EMPTY = 0;
   localparam logic [TILE_BITS-1:0] COIN = 1;
   localparam logic [TILE_BITS-1:0] WALL = 2;
   localparam logic [TILE_BITS-1:0] GHOST_WALL = 3;
   localparam logic [TILE_BITS-1:0] PORTAL = 4;
   localparam logic [TILE_BITS-1:0] POWER = 5;
-  localparam logic [TILE_BITS-1:0] FRUIT = 6;
-  
+  localparam logic [TILE_BITS-1:0] CHERRY = 6;
+  localparam logic [TILE_BITS-1:0] BANANA = 7;
+  localparam logic [TILE_BITS-1:0] STRAWBERRY = 8;
+  localparam logic [TILE_BITS-1:0] POISION = 9;
+  localparam logic [TILE_BITS-1:0] FEE = 10;
+
 
   // chery
   localparam NUM_FRUITS = 5;
   localparam int FRUIT_THRESH[0:NUM_FRUITS-1] = '{30, 45, 60, 75, 90};
-  
+  localparam NUM_PICKUPS = 5;
+
+
   // pacman speed 
   localparam NORMAL_SPEED = 0;
   localparam FAST_SPEED = 1;
@@ -83,8 +89,8 @@ module map1_drawer (
   logic [$clog2(MAP_WIDTH_X)-1:0] emptyTilesX[0:TILE_SAVED-1];
   logic [$clog2(MAP_HEIGHT_Y)-1:0] emptyTilesY[0:TILE_SAVED-1];
   logic [$clog2(NUM_FRUITS)-1:0] currFruit;
-  logic [2:0] cherryCounter;     // 0..8
-  
+  logic [2:0] cherryCounter;  // 0..8
+
   logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] pacmanMap;
   logic [TILE_BITS-1:0] tile;
 
@@ -93,7 +99,7 @@ module map1_drawer (
   logic coinFlag;
   logic powFlag;
   logic fruitFlag;
-
+  int fruitIdx;
 
     logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
@@ -129,25 +135,109 @@ module map1_drawer (
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 }
   };
 
-  logic [0:15] [0:15] [7:0] cherryMap = {
-  {8'he3,8'he3,8'h10,8'h10,8'h10,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he0,8'hff,8'he0,8'he0,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'hff,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
+  logic [0:4][0:15][0:15][7:0] pickUpsMaps = {  // 5 fruits, 16x16 pixels, 8-bit color
+      // cherry
+      {
+        {8'he3,8'he3,8'h10,8'h10,8'h10,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he0,8'hff,8'he0,8'he0,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'hff,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}
+      },
 
-  
+      // banana        
+      {
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h24,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h24,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hd8,8'hb8,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hd8,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hb4,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hb8,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'hb4,8'hb8,8'hfc,8'hfc,8'hd8,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'hb8,8'hb8,8'hb8,8'hb4,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'hf8,8'hfc,8'hfc,8'hfc,8'hd8,8'hfc,8'hfc,8'hd8,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'h24,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'hd8,8'hd8,8'hd8,8'hd8,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'hdc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}
+      },
+
+      //strawberry
+      {
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'h04,8'h04,8'h04,8'hff,8'h78,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'h78,8'hbc,8'h9c,8'hbd,8'hbd,8'hbd,8'hbd,8'h64,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he0,8'he0,8'h78,8'h78,8'hbd,8'hbc,8'h78,8'he0,8'he4,8'he0,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'h78,8'he0,8'he0,8'he0,8'hff,8'he0,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he0,8'hff,8'he0,8'he0,8'he0,8'he0,8'he0,8'hff,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he0,8'he0,8'he0,8'hff,8'he0,8'hfa,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'hff,8'he0,8'he0,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he0,8'hff,8'he0,8'he0,8'hfa,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'hff,8'he0,8'he0,8'hfa,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
+        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}
+      },
+
+      // poision
+      {
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00},
+        {8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00},
+        {8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00},
+        {8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00},
+        {8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00},
+        {8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00},
+        {8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00},
+        {8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00},
+        {8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'h00,8'h00,8'h00,8'h00,8'h00}
+      },
+
+      // fee
+      {
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00}
+      }
+  };
+
+
   // ---------------------------------------------------------------------------
   // functions
   // ---------------------------------------------------------------------------
@@ -184,28 +274,28 @@ module map1_drawer (
   endfunction
 
 
- 
 
 
-	// fruit collection and counter
-	always_ff @(posedge clk or negedge resetN) begin
-		 if (!resetN) begin
-			  cherryCounter   <= 0;
-			  pacSpeedChange  <= 0;
-		 end else begin
-			  if (fruitCollision && !fruitFlag) begin
-					cherryCounter   <= 6;   // load timer for 6 seconds
-					pacSpeedChange  <= 1;   // activate turbo
-			  end else if (cherryCounter > 0 && oneSec) begin
-					cherryCounter   <= cherryCounter - 1;
-					if (cherryCounter == 1) begin
-						 pacSpeedChange <= 0; // when counter reaches 0, return to normal
-					end
-			  end
-		 end
-	end
 
- // ---------------------------------------------------------------------------
+  // fruit collection and counter
+  always_ff @(posedge clk or negedge resetN) begin
+    if (!resetN) begin
+      cherryCounter  <= 0;
+      pacSpeedChange <= 0;
+    end else begin
+      if (fruitCollision && !fruitFlag) begin
+        cherryCounter  <= 6;  // load timer for 6 seconds
+        pacSpeedChange <= 1;  // activate turbo
+      end else if (cherryCounter > 0 && oneSec) begin
+        cherryCounter <= cherryCounter - 1;
+        if (cherryCounter == 1) begin
+          pacSpeedChange <= 0;  // when counter reaches 0, return to normal
+        end
+      end
+    end
+  end
+
+  // ---------------------------------------------------------------------------
   // rgb output logic + map update
   // ---------------------------------------------------------------------------
 
@@ -225,21 +315,21 @@ module map1_drawer (
       powFlag <= 0;
       fruitFlag <= 0;
       currFruit <= 0;
-		
+
     end else begin
       RGBout  <= TRANSPARENT_ENCODING;
       mapDR   <= 1'b0;
       coinsDR <= 1'b0;
       powerDR <= 1'b0;
       fruitDR <= 1'b0;
-		
+
       tile = pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1];
 
       // FRUIT LOGIC - place fruit when enough coins collected
       if (currFruit < NUM_FRUITS && (coinsCollected * 100 / coinsPowTot) > FRUIT_THRESH[currFruit] ) begin
         logic [$clog2(TILE_SAVED)-1:0] idx;
         idx = rnd[$clog2(TILE_SAVED)-1:0];  // index in [0 .. TILE_SAVED-1]
-        pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] <= FRUIT;  
+        pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] <= CHERRY + rnd % NUM_PICKUPS; // place a random fruit
         currFruit <= currFruit + 1'b1;
       end
 
@@ -301,13 +391,13 @@ module map1_drawer (
             end else powFlag <= 1'b0;
           end
 
-          FRUIT: begin
-
+          CHERRY, BANANA, STRAWBERRY, POISION, FEE: begin
+            fruitIdx = tile - CHERRY;
             offsetX = pixelX % TILE_SIZE;
             offsetY = pixelY % TILE_SIZE;
 
-            if (cherryMap[offsetY][offsetX] != TRANSPARENT_ENCODING) begin
-              RGBout  <= cherryMap[offsetY][offsetX];
+            if (pickUpsMaps[fruitIdx][offsetY][offsetX] != TRANSPARENT_ENCODING) begin
+              RGBout  <= pickUpsMaps[fruitIdx][offsetY][offsetX];
               fruitDR <= 1'b1;
             end
 
