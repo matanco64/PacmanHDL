@@ -3,7 +3,7 @@ module ghost_move (
     input logic resetN,
     input logic startOfFrame,
     input logic [1:0] ghostSelect,
-    input logic [11:0] aroundGhost,
+    input logic [15:0] aroundGhost,
     input logic [10:0] pacmanX,
     input logic [10:0] pacmanY,
     input logic [1:0] pacmanDir,
@@ -19,17 +19,17 @@ module ghost_move (
   // Parameters
   // ---------------------------------------------------------------------------
   parameter FIXED_POINT_MULTIPLIER = 16;
-  parameter TILE_BITS = 3;
+  parameter TILE_BITS = 4;
   parameter MOVEMENT_SPEED = 16;
   parameter TILE_PIXELS = 16;
   parameter SAFETY_MARGIN = 16;
   parameter SCREEN_HEIGHT = 480;
   parameter SCREEN_WIDTH = 640;
 
-  parameter [TILE_BITS-1:0] EMPTY = 3'd0;
-  parameter [TILE_BITS-1:0] WALL = 3'd2;
-  parameter [TILE_BITS-1:0] GHOST_WALL = 3'd3;
-  parameter [TILE_BITS-1:0] PORTAL = 3'd4;
+  parameter [TILE_BITS-1:0] EMPTY = 4'd0;
+  parameter [TILE_BITS-1:0] WALL = 4'd2;
+  parameter [TILE_BITS-1:0] GHOST_WALL = 4'd3;
+  parameter [TILE_BITS-1:0] PORTAL = 4'd4;
 
   // time
   parameter [10:0] SCATTER_TIME = 10'd210;  // 7 SEC
@@ -87,10 +87,10 @@ module ghost_move (
   // Direction checking signals
   wire canMoveUp, canMoveDown, canMoveLeft, canMoveRight;
 
-  assign canMoveUp = (!aligned_to_grid || aroundGhost[11:9] != WALL);
-  assign canMoveDown = (!aligned_to_grid || aroundGhost[8:6] != WALL&& aroundGhost[8:6] != GHOST_WALL);
-  assign canMoveLeft = (!aligned_to_grid || aroundGhost[5:3] != WALL);
-  assign canMoveRight = (!aligned_to_grid || (aroundGhost[2:0] != WALL));
+  assign canMoveUp = (!aligned_to_grid || aroundGhost[15:12] != WALL);
+  assign canMoveDown = (!aligned_to_grid || aroundGhost[11:8] != WALL&& aroundGhost[11:8] != GHOST_WALL);
+  assign canMoveLeft = (!aligned_to_grid || aroundGhost[7:4] != WALL);
+  assign canMoveRight = (!aligned_to_grid || (aroundGhost[3:0] != WALL));
 
   enum logic [1:0] {  // ghost movement
     IDLE_ST,
@@ -381,14 +381,14 @@ module ghost_move (
                 // Check if we can move in current direction
                 case (ghostDir)
                   DIR_UP:
-                  if (aroundGhost[11:9] == PORTAL) begin
+                  if (aroundGhost[15:12] == PORTAL) begin
                     Yposition <= (SCREEN_HEIGHT - 2 * TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
                   end else if (!canMoveUp || isJunction) begin
                     lastDir  <= ghostDir;
                     ghostDir <= nextDir;
                   end
                   DIR_DOWN:
-                  if (aroundGhost[8:6] == PORTAL) begin
+                  if (aroundGhost[11:8] == PORTAL) begin
                     Yposition <= (2* TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
                   end else if (!canMoveDown || isJunction) begin
                     lastDir  <= ghostDir;

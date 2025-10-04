@@ -10,7 +10,7 @@ module pacman_move (
     input logic       collision_pac_wall,
     input logic [2:0] collision_pac_ghost, // 0=no 1=B 2=P 3=I 4=C
 
-    input logic [11:0] aroundPac,
+    input logic [15:0] aroundPac,
     input logic [ 2:0] gameState,
 	 input logic [ 1:0] speedChange, // 0=normal, 1=fast, 2=slow
 
@@ -206,8 +206,8 @@ module pacman_move (
           Yposition <= Yposition + Yspeed;
 
 
-          if (aroundPac[11:9] == PORTAL && curDirKey == UP_KEY) SM_Motion <= PORTAL_UP;
-          else if (aroundPac[8:6] == PORTAL && curDirKey == DOWN_KEY) SM_Motion <= PORTAL_DOWN;
+          if (aroundPac[15:12] == PORTAL && curDirKey == UP_KEY) SM_Motion <= PORTAL_UP;
+          else if (aroundPac[11:8] == PORTAL && curDirKey == DOWN_KEY) SM_Motion <= PORTAL_DOWN;
           else SM_Motion <= MOVE_ST;
 
         end

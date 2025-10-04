@@ -55,8 +55,8 @@ agreement for further details.
 	(port
 		(pt 0 96)
 		(input)
-		(text "aroundGhost[11..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "aroundGhost[11..0]" (rect 21 91 94 103)(font "Arial" ))
+		(text "aroundGhost[15..0]" (rect 0 0 74 12)(font "Arial" ))
+		(text "aroundGhost[15..0]" (rect 21 91 95 103)(font "Arial" ))
 		(line (pt 0 96)(pt 16 96)(line_width 3))
 	)
 	(port
@@ -122,7 +122,7 @@ agreement for further details.
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
 		"TILE_BITS"
-		"3"
+		"4"
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
@@ -152,22 +152,22 @@ agreement for further details.
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
 		"EMPTY"
-		"000"
+		"0000"
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
 		"WALL"
-		"010"
+		"0010"
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
 		"GHOST_WALL"
-		"011"
+		"0011"
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
 		"PORTAL"
-		"100"
+		"0100"
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
