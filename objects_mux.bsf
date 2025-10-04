@@ -209,8 +209,8 @@ agreement for further details.
 	(port
 		(pt 0 448)
 		(input)
-		(text "fruitDR" (rect 0 0 30 12)(font "Arial" ))
-		(text "fruitDR" (rect 21 443 51 455)(font "Arial" ))
+		(text "pickUpDR" (rect 0 0 42 12)(font "Arial" ))
+		(text "pickUpDR" (rect 21 443 63 455)(font "Arial" ))
 		(line (pt 0 448)(pt 16 448)(line_width 1))
 	)
 	(port
