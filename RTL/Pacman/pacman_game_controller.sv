@@ -1,31 +1,27 @@
 module pacman_game_controller (
-    input logic       clk,
-    input logic       resetN,
-    input logic       pauseN,
-    input logic       startOfFrame,
-	 input logic       oneSec,
-	 input logic		 timerEnd,
-	 
-	 // DR
-    input logic       pacDR,
-    input logic       wallsDR,
-    input logic       coinDR,
-    input logic       powerDR,
-	 input logic       fruitDR,
-    input logic       blinkeyDR,
-    input logic       pinkeyDR,
-    input logic       inkyDR,
-    input logic       clydeDR,
-	 
-    input logic [8:0] coinsPowTot,
-    input logic [8:0] coinsCollected,
-    input logic [8:0] powCollected,
-	 input logic [8:0] fruitsCollected,
+    input logic clk,
+    input logic resetN,
+    input logic pauseN,
+    input logic startOfFrame,
+    input logic oneSec,
+    input logic timerEnd,
+    input logic isWin,
+
+    // DR
+    input logic pacDR,
+    input logic wallsDR,
+    input logic coinDR,
+    input logic powerDR,
+    input logic blinkeyDR,
+    input logic pinkeyDR,
+    input logic inkyDR,
+    input logic clydeDR,
+
+    input logic signed [10:0] partialScore,
 
     output logic       collision_pac_wall,
     output logic       collision_pac_coin,
     output logic       collision_pac_power,
-	 output logic       collision_pac_fruit,
     output logic [2:0] collision_pac_ghost,
 
     output logic [2:0] gameState,
@@ -63,16 +59,14 @@ module pacman_game_controller (
   game_state_t currentState, lastState, prePausedState;
 
   logic       ghost_flag;
-  
+
   logic [5:0] ghostEaten;
   logic [9:0] totalScore;
 
   // Collision detection
-  assign collision_pac_wall = pacDR && wallsDR;
-  assign collision_pac_coin = pacDR && coinDR;
-  assign collision_pac_fruit = pacDR && fruitDR;
+  assign collision_pac_wall  = pacDR && wallsDR;
+  assign collision_pac_coin  = pacDR && coinDR;
   assign collision_pac_power = pacDR && powerDR;  // for map
-  assign totalScore = coinsCollected + (ghostEaten * 50) + (powCollected * 10) + (fruitsCollected*30);
 
   // ------------------------------------------------------------
   // Collision detection (combinational, latched later per-frame)
@@ -92,12 +86,15 @@ module pacman_game_controller (
       ghost_flag <= 1'b0;
       currLives  <= START_HEARTS;
       ghostEaten <= 0;
+      totalScore <= 0;
 
     end else if (currentState == RESET_ST) begin
       ghost_flag <= 1'b0;
       currLives  <= START_HEARTS;
       ghostEaten <= 0;
     end else begin
+      totalScore = (partialScore + ghostEaten * 5 > 0) ? 
+							  (partialScore + ghostEaten * 5) : 0; // none negative
 
       if (startOfFrame) ghost_flag <= 1'b0;
 
@@ -117,33 +114,33 @@ module pacman_game_controller (
   logic collision_pac_power_reg;
   logic timerEnd_reg;
 
-	 always_ff @(posedge clk or negedge resetN) begin
-	  if (!resetN) begin
-		 collision_pac_power_reg <= 1'b0;
-		 timerEnd_reg <= 1'b0;
-	  end else begin
+  always_ff @(posedge clk or negedge resetN) begin
+    if (!resetN) begin
+      collision_pac_power_reg <= 1'b0;
+      timerEnd_reg <= 1'b0;
+    end else begin
 
-		 if (startOfFrame) collision_pac_power_reg <= 1'b0;  // clear at the start of frame
-		 else if (pacDR && powerDR) collision_pac_power_reg <= 1'b1;
+      if (startOfFrame) collision_pac_power_reg <= 1'b0;  // clear at the start of frame
+      else if (pacDR && powerDR) collision_pac_power_reg <= 1'b1;
 
-		 if (startOfFrame) timerEnd_reg <= 1'b0;
-		 else if (timerEnd) timerEnd_reg <= 1'b1;
+      if (startOfFrame) timerEnd_reg <= 1'b0;
+      else if (timerEnd) timerEnd_reg <= 1'b1;
 
-	  end
-	end
+    end
+  end
 
   // ------------------------------------------------------------
   // Sequential FSM and counters
   // ------------------------------------------------------------
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
-      currentState     <= RESET_ST;
-      lastState        <= RESET_ST;
-      prePausedState   <= RESET_ST;
+      currentState   <= RESET_ST;
+      lastState      <= RESET_ST;
+      prePausedState <= RESET_ST;
 
-      startCountN      <= 1'b1;  // no counting
-      datainL          <= 4'd0;
-      datainH          <= 4'd0;
+      startCountN    <= 1'b1;  // no counting
+      datainL        <= 4'd0;
+      datainH        <= 4'd0;
 
     end else begin
       // default
@@ -166,9 +163,9 @@ module pacman_game_controller (
 
             if (lastState != START_WAIT_ST) begin
 
-              startCountN  <= 1'b0;
-              datainL      <= TIME_START_L;
-              datainH      <= TIME_START_H;
+              startCountN <= 1'b0;
+              datainL     <= TIME_START_L;
+              datainH     <= TIME_START_H;
 
             end
           end
@@ -176,7 +173,7 @@ module pacman_game_controller (
           PLAYING_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
             else if (collision_pac_ghost != 3'd0) currentState <= GHOST_HIT_ST;
-            else if (coinsCollected + powCollected == coinsPowTot) currentState <= WIN_ST;
+            else if (isWin) currentState <= WIN_ST;
             else if (collision_pac_power_reg) currentState <= POWER_UP_ST;
           end
 
@@ -187,11 +184,11 @@ module pacman_game_controller (
           POWER_UP_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
             if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
-              startCountN      <= 1'b0;
-              datainL          <= TIME_POWER_L;
-              datainH          <= TIME_POWER_H;
+              startCountN <= 1'b0;
+              datainL     <= TIME_POWER_L;
+              datainH     <= TIME_POWER_H;
 
-            end else if (timerEnd_reg)   // +2st enter
+            end else if (timerEnd_reg)  // +2st enter
               currentState <= PLAYING_ST;
           end
 

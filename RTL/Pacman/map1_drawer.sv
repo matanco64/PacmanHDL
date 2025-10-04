@@ -6,32 +6,28 @@ module map1_drawer (
     input logic [7:0] rnd,
     input logic oneSec,
 
-    // Collisions
     input logic coinCollision,
     input logic powerCollision,
-    input logic fruitCollision,
 
     //Ghosts - inputs//
     input logic [10:0] BlinkytopLeftX,
     input logic [10:0] BlinkytopLeftY,
-
     input logic [10:0] PinkytopLeftX,
     input logic [10:0] PinkytopLeftY,
-
     input logic [10:0] InkytopLeftX,
     input logic [10:0] InkytopLeftY,
-
     input logic [10:0] ClydetopLeftX,
     input logic [10:0] ClydetopLeftY,
-
     input logic [10:0] pactopLeftX,
     input logic [10:0] pactopLeftY,
+    input logic pacmanDR,
 
     //outputs//
+    output logic isWin,
     output logic mapDR,
     output logic coinsDR,  // ouput Whether a coin is drawn or not
     output logic powerDR,
-    output logic fruitDR,
+    output logic pickUpDR,
     output logic [7:0] RGBout,
 
     //Ghosts - outputs - change if TILE_SIZE changes
@@ -40,27 +36,29 @@ module map1_drawer (
     output logic [15:0] aroundInky,
     output logic [15:0] aroundClyde,
     output logic [15:0] aroundPac,
-    output logic [8:0] coinsPowTot,  // pow and coins!
-    output logic [8:0] coinsCollected,
-    output logic [8:0] powerCollected,
-    output logic [8:0] fruitsCollected,
+
+    output logic signed [10:0] partialScore,  // controller will add aten ghosts score
     output logic [1:0] pacSpeedChange  // 0=normal, 1=fast, 2=slow
 );
-
+  // map
   localparam MAP_HEIGHT_Y = 31;
   localparam MAP_WIDTH_X = 28;
-
+  // colors
   localparam WALL_COLOR = 8'b00000011;
   localparam GHOST_WALL_COLOR = 8'b10001111;
   localparam PORTAL_COLOR = 8'b01111111;
   localparam COIN_COLOR = 8'b11111111;
   localparam POW_COLOR = 8'b11111101;
-
+  localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
+  // tiles
   localparam TILE_SIZE = 16;  // IMPORTANT TO KEEP 2^n
   localparam TILE_BITS = 4; // 16 types of tiles, 4 bits each - if changed, change the map encoding too
-
-  localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
-
+  localparam TILE_SAVED = 16;  // IMPORTANT TO KEEP 2^n 
+  // speed 
+  localparam NORMAL_SPEED = 0;
+  localparam FAST_SPEED = 1;
+  localparam SLOW_SPEED = 2;
+  // map encoding
   localparam logic [TILE_BITS-1:0] EMPTY = 0;
   localparam logic [TILE_BITS-1:0] COIN = 1;
   localparam logic [TILE_BITS-1:0] WALL = 2;
@@ -72,34 +70,42 @@ module map1_drawer (
   localparam logic [TILE_BITS-1:0] STRAWBERRY = 8;
   localparam logic [TILE_BITS-1:0] POISION = 9;
   localparam logic [TILE_BITS-1:0] FEE = 10;
+  // Pickups
+  localparam PICKUPS_TO_PLACE = 9;
+  localparam PICKUPS_TYPES = 5;
+  localparam int FRUIT_THRESH[0:PICKUPS_TO_PLACE-1] = '{
+      15,
+      21,
+      32,
+      47,
+      58,
+      65,
+      83,
+      90,
+      110  // never reached
+  };  // increasing order
 
-
-  // chery
-  localparam NUM_FRUITS = 5;
-  localparam int FRUIT_THRESH[0:NUM_FRUITS-1] = '{30, 45, 60, 75, 90};
-  localparam NUM_PICKUPS = 5;
-
-
-  // pacman speed 
-  localparam NORMAL_SPEED = 0;
-  localparam FAST_SPEED = 1;
-  localparam Slow_SPEED = 2;
-
-  localparam TILE_SAVED = 16;  // IMPORTANT TO KEEP 2^n 
-  logic [$clog2(MAP_WIDTH_X)-1:0] emptyTilesX[0:TILE_SAVED-1];
-  logic [$clog2(MAP_HEIGHT_Y)-1:0] emptyTilesY[0:TILE_SAVED-1];
-  logic [$clog2(NUM_FRUITS)-1:0] currFruit;
-  logic [2:0] cherryCounter;  // 0..8
-
-  logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] pacmanMap;
-  logic [TILE_BITS-1:0] tile;
+  // flags
+  logic coinFlag;
+  logic powFlag;
+  logic picUpFlag;
+  logic pickUpCollision;  // 1= collision
+  logic fruitSpawnPending;
 
   logic [3:0] offsetX;
   logic [3:0] offsetY;
-  logic coinFlag;
-  logic powFlag;
-  logic fruitFlag;
-  int fruitIdx;
+  logic [2:0] pickUpTimer;  // 8 sec max
+  logic [8:0] coinsCollected;
+  logic [8:0] powerCollected;
+  logic [8:0] coinsPowTot;  // pow and coins!
+
+  logic [$clog2(MAP_WIDTH_X)-1:0] emptyTilesX[0:TILE_SAVED-1];
+  logic [$clog2(MAP_HEIGHT_Y)-1:0] emptyTilesY[0:TILE_SAVED-1];
+  logic [$clog2(PICKUPS_TO_PLACE)-1:0] currPicUp;
+  logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] pacmanMap;
+  logic [TILE_BITS-1:0] tile;
+  logic [PICKUPS_TO_PLACE-1:0][5:0] pickUpCollected;  //  how many of each pickup collected
+
 
     logic [0:MAP_HEIGHT_Y-1][0:MAP_WIDTH_X-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
@@ -274,27 +280,6 @@ module map1_drawer (
   endfunction
 
 
-
-
-
-  // fruit collection and counter
-  always_ff @(posedge clk or negedge resetN) begin
-    if (!resetN) begin
-      cherryCounter  <= 0;
-      pacSpeedChange <= 0;
-    end else begin
-      if (fruitCollision && !fruitFlag) begin
-        cherryCounter  <= 6;  // load timer for 6 seconds
-        pacSpeedChange <= 1;  // activate turbo
-      end else if (cherryCounter > 0 && oneSec) begin
-        cherryCounter <= cherryCounter - 1;
-        if (cherryCounter == 1) begin
-          pacSpeedChange <= 0;  // when counter reaches 0, return to normal
-        end
-      end
-    end
-  end
-
   // ---------------------------------------------------------------------------
   // rgb output logic + map update
   // ---------------------------------------------------------------------------
@@ -304,35 +289,108 @@ module map1_drawer (
     if (!resetN) begin
       RGBout <= 8'b0;
       mapDR <= 1'b0;
+      pickUpDR <= 1'b0;
       pacmanMap <= OriginalPacmanMap;
       coinsPowTot <= countCoins();
 
       coinsCollected <= 0;
       powerCollected <= 0;
-      fruitsCollected <= 0;
+      pickUpCollected <= '{default: 0};  // all elements reset to 0
+		fruitSpawnPending <= 1'b0;
 
       coinFlag <= 0;
       powFlag <= 0;
-      fruitFlag <= 0;
-      currFruit <= 0;
+      picUpFlag <= 0;
+      currPicUp <= 0;
+      isWin <= 0;
+
+      pickUpTimer <= 0;
+      pacSpeedChange <= NORMAL_SPEED;
 
     end else begin
-      RGBout  <= TRANSPARENT_ENCODING;
-      mapDR   <= 1'b0;
+      RGBout <= TRANSPARENT_ENCODING;
+      mapDR <= 1'b0;
       coinsDR <= 1'b0;
       powerDR <= 1'b0;
-      fruitDR <= 1'b0;
-
+      pickUpDR <= 1'b0;
+      isWin <= (coinsCollected + powerCollected == coinsPowTot);
       tile = pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1];
 
-      // FRUIT LOGIC - place fruit when enough coins collected
-      if (currFruit < NUM_FRUITS && (coinsCollected * 100 / coinsPowTot) > FRUIT_THRESH[currFruit] ) begin
-        logic [$clog2(TILE_SAVED)-1:0] idx;
-        idx = rnd[$clog2(TILE_SAVED)-1:0];  // index in [0 .. TILE_SAVED-1]
-        pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] <= CHERRY + rnd % NUM_PICKUPS; // place a random fruit
-        currFruit <= currFruit + 1'b1;
-      end
+      // cherry&banana Counter
+      if (pickUpTimer > 0 && oneSec) pickUpTimer <= pickUpTimer - 1;
+      else if (pickUpTimer == 0) pacSpeedChange <= NORMAL_SPEED;
 
+      // place fruits
+//      if (currPicUp < PICKUPS_TO_PLACE && (coinsCollected * 100 / coinsPowTot) > FRUIT_THRESH[currPicUp]) begin
+//        logic [$clog2(TILE_SAVED)-1:0] idx;
+//        idx = rnd[$clog2(TILE_SAVED)-1:0];
+//        if (pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] == EMPTY) begin
+//          currPicUp <= currPicUp + 1'b1;
+//          pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] <= CHERRY + rnd % PICKUPS_TYPES;
+//        end
+//      end
+		
+		if (!fruitSpawnPending && currPicUp < PICKUPS_TO_PLACE && 
+			 (coinsCollected * 100 / coinsPowTot) > FRUIT_THRESH[currPicUp]) begin
+			  fruitSpawnPending <= 1'b1;  // Set flag to start spawning
+		end
+		// Actually place the fruit when flag is set
+		if (fruitSpawnPending) begin
+		  logic [$clog2(TILE_SAVED)-1:0] idx;
+		  idx = rnd[$clog2(TILE_SAVED)-1:0];
+		  
+		  // Only place if the tile is truly empty -  If tile wasn't empty, keep trying next clock
+		  if (pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] == EMPTY) begin
+			 pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] <= CHERRY + (rnd % PICKUPS_TYPES);
+			 currPicUp <= currPicUp + 1'b1;  // Increment fruit counter
+			 fruitSpawnPending <= 1'b0;  // Clear flag - ready for next fruit
+		  end
+		  
+		end
+
+      // colision coins
+      if (coinCollision) begin
+        pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
+        if (!coinFlag) begin
+          coinFlag <= 1'b1;
+          coinsCollected <= coinsCollected + 1;
+          ///add fruit logic - coinsCollected = empty tiles found
+          if (coinsCollected < TILE_SAVED) begin
+            emptyTilesX[coinsCollected] <= pixelX / TILE_SIZE;
+            emptyTilesY[coinsCollected] <= pixelY / TILE_SIZE - 1;
+          end else if (rnd[1:0] == 2'b10) begin  // 25% for a swap
+            emptyTilesX[rnd[3:0]] <= pixelX / TILE_SIZE;
+            emptyTilesY[rnd[3:0]] <= pixelY / TILE_SIZE - 1;
+          end
+        end
+      end else coinFlag <= 1'b0;
+
+      // colision power
+      if (powerCollision) begin
+        pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
+        if (!powFlag) begin
+          powFlag <= 1'b1;
+          powerCollected <= powerCollected + 1;
+        end
+      end else powFlag <= 1'b0;
+
+      // colision pickUps
+      if (pickUpCollision && !picUpFlag) begin
+        pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
+        picUpFlag <= 1'b1;
+        pickUpCollected[tile - CHERRY] <= pickUpCollected[tile - CHERRY] + 1;  // count pickups
+
+        if (tile == CHERRY) begin
+          pickUpTimer <= 6;  //  6 sec
+          pacSpeedChange <= FAST_SPEED;
+        end else if (tile == BANANA) begin
+          pickUpTimer <= 6;  // 6 sec
+          pacSpeedChange <= SLOW_SPEED;
+        end
+      end else picUpFlag <= 1'b0;
+
+
+      // MAP CONTROL/////////////////////////////////////////////////////
       if (pixelY / TILE_SIZE >= 1) begin
         case (tile)
           GHOST_WALL: begin
@@ -357,22 +415,6 @@ module map1_drawer (
               RGBout  <= COIN_COLOR;
               coinsDR <= 1'b1;
             end
-            if (coinCollision) begin
-              pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
-              if (!coinFlag) begin
-                coinFlag <= 1'b1;
-                coinsCollected <= coinsCollected + 1;
-
-                ///add fruit logic - coinsCollected = empty tiles found
-                if (coinsCollected < TILE_SAVED) begin
-                  emptyTilesX[coinsCollected] <= pixelX / TILE_SIZE;
-                  emptyTilesY[coinsCollected] <= pixelY / TILE_SIZE - 1;
-                end else if (rnd[1:0] == 2'b10) begin  // 25% for a swap
-                  emptyTilesX[rnd[3:0]] <= pixelX / TILE_SIZE;
-                  emptyTilesY[rnd[3:0]] <= pixelY / TILE_SIZE - 1;
-                end
-              end
-            end else coinFlag <= 1'b0;
           end
 
           POWER: begin
@@ -382,32 +424,18 @@ module map1_drawer (
               RGBout  <= POW_COLOR;
               powerDR <= 1'b1;
             end
-            if (powerCollision) begin
-              pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
-              if (!powFlag) begin
-                powFlag <= 1'b1;
-                powerCollected <= powerCollected + 1;
-              end
-            end else powFlag <= 1'b0;
           end
 
           CHERRY, BANANA, STRAWBERRY, POISION, FEE: begin
+            logic [$clog2(PICKUPS_TYPES)-1:0] fruitIdx;
             fruitIdx = tile - CHERRY;
-            offsetX = pixelX % TILE_SIZE;
-            offsetY = pixelY % TILE_SIZE;
+            offsetX  = pixelX % TILE_SIZE;
+            offsetY  = pixelY % TILE_SIZE;
 
             if (pickUpsMaps[fruitIdx][offsetY][offsetX] != TRANSPARENT_ENCODING) begin
-              RGBout  <= pickUpsMaps[fruitIdx][offsetY][offsetX];
-              fruitDR <= 1'b1;
+              RGBout   <= pickUpsMaps[fruitIdx][offsetY][offsetX];
+              pickUpDR <= 1'b1;
             end
-
-            if (fruitCollision) begin
-              pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
-              if (!fruitFlag) begin
-                fruitFlag <= 1'b1;
-                fruitsCollected <= fruitsCollected + 1;
-              end
-            end else fruitFlag <= 1'b0;
           end
 
           default: begin
@@ -432,5 +460,12 @@ module map1_drawer (
   assign aroundInky = aroundGhost(InkytopLeftX, InkytopLeftY);
   assign aroundClyde = aroundGhost(ClydetopLeftX, ClydetopLeftY);
   assign aroundPac = aroundGhost(pactopLeftX, pactopLeftY);
+
+  assign pickUpCollision = (pickUpDR && pacmanDR) ? 1 : 0;
+  assign partialScore = coinsCollected + powerCollected * 10 + pickUpCollected[0] * 4  // cherry
+      + pickUpCollected[1] * 10  // banana
+      + pickUpCollected[2] * 2  // strawberry
+      - pickUpCollected[3] * 20  // poision
+      - pickUpCollected[4] * 100;  //  fee
 
 endmodule
