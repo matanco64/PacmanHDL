@@ -90,8 +90,8 @@ agreement for further details.
 	(port
 		(pt 0 176)
 		(input)
-		(text "aroundGhost[11..0]" (rect 0 0 114 19)(font "Intel Clear" (font_size 8)))
-		(text "aroundGhost[11..0]" (rect 21 171 135 190)(font "Intel Clear" (font_size 8)))
+		(text "aroundGhost[15..0]" (rect 0 0 114 19)(font "Intel Clear" (font_size 8)))
+		(text "aroundGhost[15..0]" (rect 21 171 135 190)(font "Intel Clear" (font_size 8)))
 		(line (pt 0 176)(pt 16 176)(line_width 3))
 	)
 	(port
