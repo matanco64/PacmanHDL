@@ -13,7 +13,8 @@ module ghost_move (
     input logic [2:0] gameState,  // Currently unused - for future game state - start, play, pause, turbo, game over
 
     output logic signed [10:0] topLeftX,
-    output logic signed [10:0] topLeftY
+    output logic signed [10:0] topLeftY,
+	 output logic [1:0] ghostDir
 );
   // ---------------------------------------------------------------------------
   // Parameters
@@ -62,7 +63,7 @@ module ghost_move (
   // Internal signals
   // ---------------------------------------------------------------------------
   reg signed [31:0] Xposition, Yposition;
-  reg [1:0] ghostDir, lastDir;
+  reg [1:0] lastDir;
   reg [7:0] modeTimer;
   reg [7:0] frightenedTimer;
   reg [7:0] idleCounter;

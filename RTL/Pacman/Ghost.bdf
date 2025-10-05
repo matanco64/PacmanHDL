@@ -575,15 +575,22 @@ agreement for further details.
 		(pt 248 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 166 27 239 39)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 166 27 227 39)(font "Arial" ))
 		(line (pt 248 32)(pt 232 32)(line_width 3))
 	)
 	(port
 		(pt 248 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 164 43 239 55)(font "Arial" ))
+		(text "topLeftY[10..0]" (rect 164 43 227 55)(font "Arial" ))
 		(line (pt 248 48)(pt 232 48)(line_width 3))
+	)
+	(port
+		(pt 248 64)
+		(output)
+		(text "ghostDir[1..0]" (rect 0 0 67 12)(font "Arial" ))
+		(text "ghostDir[1..0]" (rect 171 59 227 71)(font "Arial" ))
+		(line (pt 248 64)(pt 232 64)(line_width 3))
 	)
 	(parameter
 		"FIXED_POINT_MULTIPLIER"
@@ -786,9 +793,9 @@ agreement for further details.
 	(annotation_block (parameter)(rect 456 88 638 145))
 )
 (symbol
-	(rect 1584 88 1832 328)
+	(rect 1584 88 1832 360)
 	(text "characterBitMap" (rect 5 0 84 12)(font "Arial" ))
-	(text "inst2" (rect 8 224 31 236)(font "Arial" ))
+	(text "inst2" (rect 8 256 31 268)(font "Arial" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -874,21 +881,28 @@ agreement for further details.
 		(line (pt 0 208)(pt 16 208)(line_width 3))
 	)
 	(port
+		(pt 0 224)
+		(input)
+		(text "ghostDir[1..0]" (rect 0 0 67 12)(font "Arial" ))
+		(text "ghostDir[1..0]" (rect 21 219 88 231)(font "Arial" ))
+		(line (pt 0 224)(pt 16 224)(line_width 3))
+	)
+	(port
 		(pt 248 32)
 		(output)
 		(text "drawingRequest" (rect 0 0 77 12)(font "Arial" ))
-		(text "drawingRequest" (rect 162 27 239 39)(font "Arial" ))
+		(text "drawingRequest" (rect 162 27 227 39)(font "Arial" ))
 		(line (pt 248 32)(pt 232 32))
 	)
 	(port
 		(pt 248 48)
 		(output)
 		(text "RGBout[7..0]" (rect 0 0 64 12)(font "Arial" ))
-		(text "RGBout[7..0]" (rect 173 43 237 55)(font "Arial" ))
+		(text "RGBout[7..0]" (rect 173 43 227 55)(font "Arial" ))
 		(line (pt 248 48)(pt 232 48)(line_width 3))
 	)
 	(drawing
-		(rectangle (rect 16 16 232 224))
+		(rectangle (rect 16 16 232 256))
 	)
 )
 (connector
@@ -1180,5 +1194,17 @@ agreement for further details.
 (connector
 	(pt 1832 136)
 	(pt 2016 136)
+	(bus)
+)
+(connector
+	(text "ghostDir[1..0]" (rect 722 208 784 225)(font "Intel Clear" ))
+	(pt 704 224)
+	(pt 792 224)
+	(bus)
+)
+(connector
+	(text "ghostDir[1..0]" (rect 1514 296 1576 313)(font "Intel Clear" ))
+	(pt 1496 312)
+	(pt 1584 312)
 	(bus)
 )
