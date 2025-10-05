@@ -5,25 +5,32 @@
 module characterBitMap(
     input  logic        clk,
     input  logic        resetN,
+	 input  logic		 	oneSec,
+    input  logic [7:0] 	rnd,
     input  logic [10:0] offsetX,// offset from top left position 
     input  logic [10:0] offsetY,
     input  logic        InsideRectangle, // pixel is within rectangle
     input  logic        startOfFrame,
     input  logic [1:0]  characterSelect, // 2-bit selector: 00=Pacman, 01=Pinky, 10=Inky, 11=Blinky
-	 input logic [ 2:0]  gameState,
-    input logic [3:0] 	countL,
-    input logic [3:0] 	countH,
+	 input  logic [ 2:0] gameState,
+    input  logic [3:0] 	countL,
+    input  logic [3:0] 	countH,
 
     output logic        drawingRequest, // pixel should be displayed
     output logic [7:0]  RGBout        // RGB value from the bitmap 
 );
 
-localparam int OBJECT_HEIGHT_Y = 16;
-localparam int OBJECT_WIDTH_X  = 16;
-localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
+	localparam int OBJECT_HEIGHT_Y = 16;
+	localparam int OBJECT_WIDTH_X  = 16;
+	localparam [2:0] POWER_UP_ST = 3'b111;
+	localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
+	localparam logic [7:0] COLOR1 = 8'hCA; // power mode ghost color1
+	localparam logic [7:0] COLOR2 = 8'hFF;
 
-  localparam logic [7:0] COLOR1 = 8'hCA; // power mode ghost color1
-  localparam logic [7:0] COLOR2 = 8'hFF;
+	logic [10:0] srcX, srcY;
+	logic [10:0] displayWidth, displayHeight;
+	logic localInside;
+	logic ghostDir;
 
 
 // -----------------------------------------------------------------------------
@@ -120,25 +127,36 @@ logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] power = {
 
 // -----------------------------------------------------------------------------
 
-  localparam [2:0] POWER_UP_ST = 3'b111;
-
-  logic [10:0] srcX, srcY;
-  logic [10:0] displayWidth, displayHeight;
-  logic localInside;
+  
 
   // compute mapping and bounding box depending on direction
   always_comb begin
     // default values
     displayWidth = OBJECT_WIDTH_X;
     displayHeight = OBJECT_HEIGHT_Y;
-    srcX = offsetX;
     srcY = offsetY;
+	 if (ghostDir) srcX = offsetX;
+    else srcX =  OBJECT_WIDTH_X - 1 - offsetX;
 
     // compute inside rectangle flag
     localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
   end
+  
 
-
+	// eye movment - Each ghost decides based on rnd and characterSelect
+	always_ff @(posedge clk or negedge resetN) begin
+	  if (!resetN)
+		 ghostDir <= 1'b0;
+	  else if (oneSec) begin
+		 case (characterSelect)
+			2'd0: if (rnd == 2'b00) ghostDir <= ~ghostDir;  // Blinky: flips rarely
+			2'd1: if (rnd[0])        ghostDir <= ~ghostDir;  // Pinky: flips often
+			2'd2: if (rnd == 2'b11) ghostDir <= ~ghostDir;  // Inky: unpredictable
+			2'd3: if (^rnd)         ghostDir <= ~ghostDir;  // Clyde: flips on odd parity
+		 endcase
+	  end
+	end
+	
 
   // ---------------------------------------------------------------------------
   // ghost map
