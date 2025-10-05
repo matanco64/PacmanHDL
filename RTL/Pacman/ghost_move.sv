@@ -14,7 +14,9 @@ module ghost_move (
 
     output logic signed [10:0] topLeftX,
     output logic signed [10:0] topLeftY,
-	 output logic [1:0] ghostDir
+	 output logic [1:0] ghostDir,
+	 output logic [3:0] ghostStateFor7Seg
+
 );
   // ---------------------------------------------------------------------------
   // Parameters
@@ -105,6 +107,8 @@ module ghost_move (
     FRIGHTENED_M,
     EATEN_M
   } currMode;
+  
+  assign ghostStateFor7Seg= {2'b0, currMode};  // 2->4 bits
 
   // ---------------------------------------------------------------------------
   // functions
