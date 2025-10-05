@@ -248,6 +248,13 @@ agreement for further details.
 		(text "pacSpeedChange[1..0]" (rect 163 219 251 231)(font "Arial" ))
 		(line (pt 272 224)(pt 256 224)(line_width 3))
 	)
+	(port
+		(pt 272 240)
+		(output)
+		(text "pacLifeChange[1..0]" (rect 0 0 79 12)(font "Arial" ))
+		(text "pacLifeChange[1..0]" (rect 172 235 251 247)(font "Arial" ))
+		(line (pt 272 240)(pt 256 240)(line_width 3))
+	)
 	(drawing
 		(rectangle (rect 16 16 256 352)(line_width 1))
 	)
