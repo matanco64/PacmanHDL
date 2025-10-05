@@ -115,6 +115,13 @@ agreement for further details.
 		(text "topLeftY[10..0]" (rect 168 43 227 55)(font "Arial" ))
 		(line (pt 248 48)(pt 232 48)(line_width 3))
 	)
+	(port
+		(pt 248 64)
+		(output)
+		(text "ghostDir[1..0]" (rect 0 0 51 12)(font "Arial" ))
+		(text "ghostDir[1..0]" (rect 176 59 227 71)(font "Arial" ))
+		(line (pt 248 64)(pt 232 64)(line_width 3))
+	)
 	(parameter
 		"FIXED_POINT_MULTIPLIER"
 		"16"
