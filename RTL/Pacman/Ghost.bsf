@@ -178,6 +178,13 @@ agreement for further details.
 		(text "topLeftY[10..0]" (rect 169 75 259 94)(font "Intel Clear" (font_size 8)))
 		(line (pt 280 80)(pt 264 80)(line_width 3))
 	)
+	(port
+		(pt 280 96)
+		(output)
+		(text "HEX4[6..0]" (rect 0 0 63 19)(font "Intel Clear" (font_size 8)))
+		(text "HEX4[6..0]" (rect 196 91 259 110)(font "Intel Clear" (font_size 8)))
+		(line (pt 280 96)(pt 264 96)(line_width 3))
+	)
 	(parameter
 		"initial_X"
 		"100"
