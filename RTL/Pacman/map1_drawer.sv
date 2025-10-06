@@ -39,7 +39,13 @@ module map1_drawer (
 
     output logic signed [10:0] partialScore,  // controller will add aten ghosts score
     output logic [1:0] pacSpeedChange,  // 0=normal, 1=fast, 2=slow
-	 output logic [1:0] pacLifeChange  // 0=no, 1=incr, 2=decr up for 1 clk
+	 output logic [1:0] pacLifeChange,  // 0=no, 1=incr, 2=decr up for 1 clk
+	 
+	 // for melody selection
+	 output logic coinFlag,
+	 output logic powFlag,
+	 output logic picUpFlag,
+	 output logic fruitSpawnFlag
 );
   // map
   localparam MAP_HEIGHT_Y = 31;
@@ -86,10 +92,10 @@ module map1_drawer (
       110  // never reached
   };  // increasing order
 
-  // flags
-  logic coinFlag;
-  logic powFlag;
-  logic picUpFlag;
+  // flags - moved to outputs
+//  logic coinFlag;
+//  logic powFlag;
+//  logic picUpFlag;
   logic pickUpCollision;  // 1= collision
   logic fruitSpawnPending;
 
@@ -302,6 +308,7 @@ module map1_drawer (
       coinFlag <= 0;
       powFlag <= 0;
       picUpFlag <= 0;
+		fruitSpawnFlag <=0;
       currPicUp <= 0;
       isWin <= 0;
 
@@ -314,9 +321,12 @@ module map1_drawer (
       coinsDR <= 1'b0;
       powerDR <= 1'b0;
       pickUpDR <= 1'b0;
+		fruitSpawnFlag <= 1'b0;
+		pacLifeChange <= NORMAL;
+		
       isWin <= (coinsCollected + powerCollected == coinsPowTot);
       tile = pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1];
-		pacLifeChange <= NORMAL;
+
 
       // cherry&banana Counter
       if (pickUpTimer > 0 && oneSec) pickUpTimer <= pickUpTimer - 1;
@@ -337,6 +347,7 @@ module map1_drawer (
 			 pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] <= CHERRY + (rnd % PICKUPS_TYPES);
 			 currPicUp <= currPicUp + 1'b1;  // Increment fruit counter
 			 fruitSpawnPending <= 1'b0;  // Clear flag - ready for next fruit
+			 fruitSpawnFlag <= 1'b1;
 		  end
 		  
 		end
