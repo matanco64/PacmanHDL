@@ -62,23 +62,36 @@ always_comb begin
       // PAC-MAN BACKGROUND MUSIC (Wakka-wakka rhythm)
       // Alternating two-note pattern that mimics the chomping sound
       //************************************************************************************************** 
-      frq[0] = fa ; len[0] = 1 ; 
-      frq[1] = sol ; len[1] = 1 ; 
-      frq[2] = fa ; len[2] = 1 ; 
-      frq[3] = sol ; len[3] = 1 ; 
-      frq[4] = fa ; len[4] = 1 ; 
-      frq[5] = sol ; len[5] = 1 ; 
-      frq[6] = fa ; len[6] = 1 ; 
-      frq[7] = sol ; len[7] = 1 ; 
-      frq[8] = mi ; len[8] = 1 ; 
-      frq[9] = fa ; len[9] = 1 ; 
-      frq[10] = mi ; len[10] = 1 ; 
-      frq[11] = fa ; len[11] = 1 ; 
-      frq[12] = mi ; len[12] = 1 ; 
-      frq[13] = fa ; len[13] = 1 ; 
-      frq[14] = mi ; len[14] = 1 ; 
-      frq[15] = fa ; len[15] = 1 ; 
-      frq[16] = do_ ; len[16] = 0 ; // Loop point
+//      frq[0] = fa ; len[0] = 1 ; 
+//      frq[1] = sol ; len[1] = 1 ; 
+//      frq[2] = fa ; len[2] = 1 ; 
+//      frq[3] = sol ; len[3] = 1 ; 
+//      frq[4] = fa ; len[4] = 1 ; 
+//      frq[5] = sol ; len[5] = 1 ; 
+//      frq[6] = fa ; len[6] = 1 ; 
+//      frq[7] = sol ; len[7] = 1 ; 
+//      frq[8] = mi ; len[8] = 1 ; 
+//      frq[9] = fa ; len[9] = 1 ; 
+//      frq[10] = mi ; len[10] = 1 ; 
+//      frq[11] = fa ; len[11] = 1 ; 
+//      frq[12] = mi ; len[12] = 1 ; 
+//      frq[13] = fa ; len[13] = 1 ; 
+//      frq[14] = mi ; len[14] = 1 ; 
+//      frq[15] = fa ; len[15] = 1 ; 
+//      frq[16] = do_ ; len[16] = 0 ; // Loop point
+		frq[0] = sol;    len[0] = 1;
+      frq[1] = solD;   len[1] = 1;
+      frq[2] = silence;len[2] = 1;
+      frq[3] = sol;    len[3] = 1;
+      frq[4] = fa;     len[4] = 1;
+      frq[5] = silence;len[5] = 1;
+      frq[6] = sol;    len[6] = 1;
+      frq[7] = solD;   len[7] = 1;
+      frq[8] = silence;len[8] = 1;
+      frq[9] = sol;    len[9] = 1;
+      frq[10] = fa;    len[10] = 1;
+      frq[11] = silence;len[11] = 1;
+      frq[12] = do_;   len[12] = 0;
     end 
     
     2: begin 
