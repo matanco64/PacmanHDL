@@ -138,7 +138,7 @@ module pacman_move (
         MOVE_ST: begin  // moving collecting colisions 
           //------------
 
-          if (keyPadValid && !is_neg && canTurn) begin
+          if ((speedChange != 0 ||keyPadValid ) && !is_neg && canTurn) begin
             case (keyPadCode)
               UP_KEY: begin
                 Yspeed <= -speed;
