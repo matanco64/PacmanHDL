@@ -44,7 +44,7 @@ module pacman_game_controller (
 
   localparam [3:0] TIME_POWER_L = 8;
   localparam [3:0] TIME_POWER_H = 0;
-  localparam [3:0] TIME_START_L = 3;
+  localparam [3:0] TIME_START_L = 4;
   localparam [3:0] TIME_START_H = 0;
 
 
