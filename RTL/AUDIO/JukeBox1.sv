@@ -8,7 +8,8 @@ module JukeBox1
  
  output logic [3:0] tone,        // index to toneDecoder
  output logic [3:0] note_length,      // length of notes, in beats
- output logic silenceOutN ) ;         //  a silence note: disable sound
+ output logic silenceOutN
+ ) ;         //  a silence note: disable sound
  
 
  localparam MaxMelodyLength = 6'h32;  // maximum melody length, in notes. 
@@ -79,19 +80,45 @@ always_comb begin
 //      frq[14] = mi ; len[14] = 1 ; 
 //      frq[15] = fa ; len[15] = 1 ; 
 //      frq[16] = do_ ; len[16] = 0 ; // Loop point
-		frq[0] = sol;    len[0] = 1;
-      frq[1] = solD;   len[1] = 1;
-      frq[2] = silence;len[2] = 1;
-      frq[3] = sol;    len[3] = 1;
-      frq[4] = fa;     len[4] = 1;
-      frq[5] = silence;len[5] = 1;
-      frq[6] = sol;    len[6] = 1;
-      frq[7] = solD;   len[7] = 1;
-      frq[8] = silence;len[8] = 1;
-      frq[9] = sol;    len[9] = 1;
-      frq[10] = fa;    len[10] = 1;
-      frq[11] = silence;len[11] = 1;
-      frq[12] = do_;   len[12] = 0;
+//
+//		frq[0] = sol;    len[0] = 1;
+//      frq[1] = solD;   len[1] = 1;
+//      frq[2] = silence;len[2] = 1;
+//      frq[3] = sol;    len[3] = 1;
+//      frq[4] = fa;     len[4] = 1;
+//      frq[5] = silence;len[5] = 1;
+//      frq[6] = sol;    len[6] = 1;
+//      frq[7] = solD;   len[7] = 1;
+//      frq[8] = silence;len[8] = 1;
+//      frq[9] = sol;    len[9] = 1;
+//      frq[10] = fa;    len[10] = 1;
+//      frq[11] = silence;len[11] = 1;
+//      frq[12] = do_;   len[12] = 0;
+
+	 frq[0]  = fa;      len[0]  = 2;
+    frq[1]  = sol;     len[1]  = 2;
+    frq[2]  = silence; len[2]  = 1;
+
+    frq[3]  = fa;      len[3]  = 2;
+    frq[4]  = mi;      len[4]  = 2;
+    frq[5]  = silence; len[5]  = 1;
+
+    frq[6]  = re;      len[6]  = 2;
+    frq[7]  = fa;      len[7]  = 2;
+    frq[8]  = silence; len[8]  = 1;
+
+    frq[9]  = do_;     len[9]  = 3;
+    frq[10] = silence; len[10] = 2;
+
+    frq[11] = re;      len[11] = 2;
+    frq[12] = mi;      len[12] = 2;
+    frq[13] = silence; len[13] = 1;
+
+    frq[14] = fa;      len[14] = 3;
+    frq[15] = silence; len[15] = 2;
+
+    frq[16] = do_;     len[16] = 0; // End
+
     end 
     
     2: begin 
@@ -99,9 +126,19 @@ always_comb begin
       // COIN EATING SOUND (Wakka)
       // Very short, quick alternating notes
       //************************************************************************************************** 
-      frq[0] = sol ; len[0] = 1 ; 
-      frq[1] = do_H ; len[1] = 1 ; 
-      frq[2] = do_ ; len[2] = 0 ; // End 
+//      frq[0] = silence ; len[0] = 1 ; 
+//		frq[1] = sol ; len[1] = 1 ; 
+//      frq[2] = do_H ; len[2] = 1 ; 
+//      frq[3] = do_ ; len[3] = 1 ; 
+//		frq[4] = silence ; len[4] = 0 ; 
+	 frq[0]  = mi;      len[0]  = 1;
+    frq[1]  = sol;     len[1]  = 1;
+    frq[2]  = do_H;    len[2]  = 2;
+    frq[3]  = silence; len[3]  = 1;
+    frq[4]  = do_H;    len[4]  = 1;
+    frq[5]  = silence; len[5]  = 1;
+    frq[6]  = do_;     len[6]  = 0; // End
+
     end 
     
     3: begin 
@@ -154,11 +191,13 @@ always_comb begin
       // EATING GHOST SOUND
       // Quick ascending run
       //************************************************************************************************** 
-      frq[0] = do_ ; len[0] = 1 ; 
-      frq[1] = mi ; len[1] = 1 ; 
-      frq[2] = sol ; len[2] = 1 ; 
-      frq[3] = do_H ; len[3] = 2 ; 
-      frq[4] = do_ ; len[4] = 0 ; // End 
+		frq[0] = silence ; len[0] = 1 ; 
+      frq[1] = do_ ; len[1] = 1 ; 
+      frq[2] = mi ; len[2] = 1 ; 
+      frq[3] = sol ; len[3] = 1 ; 
+      frq[4] = do_H ; len[4] = 2 ; 
+      frq[5] = do_ ; len[5] = 1 ;
+		frq[0] = silence ; len[6] = 0 ; // End 
     end 
     
     6: begin 

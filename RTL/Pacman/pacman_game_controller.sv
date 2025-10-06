@@ -193,7 +193,19 @@ module pacman_game_controller (
           end
 
           GHOST_HIT_ST: begin
-            currentState <= (!pauseN) ? PAUSED_ST : (currLives > 1) ? START_WAIT_ST : LOSE_ST;
+			 
+				if (!pauseN) currentState <= PAUSED_ST;
+            else if (timerEnd_reg && lastState == GHOST_HIT_ST) currentState <= (currLives > 1) ? PLAYING_ST : LOSE_ST;
+
+            if (lastState != GHOST_HIT_ST) begin
+
+              startCountN <= 1'b0;
+              datainL     <= TIME_START_L;
+              datainH     <= TIME_START_H;
+
+            end
+				
+//            currentState <= (!pauseN) ? PAUSED_ST : (currLives > 1) ? START_WAIT_ST : LOSE_ST;
           end
 
           POWER_UP_ST: begin
