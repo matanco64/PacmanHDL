@@ -58,6 +58,7 @@ module pacman_move (
   const int NORMAL_SPEED = 64;
 
   int speed;
+  int prevSpeed;
   int Xposition;
   int Yposition;
   int Xspeed;
@@ -76,11 +77,13 @@ module pacman_move (
   logic hit_reg = 1'b0;
   logic is_neg;
 
+
   logic canTurn;
 
-  assign canTurn = ((Xposition / FIXED_POINT_MULTIPLIER) % 16) == 0 && ((Yposition / FIXED_POINT_MULTIPLIER) % 16) == 0;
+  assign canTurn = ((Xposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER)) == 0) &&
+                 ((Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER)) == 0);
 
-
+	
 
   always_ff @(posedge clk or negedge resetN) begin
     if (resetN == 1'b0) begin
@@ -92,6 +95,7 @@ module pacman_move (
       is_neg <= 1'b0;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
 		speed <= NORMAL_SPEED;
+		prevSpeed <= NORMAL_SPEED;
       curDirKey <= INITIAL_DIRECTION;
     end else if (collision_pac_ghost != 3'b0 && gameState != POWER_UP_ST) begin  // thoch ghost
       SM_Motion <= IDLE_ST;
@@ -119,6 +123,13 @@ module pacman_move (
 			default: speed <= NORMAL_SPEED;
 		endcase
 		
+	 // align if speed has changed - prevent getting stack at the middle
+    if (speed != prevSpeed) begin
+        Xposition <= ((Xposition / FIXED_POINT_MULTIPLIER) * FIXED_POINT_MULTIPLIER);
+        Yposition <= ((Yposition / FIXED_POINT_MULTIPLIER) * FIXED_POINT_MULTIPLIER);
+        prevSpeed <= speed;
+    end
+		
       case (SM_Motion)
 
         //------------
@@ -138,7 +149,7 @@ module pacman_move (
         MOVE_ST: begin  // moving collecting colisions 
           //------------
 
-          if ((speedChange != 0 ||keyPadValid ) && !is_neg && canTurn) begin
+          if ((speedChange != 0 || keyPadValid ) && !is_neg && canTurn) begin
             case (keyPadCode)
               UP_KEY: begin
                 Yspeed <= -speed;
