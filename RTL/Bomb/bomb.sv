@@ -18,14 +18,14 @@ module bomb
 	output logic countLoadN, 
 	output logic countEnable, 
 	output logic lampEnable,
-	output logic show88
+	output logic show88,
+	output logic timerEnd
    );
 
 //-------------------------------------------------------------------------------------------
 
 // state machine declaration 
    enum logic [2:0] {s_idle,s_arm, s_run, s_pause, s_end, s_lampOff, s_lampOn} SMbomb;
-	logic [2:0] timer;
  	
 //--------------------------------------------------------------------------------------------
 
@@ -39,6 +39,7 @@ always @(posedge clk or negedge resetN)
 		countEnable <= 1'b0;
 		lampEnable  <= 1'b0;
 		show88 		<= 1'b0;
+		timerEnd  <= 1'b0;
 		end 
 
    
@@ -49,13 +50,15 @@ always @(posedge clk or negedge resetN)
 		countEnable <= 1'b0;
 		lampEnable  <= 1'b1;
 		show88 		<= 1'b0;
+		timerEnd  <= 1'b0;
 		
 	case (SMbomb) // logically defining what is the next state, and the ouptput
 		
 //      ======		
 			s_idle: begin
 //      ======		
-				lampEnable  <= 1'b0;
+			   lampEnable  <= 1'b0;
+				timerEnd  <= 1'b1;
 				countLoadN <= 1'b0; // load
 				if (startN == 1'b0) 
 					SMbomb <= s_arm; 
@@ -79,7 +82,6 @@ always @(posedge clk or negedge resetN)
 			s_pause: begin
 				if (pauseN == 1'b1) begin
 					SMbomb <= s_run;
-					timer <= 'b000;
 				end
 			end
 			

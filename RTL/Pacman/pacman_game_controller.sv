@@ -127,20 +127,14 @@ module pacman_game_controller (
 
   // sticky logic - up for frame
   logic collision_pac_power_reg;
-  logic timerEnd_reg;
 
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
       collision_pac_power_reg <= 1'b0;
-      timerEnd_reg <= 1'b0;
     end else begin
 
       if (startOfFrame) collision_pac_power_reg <= 1'b0;  // clear at the start of frame
       else if (pacDR && powerDR) collision_pac_power_reg <= 1'b1;
-
-      if (startOfFrame) timerEnd_reg <= 1'b0;
-      else if (timerEnd) timerEnd_reg <= 1'b1;
-
     end
   end
 
@@ -174,15 +168,11 @@ module pacman_game_controller (
 
           START_WAIT_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-            else if (timerEnd_reg && lastState == START_WAIT_ST) currentState <= PLAYING_ST;
-
-            if (lastState != START_WAIT_ST) begin
-
+            else if (lastState != START_WAIT_ST) begin  // 1st enter
               startCountN <= 1'b0;
               datainL     <= TIME_START_L;
               datainH     <= TIME_START_H;
-
-            end
+            end else if (timerEnd) currentState <= PLAYING_ST;
           end
 
           PLAYING_ST: begin
@@ -193,29 +183,21 @@ module pacman_game_controller (
           end
 
           GHOST_HIT_ST: begin
-			 
-				if (!pauseN) currentState <= PAUSED_ST;
-            else if (timerEnd_reg && lastState == GHOST_HIT_ST) currentState <= (currLives > 1) ? PLAYING_ST : LOSE_ST;
-
-            if (lastState != GHOST_HIT_ST) begin
-
+            if (!pauseN) currentState <= PAUSED_ST;
+            else if (lastState != GHOST_HIT_ST) begin  // 1st enter
               startCountN <= 1'b0;
               datainL     <= TIME_START_L;
               datainH     <= TIME_START_H;
-
-            end
-				
-//            currentState <= (!pauseN) ? PAUSED_ST : (currLives > 1) ? START_WAIT_ST : LOSE_ST;
+            end else if (timerEnd) currentState <= (currLives > 1) ? PLAYING_ST : LOSE_ST;
           end
 
           POWER_UP_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-            if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
+            else if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
               startCountN <= 1'b0;
               datainL     <= TIME_POWER_L;
               datainH     <= TIME_POWER_H;
-
-            end else if (timerEnd_reg)  // +2st enter
+            end else if (timerEnd)  // +2st enter
               currentState <= PLAYING_ST;
           end
 
