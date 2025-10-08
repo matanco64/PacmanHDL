@@ -656,6 +656,32 @@ agreement for further details.
 	)
 )
 (symbol
+	(rect 1296 504 1456 584)
+	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
+	(text "inst15" (rect 8 64 36 81)(font "Intel Clear" ))
+	(port
+		(pt 160 32)
+		(output)
+		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
+		(line (pt 160 32)(pt 144 32)(line_width 3))
+	)
+	(parameter
+		"size"
+		"1"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"MyValue"
+		"1"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 144 64))
+	)
+	(annotation_block (parameter)(rect 1080 504 1249 561))
+)
+(symbol
 	(rect 328 160 616 400)
 	(text "ghost_move" (rect 5 0 66 12)(font "Arial" ))
 	(text "inst" (rect 8 224 25 236)(font "Arial" ))
@@ -683,50 +709,50 @@ agreement for further details.
 	(port
 		(pt 0 80)
 		(input)
-		(text "ghostSelect[1..0]" (rect 0 0 83 12)(font "Arial" ))
-		(text "ghostSelect[1..0]" (rect 21 75 104 87)(font "Arial" ))
-		(line (pt 0 80)(pt 16 80)(line_width 3))
+		(text "oneSec" (rect 0 0 36 12)(font "Arial" ))
+		(text "oneSec" (rect 21 75 57 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80))
 	)
 	(port
 		(pt 0 96)
 		(input)
-		(text "aroundGhost[15..0]" (rect 0 0 94 12)(font "Arial" ))
-		(text "aroundGhost[15..0]" (rect 21 91 115 103)(font "Arial" ))
+		(text "ghostSelect[1..0]" (rect 0 0 83 12)(font "Arial" ))
+		(text "ghostSelect[1..0]" (rect 21 91 104 103)(font "Arial" ))
 		(line (pt 0 96)(pt 16 96)(line_width 3))
 	)
 	(port
 		(pt 0 112)
 		(input)
-		(text "pacmanX[10..0]" (rect 0 0 76 12)(font "Arial" ))
-		(text "pacmanX[10..0]" (rect 21 107 97 119)(font "Arial" ))
+		(text "aroundGhost[15..0]" (rect 0 0 94 12)(font "Arial" ))
+		(text "aroundGhost[15..0]" (rect 21 107 115 119)(font "Arial" ))
 		(line (pt 0 112)(pt 16 112)(line_width 3))
 	)
 	(port
 		(pt 0 128)
 		(input)
-		(text "pacmanY[10..0]" (rect 0 0 79 12)(font "Arial" ))
-		(text "pacmanY[10..0]" (rect 21 123 100 135)(font "Arial" ))
+		(text "pacmanX[10..0]" (rect 0 0 76 12)(font "Arial" ))
+		(text "pacmanX[10..0]" (rect 21 123 97 135)(font "Arial" ))
 		(line (pt 0 128)(pt 16 128)(line_width 3))
 	)
 	(port
 		(pt 0 144)
 		(input)
-		(text "pacmanDir[1..0]" (rect 0 0 79 12)(font "Arial" ))
-		(text "pacmanDir[1..0]" (rect 21 139 100 151)(font "Arial" ))
+		(text "pacmanY[10..0]" (rect 0 0 79 12)(font "Arial" ))
+		(text "pacmanY[10..0]" (rect 21 139 100 151)(font "Arial" ))
 		(line (pt 0 144)(pt 16 144)(line_width 3))
 	)
 	(port
 		(pt 0 160)
 		(input)
-		(text "collisionPacGhost[2..0]" (rect 0 0 113 12)(font "Arial" ))
-		(text "collisionPacGhost[2..0]" (rect 21 155 134 167)(font "Arial" ))
+		(text "pacmanDir[1..0]" (rect 0 0 79 12)(font "Arial" ))
+		(text "pacmanDir[1..0]" (rect 21 155 100 167)(font "Arial" ))
 		(line (pt 0 160)(pt 16 160)(line_width 3))
 	)
 	(port
 		(pt 0 176)
 		(input)
-		(text "forceMode[1..0]" (rect 0 0 77 12)(font "Arial" ))
-		(text "forceMode[1..0]" (rect 21 171 98 183)(font "Arial" ))
+		(text "collisionPacGhost[2..0]" (rect 0 0 113 12)(font "Arial" ))
+		(text "collisionPacGhost[2..0]" (rect 21 171 134 183)(font "Arial" ))
 		(line (pt 0 176)(pt 16 176)(line_width 3))
 	)
 	(port
@@ -820,26 +846,6 @@ agreement for further details.
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
-		"SCATTER_TIME"
-		"00011010010"
-		""
-		(type "PARAMETER_UNSIGNED_BIN")	)
-	(parameter
-		"CHASE_TIME"
-		"01001011000"
-		""
-		(type "PARAMETER_UNSIGNED_BIN")	)
-	(parameter
-		"FRIGHTENED_TIME"
-		"00010110100"
-		""
-		(type "PARAMETER_UNSIGNED_BIN")	)
-	(parameter
-		"IDLE_DELAY_FRAMES"
-		"60"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
 		"BLINKY_HOME_X"
 		"600"
 		""
@@ -890,6 +896,46 @@ agreement for further details.
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
+		"RESET_ST"
+		"000"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"START_WAIT_ST"
+		"001"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"PLAYING_ST"
+		"010"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"PAUSED_ST"
+		"011"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"GHOST_HIT_ST"
+		"100"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"WIN_ST"
+		"101"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"LOSE_ST"
+		"110"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"POWER_UP_ST"
+		"111"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
 		"DIR_UP"
 		"00"
 		""
@@ -907,6 +953,76 @@ agreement for further details.
 	(parameter
 		"DIR_RIGHT"
 		"11"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"MODE_MIN_SEC"
+		"25"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"MODE_RANGE"
+		"11"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"FRIGHTENED_TIME_SEC"
+		"6"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"IDLE_DELAY_FRAMES"
+		"60"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"IDLE_ST"
+		"00"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"CHANGE_ST"
+		"01"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"MOVE_ST"
+		"10"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"SCATTER_M"
+		"00"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"CHASE_M"
+		"01"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"FRIGHTENED_M"
+		"10"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"EATEN_M"
+		"11"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"SCATTER_TIME"
+		"00011010010"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"CHASE_TIME"
+		"01001011000"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"FRIGHTENED_TIME"
+		"00010110100"
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
@@ -963,32 +1079,6 @@ agreement for further details.
 		(rectangle (rect 16 16 272 224))
 	)
 	(annotation_block (parameter)(rect 328 88 510 145))
-)
-(symbol
-	(rect 1296 504 1456 584)
-	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
-	(text "inst15" (rect 8 64 36 81)(font "Intel Clear" ))
-	(port
-		(pt 160 32)
-		(output)
-		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
-		(line (pt 160 32)(pt 144 32)(line_width 3))
-	)
-	(parameter
-		"size"
-		"1"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"MyValue"
-		"1"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 144 64))
-	)
-	(annotation_block (parameter)(rect 1080 504 1249 561))
 )
 (connector
 	(text "clk" (rect 288 424 302 441)(font "Intel Clear" ))
@@ -1234,48 +1324,6 @@ agreement for further details.
 	(pt 328 224)
 )
 (connector
-	(text "ghostSelect[1..0]" (rect 235 224 314 241)(font "Intel Clear" ))
-	(pt 224 240)
-	(pt 328 240)
-	(bus)
-)
-(connector
-	(text "pacmanX[10..0]" (rect 234 256 308 273)(font "Intel Clear" ))
-	(pt 224 272)
-	(pt 328 272)
-	(bus)
-)
-(connector
-	(text "pacmanY[10..0]" (rect 234 272 308 289)(font "Intel Clear" ))
-	(pt 224 288)
-	(pt 328 288)
-	(bus)
-)
-(connector
-	(text "pacmanDir[1..0]" (rect 237 288 311 305)(font "Intel Clear" ))
-	(pt 328 304)
-	(pt 224 304)
-	(bus)
-)
-(connector
-	(text "collisionPacGhost[2..0]" (rect 238 304 345 321)(font "Intel Clear" ))
-	(pt 328 320)
-	(pt 224 320)
-	(bus)
-)
-(connector
-	(text "gameState[2..0]" (rect 234 336 309 353)(font "Intel Clear" ))
-	(pt 328 352)
-	(pt 224 352)
-	(bus)
-)
-(connector
-	(text "aroundGhost[15..0]" (rect 235 240 324 257)(font "Intel Clear" ))
-	(pt 224 256)
-	(pt 328 256)
-	(bus)
-)
-(connector
 	(text "ghostStateFor6Seg[3..0]" (rect 624 224 737 241)(font "Intel Clear" ))
 	(pt 616 240)
 	(pt 728 240)
@@ -1313,5 +1361,52 @@ agreement for further details.
 (connector
 	(pt 1456 536)
 	(pt 1576 536)
+)
+(connector
+	(text "oneSec" (rect 230 224 264 241)(font "Intel Clear" ))
+	(pt 328 240)
+	(pt 224 240)
+)
+(connector
+	(text "ghostSelect[1..0]" (rect 235 240 314 257)(font "Intel Clear" ))
+	(pt 224 256)
+	(pt 328 256)
+	(bus)
+)
+(connector
+	(text "pacmanX[10..0]" (rect 234 272 308 289)(font "Intel Clear" ))
+	(pt 224 288)
+	(pt 328 288)
+	(bus)
+)
+(connector
+	(text "pacmanY[10..0]" (rect 234 288 308 305)(font "Intel Clear" ))
+	(pt 224 304)
+	(pt 328 304)
+	(bus)
+)
+(connector
+	(text "pacmanDir[1..0]" (rect 237 304 311 321)(font "Intel Clear" ))
+	(pt 328 320)
+	(pt 224 320)
+	(bus)
+)
+(connector
+	(text "collisionPacGhost[2..0]" (rect 238 320 345 337)(font "Intel Clear" ))
+	(pt 328 336)
+	(pt 224 336)
+	(bus)
+)
+(connector
+	(text "aroundGhost[15..0]" (rect 235 256 324 273)(font "Intel Clear" ))
+	(pt 224 272)
+	(pt 328 272)
+	(bus)
+)
+(connector
+	(text "gameState[2..0]" (rect 234 336 309 353)(font "Intel Clear" ))
+	(pt 328 352)
+	(pt 224 352)
+	(bus)
 )
 (text "7SEG - just for testing delet me " (rect 1304 448 1530 468)(font "Intel Clear" (font_size 10)(bold)))

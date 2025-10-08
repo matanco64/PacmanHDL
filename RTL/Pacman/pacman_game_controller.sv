@@ -44,7 +44,7 @@ module pacman_game_controller (
 
   localparam [3:0] TIME_POWER_L = 8;
   localparam [3:0] TIME_POWER_H = 0;
-  localparam [3:0] TIME_START_L = 4;
+  localparam [3:0] TIME_START_L = 3;
   localparam [3:0] TIME_START_H = 0;
 
 
@@ -97,9 +97,11 @@ module pacman_game_controller (
       currLives  <= START_HEARTS;
       ghostEaten <= 0;
     end else begin
-      logic signed [2:0] lifeChange;
-      lifeChange = (pacLifeChange == INCREASE_HEARTS) ? 3'd1 :
-                     (pacLifeChange == DECREASE_HEARTS) ? -3'd1 : 3'd0;
+      logic signed [4:0] newLives;
+		newLives = currLives;
+		
+		if(pacLifeChange == INCREASE_HEARTS) newLives = newLives+1;
+		else if(pacLifeChange == DECREASE_HEARTS) newLives = newLives - 1;
 
       totalScore = (partialScore + ghostEaten * 5 > 0) ? (partialScore + ghostEaten * 5) : 0;
       if (startOfFrame) ghost_flag <= 1'b0;
@@ -107,20 +109,16 @@ module pacman_game_controller (
       if (collision_pac_ghost != 3'd0 && !ghost_flag) begin
         ghost_flag <= 1'b1;
         if (currentState == PLAYING_ST) begin
-          lifeChange = lifeChange - 3'd1;
+          newLives = newLives - 1;
         end else if (currentState == POWER_UP_ST) begin
           ghostEaten <= ghostEaten + 1;
         end
       end
 
-      // Only update currLives once per clock
-      if (lifeChange != 0) begin
-        logic signed [4:0] newLives;
-        newLives = $signed(currLives) + lifeChange;
-        if (newLives < 0) currLives <= 0;
-        else if (newLives > MAX_HEARTS) currLives <= MAX_HEARTS;
-        else currLives <= newLives;
-      end
+      // Only update currLives
+		if (newLives != currLives) 
+		   currLives <= (newLives >= MAX_HEARTS)? MAX_HEARTS : (newLives <= 0)? 0 : newLives;
+		
     end
   end
 
@@ -178,7 +176,8 @@ module pacman_game_controller (
           PLAYING_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
             else if (collision_pac_ghost != 3'd0) currentState <= GHOST_HIT_ST;
-            else if (isWin) currentState <= WIN_ST;
+				else if (currLives == 0) currentState <= WIN_ST;
+            else if (isWin) currentState <= LOSE_ST; // if 0 heart caused by a pickUp
             else if (collision_pac_power_reg) currentState <= POWER_UP_ST;
           end
 
