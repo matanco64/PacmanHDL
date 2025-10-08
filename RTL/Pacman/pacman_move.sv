@@ -107,7 +107,7 @@ module pacman_move (
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
       curDirKey <= INITIAL_DIRECTION;
 		
-	  end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST) begin 
+	  end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST || gameState == GHOST_HIT_ST ) begin 
       // Pacman stands still in START or PAUSE
       Xspeed <= 0;
       Yspeed <= 0;

@@ -92,10 +92,6 @@ module map1_drawer (
       110  // never reached
   };  // increasing order
 
-  // flags - moved to outputs
-//  logic coinFlag;
-//  logic powFlag;
-//  logic picUpFlag;
   logic pickUpCollision;  // 1= collision
   logic fruitSpawnPending;
 
@@ -482,6 +478,6 @@ module map1_drawer (
       + pickUpCollected[1] * 10  // banana
       + pickUpCollected[2] * 2  // strawberry
       - pickUpCollected[3] * 20  // poision
-      - pickUpCollected[4] * 100;  //  fee
+      - pickUpCollected[4] * 50;  //  fee
 
 endmodule
