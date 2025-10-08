@@ -104,7 +104,7 @@ module pacman_game_controller (
 		else if(pacLifeChange == DECREASE_HEARTS) newLives = newLives - 1;
 
       totalScore = (partialScore + ghostEaten * 5 > 0) ? (partialScore + ghostEaten * 5) : 0;
-      if (startOfFrame) ghost_flag <= 1'b0;
+      if (startOfFrame && collision_pac_ghost == 0) ghost_flag <= 1'b0;
 
       if (collision_pac_ghost != 3'd0 && !ghost_flag) begin
         ghost_flag <= 1'b1;
