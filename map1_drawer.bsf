@@ -283,6 +283,13 @@ agreement for further details.
 		(text "fruitSpawnFlag" (rect 194 299 251 311)(font "Arial" ))
 		(line (pt 272 304)(pt 256 304)(line_width 1))
 	)
+	(port
+		(pt 272 320)
+		(output)
+		(text "picUpTypeFlag[2..0]" (rect 0 0 80 12)(font "Arial" ))
+		(text "picUpTypeFlag[2..0]" (rect 171 315 251 327)(font "Arial" ))
+		(line (pt 272 320)(pt 256 320)(line_width 3))
+	)
 	(drawing
 		(rectangle (rect 16 16 256 352)(line_width 1))
 	)

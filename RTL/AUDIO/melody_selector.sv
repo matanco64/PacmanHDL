@@ -2,146 +2,211 @@ module melody_selector (
     input logic clk,
     input logic resetN,
     input logic startOfFrame,
-    
+
     // Game state
     input logic [2:0] gameState,
-    
-    // Event flags (up for 1 clock cycle)
+
+    // Event flags (1-cycle pulses, made sticky until startOfFrame)
     input logic coinFlag,
     input logic powFlag,
-    input logic picUpFlag,
-    input logic fruitSpawnPending,
-    
-    // Speed and life changes (up for 1 clock cycle)
-    input logic [1:0] pacSpeedChange,  // 0=normal, 1=fast, 2=slow
-    input logic [1:0] pacLifeChange,   // 0=no, 1=incr, 2=decr
-    
+    input logic fruitSpawn,
+    input logic ghostFlag,
+    input logic [2:0] pickupType,  // 0=none, 1=cherry, 2=banana, 3=strawberry, 4=poison, 5=penalty
+    input logic pickupCollectedFlag,
+    input logic [1:0] pacLifeChange,  // 0=none, 1=+1, 2=-1
+
     // Output to JukeBox
     output logic [3:0] melodySelect
 );
 
   // Game states
-  localparam RESET_ST      = 3'b000;
+  localparam RESET_ST = 3'b000;
   localparam START_WAIT_ST = 3'b001;
-  localparam PLAYING_ST    = 3'b010;
-  localparam PAUSED_ST     = 3'b011;
-  localparam GHOST_HIT_ST  = 3'b100;
-  localparam WIN_ST        = 3'b101;
-  localparam LOSE_ST       = 3'b110;
-  localparam POWER_UP_ST   = 3'b111;
+  localparam PLAYING_ST = 3'b010;
+  localparam PAUSED_ST = 3'b011;
+  localparam GHOST_HIT_ST = 3'b100;
+  localparam WIN_ST = 3'b101;
+  localparam LOSE_ST = 3'b110;
+  localparam POWER_UP_ST = 3'b111;
 
-  // Melody indices (matching JukeBox1)
-  localparam MELODY_GAME_START     = 4'd0;  // Game intro
-  localparam MELODY_BACKGROUND     = 4'd1;  // Wakka-wakka loop
-  localparam MELODY_COIN           = 4'd2;  // Coin eating
-  localparam MELODY_POWER_MODE     = 4'd3;  // Power pellet active
-  localparam MELODY_DEATH          = 4'd4;  // Pac-Man death
-  localparam MELODY_EAT_GHOST      = 4'd5;  // Eating a ghost
-  localparam MELODY_GHOST_RETREAT  = 4'd6;  // Ghost eyes retreating
-  localparam MELODY_LEVEL_COMPLETE = 4'd7;  // Level finished
-  localparam MELODY_FRUIT_APPEAR   = 4'd8;  // Fruit spawns
-  localparam MELODY_EXTRA_LIFE     = 4'd9;  // Extra life gained
-  localparam MELODY_SILENCE        = 4'd10; // No sound
+  // Melody indices (matching JukeBox)
+  localparam MELODY_GAME_START = 4'd0;
+  localparam MELODY_WIN = 4'd1;
+  localparam MELODY_LOSE = 4'd2;
+  localparam MELODY_LIFE_LOST = 4'd3;
+  localparam MELODY_LIFE_GAINED = 4'd4;
+  localparam MELODY_PICKUP_CHERRY = 4'd5;
+  localparam MELODY_PICKUP_BANANA = 4'd6;
+  localparam MELODY_PICKUP_STRAW = 4'd7;
+  localparam MELODY_PICKUP_POISON = 4'd8;
+  localparam MELODY_PICKUP_PENALTY = 4'd9;
+  localparam MELODY_FRUIT_APPEAR = 4'd10;
+  localparam MELODY_EAT_GHOST = 4'd11;
+  localparam MELODY_POWER_MODE = 4'd12;
+  localparam MELODY_COIN = 4'd13;
+  localparam MELODY_SILENCE = 4'd15;
 
   // Internal registers
   logic [2:0] lastGameState;
   logic [3:0] currentMelody;
   logic [3:0] nextMelody;
+  
+  // Sticky event flags (hold until processed at startOfFrame)
+  logic coinFlag_sticky;
+  logic powFlag_sticky;
+  logic fruitSpawn_sticky;
+  logic ghostFlag_sticky;
+  logic pickupCollectedFlag_sticky;
+  logic [2:0] pickupType_sticky;
+  logic [1:0] pacLifeChange_sticky;
+
+  // Make flags sticky until startOfFrame
+  always_ff @(posedge clk or negedge resetN) begin
+    if (!resetN) begin
+      coinFlag_sticky <= 1'b0;
+      powFlag_sticky <= 1'b0;
+      fruitSpawn_sticky <= 1'b0;
+      ghostFlag_sticky <= 1'b0;
+      pickupCollectedFlag_sticky <= 1'b0;
+      pickupType_sticky <= 3'd0;
+      pacLifeChange_sticky <= 2'd0;
+    end else begin
+      // Set flags when events occur
+      if (coinFlag) coinFlag_sticky <= 1'b1;
+      if (powFlag) powFlag_sticky <= 1'b1;
+      if (fruitSpawn) fruitSpawn_sticky <= 1'b1;
+      if (ghostFlag) ghostFlag_sticky <= 1'b1;
+      if (pickupCollectedFlag) begin
+        pickupCollectedFlag_sticky <= 1'b1;
+        pickupType_sticky <= pickupType;
+      end
+      if (pacLifeChange != 2'd0) pacLifeChange_sticky <= pacLifeChange;
+      
+      // Clear flags at start of frame after processing
+      if (startOfFrame) begin
+        coinFlag_sticky <= 1'b0;
+        powFlag_sticky <= 1'b0;
+        fruitSpawn_sticky <= 1'b0;
+        ghostFlag_sticky <= 1'b0;
+        pickupCollectedFlag_sticky <= 1'b0;
+        pickupType_sticky <= 3'd0;
+        pacLifeChange_sticky <= 2'd0;
+      end
+    end
+  end
 
   // Priority-based melody selection (combinational)
   always_comb begin
-    nextMelody = currentMelody; // Default: keep current melody
+    nextMelody = currentMelody;  // Default: keep current melody
     
-    // Priority 1: Life events (highest priority for short sounds)
-    if (pacLifeChange == 2'd1) begin
-      nextMelody = MELODY_EXTRA_LIFE;
+    // Highest priority: Life events
+    if (pacLifeChange_sticky == 2'd1) begin
+      nextMelody = MELODY_LIFE_GAINED;
     end
-    else if (pacLifeChange == 2'd2) begin
-      nextMelody = MELODY_DEATH; // Life lost
+    else if (pacLifeChange_sticky == 2'd2) begin
+      nextMelody = MELODY_LIFE_LOST;
     end
-    
-    // Priority 2: Ghost eaten (during power mode)
-    else if (gameState == POWER_UP_ST && picUpFlag) begin
+    // Second priority: Pickup collected
+    else if (pickupCollectedFlag_sticky) begin
+      case (pickupType_sticky)
+        3'd1: nextMelody = MELODY_PICKUP_CHERRY;
+        3'd2: nextMelody = MELODY_PICKUP_BANANA;
+        3'd3: nextMelody = MELODY_PICKUP_STRAW;
+        3'd4: nextMelody = MELODY_PICKUP_POISON;
+        3'd5: nextMelody = MELODY_PICKUP_PENALTY;
+        default: nextMelody = currentMelody;
+      endcase
+    end
+    // Third priority: Ghost eaten
+    else if (ghostFlag_sticky) begin
       nextMelody = MELODY_EAT_GHOST;
     end
-    
-    // Priority 3: State-based events
+    // Fourth priority: State-based sounds
     else begin
       case (gameState)
-        
         RESET_ST: begin
           nextMelody = MELODY_SILENCE;
         end
-        
+
         START_WAIT_ST: begin
-			 nextMelody = MELODY_GAME_START;
+          // Play game start only when entering this state
+          if (lastGameState != START_WAIT_ST) begin
+            nextMelody = MELODY_GAME_START;
+          end
+          // Otherwise keep playing game start or silence
         end
-        
+
         PLAYING_ST: begin
-          // Priority 4: Short event sounds during gameplay
-          if (fruitSpawnPending) begin
+          // Event-based sounds
+          if (fruitSpawn_sticky) begin
             nextMelody = MELODY_FRUIT_APPEAR;
           end
-          else if (coinFlag) begin
+          else if (coinFlag_sticky) begin
             nextMelody = MELODY_COIN;
           end
-          else if (powFlag) begin
-            nextMelody = MELODY_POWER_MODE; // Transition to power mode
-          end
-          else begin
-            // Default gameplay music
-            nextMelody = MELODY_BACKGROUND;
-          end
-        end
-        
-        POWER_UP_ST: begin
-          // During power mode, play power music unless eating something
-          if (coinFlag) begin
-            nextMelody = MELODY_COIN;
-          end
-          else begin
+          else if (powFlag_sticky) begin
             nextMelody = MELODY_POWER_MODE;
           end
-        end
-        
-        GHOST_HIT_ST: begin
-          nextMelody = MELODY_DEATH;
-        end
-        
-        WIN_ST: begin
-          if (lastGameState != WIN_ST) begin
-            nextMelody = MELODY_LEVEL_COMPLETE;
-          end else begin
-            nextMelody = MELODY_LEVEL_COMPLETE; // Keep playing
+          else begin
+            // No events - silence (or you could add background music here)
+            nextMelody = MELODY_SILENCE;
           end
         end
-        
-        LOSE_ST: begin
-          if (lastGameState != LOSE_ST) begin
-            nextMelody = MELODY_DEATH;
-          end else begin
-            nextMelody = MELODY_SILENCE; // After death sound finishes
-          end
-        end
-        
+
         PAUSED_ST: begin
           nextMelody = MELODY_SILENCE;
         end
-        
+
+        GHOST_HIT_ST: begin
+          // Play life lost sound when entering this state
+          if (lastGameState != GHOST_HIT_ST) begin
+            nextMelody = MELODY_LIFE_LOST;
+          end
+        end
+
+        WIN_ST: begin
+          // Play win sound when entering this state
+          if (lastGameState != WIN_ST) begin
+            nextMelody = MELODY_WIN;
+          end
+        end
+
+        LOSE_ST: begin
+          // Play lose sound when entering this state
+          if (lastGameState != LOSE_ST) begin
+            nextMelody = MELODY_LOSE;
+          end
+        end
+
+        POWER_UP_ST: begin
+          // Power mode background music (loops)
+          // Unless an event overrides it (handled by priorities above)
+          if (lastGameState != POWER_UP_ST) begin
+            // Just entered power mode
+            nextMelody = MELODY_POWER_MODE;
+          end
+          else if (currentMelody != MELODY_POWER_MODE && 
+                   !pickupCollectedFlag_sticky && 
+                   !ghostFlag_sticky && 
+                   pacLifeChange_sticky == 2'd0) begin
+            // Return to power mode music after event sounds
+            nextMelody = MELODY_POWER_MODE;
+          end
+        end
+
         default: begin
           nextMelody = MELODY_SILENCE;
         end
-        
       endcase
     end
   end
 
-  // Sequential logic: Update melody at frame boundaries
+  // Sequential logic: Update melody ONLY at frame boundaries
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
       currentMelody <= MELODY_SILENCE;
       lastGameState <= RESET_ST;
-    end else begin
+    end else if (startOfFrame) begin  // KEY FIX: Only update on startOfFrame!
       currentMelody <= nextMelody;
       lastGameState <= gameState;
     end

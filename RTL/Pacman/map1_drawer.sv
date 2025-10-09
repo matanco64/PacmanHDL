@@ -45,7 +45,9 @@ module map1_drawer (
 	 output logic coinFlag,
 	 output logic powFlag,
 	 output logic picUpFlag,
-	 output logic fruitSpawnFlag
+	 output logic fruitSpawnFlag,
+	 output logic [2:0] picUpTypeFlag // 0=no, 1=banana, 2=cherry 3=str 4=strawberry 5=posion 6=fee - for jukebox
+
 );
   // map
   localparam MAP_HEIGHT_Y = 31;
@@ -304,6 +306,7 @@ module map1_drawer (
       coinFlag <= 0;
       powFlag <= 0;
       picUpFlag <= 0;
+		picUpTypeFlag <=0;
 		fruitSpawnFlag <=0;
       currPicUp <= 0;
       isWin <= 0;
@@ -378,6 +381,7 @@ module map1_drawer (
       if (pickUpCollision && !picUpFlag) begin
         pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
         picUpFlag <= 1'b1;
+		  picUpTypeFlag <= tile - CHERRY +1 ;
         pickUpCollected[tile - CHERRY] <= pickUpCollected[tile - CHERRY] + 1;  // count pickups
 
 		  case (tile)
@@ -399,7 +403,10 @@ module map1_drawer (
 			  default: begin
 			  end
 		  endcase
-      end else picUpFlag <= 1'b0;
+      end else begin 
+			picUpFlag <= 1'b0;
+			picUpTypeFlag <= 1'b0;
+		end	
 
 
       // MAP CONTROL/////////////////////////////////////////////////////
@@ -430,12 +437,17 @@ module map1_drawer (
           end
 
           POWER: begin
+				int dx, dy;
             offsetX = pixelX % TILE_SIZE;
             offsetY = pixelY % TILE_SIZE;
-            if (offsetX >= 4 && offsetX < 12 && offsetY >= 4 && offsetY < 12) begin
-              RGBout  <= POW_COLOR;
-              powerDR <= 1'b1;
-            end
+				dx = offsetX - 8;
+				dy = offsetY - 8;
+				
+				if ((dx*dx + dy*dy) <= (5*5)) begin // 5=radius
+					 RGBout  <= POW_COLOR;
+					 powerDR <= 1'b1;
+				end
+
           end
 
           CHERRY, BANANA, STRAWBERRY, POISION, FEE: begin

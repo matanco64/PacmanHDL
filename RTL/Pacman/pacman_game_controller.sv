@@ -24,6 +24,7 @@ module pacman_game_controller (
     output logic       collision_pac_coin,
     output logic       collision_pac_power,
     output logic [2:0] collision_pac_ghost,
+	 output logic       ghostFlag,
 
     output logic [2:0] gameState,
     output logic [3:0] gameStateFor7Seg,
@@ -62,8 +63,6 @@ module pacman_game_controller (
   // Internal registers
   game_state_t currentState, lastState, prePausedState;
 
-  logic       ghost_flag;
-
   logic [5:0] ghostEaten;
   logic [9:0] totalScore;
 
@@ -88,12 +87,12 @@ module pacman_game_controller (
 
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
-      ghost_flag <= 1'b0;
+      ghostFlag <= 1'b0;
       currLives  <= START_HEARTS;
       ghostEaten <= 0;
       totalScore <= 0;
     end else if (currentState == RESET_ST) begin
-      ghost_flag <= 1'b0;
+      ghostFlag <= 1'b0;
       currLives  <= START_HEARTS;
       ghostEaten <= 0;
     end else begin
@@ -104,10 +103,10 @@ module pacman_game_controller (
 		else if(pacLifeChange == DECREASE_HEARTS) newLives = newLives - 1;
 
       totalScore = (partialScore + ghostEaten * 5 > 0) ? (partialScore + ghostEaten * 5) : 0;
-      if (startOfFrame && collision_pac_ghost == 0) ghost_flag <= 1'b0;
+      if (startOfFrame && collision_pac_ghost == 0) ghostFlag <= 1'b0;
 
-      if (collision_pac_ghost != 3'd0 && !ghost_flag) begin
-        ghost_flag <= 1'b1;
+      if (collision_pac_ghost != 3'd0 && !ghostFlag) begin
+        ghostFlag <= 1'b1;
         if (currentState == PLAYING_ST) begin
           newLives = newLives - 1;
         end else if (currentState == POWER_UP_ST) begin
