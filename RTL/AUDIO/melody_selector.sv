@@ -2,11 +2,9 @@ module melody_selector (
     input logic clk,
     input logic resetN,
     input logic startOfFrame,
-
-    // Game state
+    input logic melodyEnded,
     input logic [2:0] gameState,
-
-    // Event flags (1-cycle pulses, made sticky until startOfFrame)
+    // flags (1-cycle pulses, made sticky until startOfFrame)
     input logic coinFlag,
     input logic powFlag,
     input logic fruitSpawn,
@@ -50,13 +48,16 @@ module melody_selector (
   logic [2:0] lastGameState;
   logic [3:0] currentMelody;
   logic [3:0] nextMelody;
-  
+
   // Sticky event flags (hold until processed at startOfFrame)
   logic coinFlag_sticky;
   logic powFlag_sticky;
   logic fruitSpawn_sticky;
   logic ghostFlag_sticky;
   logic pickupCollectedFlag_sticky;
+  logic melodyEnded_sticky;
+  logic enableChange;
+
   logic [2:0] pickupType_sticky;
   logic [1:0] pacLifeChange_sticky;
 
@@ -70,6 +71,7 @@ module melody_selector (
       pickupCollectedFlag_sticky <= 1'b0;
       pickupType_sticky <= 3'd0;
       pacLifeChange_sticky <= 2'd0;
+      melodyEnded_sticky <= 1'b0;
     end else begin
       // Set flags when events occur
       if (coinFlag) coinFlag_sticky <= 1'b1;
@@ -81,7 +83,8 @@ module melody_selector (
         pickupType_sticky <= pickupType;
       end
       if (pacLifeChange != 2'd0) pacLifeChange_sticky <= pacLifeChange;
-      
+      if (melodyEnded) melodyEnded_sticky <= 1'b1;
+
       // Clear flags at start of frame after processing
       if (startOfFrame) begin
         coinFlag_sticky <= 1'b0;
@@ -91,6 +94,7 @@ module melody_selector (
         pickupCollectedFlag_sticky <= 1'b0;
         pickupType_sticky <= 3'd0;
         pacLifeChange_sticky <= 2'd0;
+        melodyEnded_sticky <= 1'b0;
       end
     end
   end
@@ -98,15 +102,13 @@ module melody_selector (
   // Priority-based melody selection (combinational)
   always_comb begin
     nextMelody = currentMelody;  // Default: keep current melody
-    
+
     // Highest priority: Life events
     if (pacLifeChange_sticky == 2'd1) begin
       nextMelody = MELODY_LIFE_GAINED;
-    end
-    else if (pacLifeChange_sticky == 2'd2) begin
+    end else if (pacLifeChange_sticky == 2'd2) begin
       nextMelody = MELODY_LIFE_LOST;
-    end
-    // Second priority: Pickup collected
+    end  // Second priority: Pickup collected
     else if (pickupCollectedFlag_sticky) begin
       case (pickupType_sticky)
         3'd1: nextMelody = MELODY_PICKUP_CHERRY;
@@ -116,12 +118,10 @@ module melody_selector (
         3'd5: nextMelody = MELODY_PICKUP_PENALTY;
         default: nextMelody = currentMelody;
       endcase
-    end
-    // Third priority: Ghost eaten
+    end  // Third priority: Ghost eaten
     else if (ghostFlag_sticky) begin
       nextMelody = MELODY_EAT_GHOST;
-    end
-    // Fourth priority: State-based sounds
+    end  // Fourth priority: State-based sounds
     else begin
       case (gameState)
         RESET_ST: begin
@@ -140,14 +140,11 @@ module melody_selector (
           // Event-based sounds
           if (fruitSpawn_sticky) begin
             nextMelody = MELODY_FRUIT_APPEAR;
-          end
-          else if (coinFlag_sticky) begin
+          end else if (coinFlag_sticky) begin
             nextMelody = MELODY_COIN;
-          end
-          else if (powFlag_sticky) begin
+          end else if (powFlag_sticky) begin
             nextMelody = MELODY_POWER_MODE;
-          end
-          else begin
+          end else begin
             // No events - silence (or you could add background music here)
             nextMelody = MELODY_SILENCE;
           end
@@ -201,16 +198,26 @@ module melody_selector (
     end
   end
 
-  // Sequential logic: Update melody ONLY at frame boundaries
+
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
       currentMelody <= MELODY_SILENCE;
       lastGameState <= RESET_ST;
-    end else if (startOfFrame) begin  // KEY FIX: Only update on startOfFrame!
-      currentMelody <= nextMelody;
-      lastGameState <= gameState;
+      enableChange  <= 1'b1;
+    end else begin
+      // Determine if a melody change is allowed (priority-based)
+      if (melodyEnded_sticky) enableChange <= 1'b1;
+      else if (currentMelody > nextMelody) enableChange <= 1'b1;
+
+      // Update melody only at frame boundaries
+      if (startOfFrame && enableChange) begin
+        currentMelody <= nextMelody;
+        lastGameState <= gameState;
+        enableChange  <= 1'b0;  // reset until next allowed change
+      end
     end
   end
+
 
   // Output assignment
   assign melodySelect = currentMelody;

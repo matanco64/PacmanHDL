@@ -12,7 +12,7 @@ module pacman_move (
 
     input logic [15:0] aroundPac,
     input logic [ 2:0] gameState,
-	 input logic [ 1:0] speedChange, // 0=normal, 1=fast, 2=slow
+    input logic [ 1:0] speedChange, // 0=normal, 1=fast, 2=slow
 
     output logic signed [10:0] topLeftX,  // output the top left corner 
     output logic signed [10:0] topLeftY,  // can be negative , if the object is partliy outside
@@ -71,7 +71,8 @@ module pacman_move (
     START_OF_FRAME_ST,   // startOfFrame activity-after all data collected 
     POSITION_CHANGE_ST,  // position interpolate 
     PORTAL_UP,
-    PORTAL_DOWN
+    PORTAL_DOWN,
+    WAIT_ST
   } SM_Motion;
 
   logic hit_reg = 1'b0;
@@ -83,58 +84,55 @@ module pacman_move (
   assign canTurn = ((Xposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER)) == 0) &&
                  ((Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER)) == 0);
 
-	
+
 
   always_ff @(posedge clk or negedge resetN) begin
     if (resetN == 1'b0) begin
       SM_Motion <= IDLE_ST;
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+
       Xspeed <= 0;
       Yspeed <= 0;
       hit_reg <= 1'b0;
       is_neg <= 1'b0;
-      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-		speed <= NORMAL_SPEED;
-		prevSpeed <= NORMAL_SPEED;
+      speed <= NORMAL_SPEED;
+      prevSpeed <= 0;
       curDirKey <= INITIAL_DIRECTION;
     end else if (collision_pac_ghost != 3'b0 && gameState != POWER_UP_ST) begin  // thoch ghost
       SM_Motion <= IDLE_ST;
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
       Xspeed <= 0;
       Yspeed <= 0;
       hit_reg <= 1'b0;
       is_neg <= 1'b0;
-      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
       curDirKey <= INITIAL_DIRECTION;
-		
-	  end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST || gameState == GHOST_HIT_ST ) begin 
+    end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST || gameState == GHOST_HIT_ST || gameState == WIN_ST || gameState == LOSE_ST) begin
       // Pacman stands still in START or PAUSE
-      Xspeed <= 0;
-      Yspeed <= 0;
-      SM_Motion <= MOVE_ST;
+      SM_Motion <= WAIT_ST;
 
     end else begin
-	 
-		// missing - handle speed next do turbo - all in different ff block
-		
-		if (startOfFrame && canTurn) begin
-		  case (speedChange)
-			 0: speed <= NORMAL_SPEED;
-			 1: speed <= NORMAL_SPEED * 2;
-			 2: speed <= NORMAL_SPEED / 2;
-			 default: speed <= NORMAL_SPEED;
-		  endcase
-		  prevSpeed <= speed;
-		end
 
-		
-	 // align if speed has changed - prevent getting stack at the middle
-    if (speed != prevSpeed) begin
-        Xposition <= ((Xposition / FIXED_POINT_MULTIPLIER) * FIXED_POINT_MULTIPLIER);
-        Yposition <= ((Yposition / FIXED_POINT_MULTIPLIER) * FIXED_POINT_MULTIPLIER);
+      // missing - handle speed next do turbo - all in different ff block
+
+      if (startOfFrame && canTurn) begin
+        case (speedChange)
+          0: speed <= NORMAL_SPEED;
+          1: speed <= NORMAL_SPEED * 2;
+          2: speed <= NORMAL_SPEED / 2;
+          default: speed <= NORMAL_SPEED;
+        endcase
         prevSpeed <= speed;
-    end
-		
+      end
+
+      // align if speed has changed - prevent getting stack at the middle
+      if (speed != prevSpeed) begin
+        Xposition <= ((Xposition / FIXED_POINT_MULTIPLIER)/ TILE_PIXELS ) * FIXED_POINT_MULTIPLIER*TILE_PIXELS;
+        Yposition <= ((Yposition / FIXED_POINT_MULTIPLIER)/ TILE_PIXELS ) * FIXED_POINT_MULTIPLIER*TILE_PIXELS;
+        prevSpeed <= speed;
+      end
+
       case (SM_Motion)
 
         //------------
@@ -154,7 +152,7 @@ module pacman_move (
         MOVE_ST: begin  // moving collecting colisions 
           //------------
 
-          if ((speedChange != 0 || keyPadValid ) && !is_neg && canTurn) begin
+          if ((speedChange != 0 || keyPadValid) && !is_neg && canTurn) begin
             case (keyPadCode)
               UP_KEY: begin
                 Yspeed <= -speed;
@@ -244,6 +242,13 @@ module pacman_move (
             Yposition <= (2 * TILE_PIXELS) * FIXED_POINT_MULTIPLIER;  // map is down by 1 tile
             SM_Motion <= MOVE_ST;
           end
+        end
+
+        WAIT_ST: begin
+          Xspeed <= 0;
+          Yspeed <= 0;
+          if (startOfFrame && (gameState == PLAYING_ST || gameState == POWER_UP_ST))
+            SM_Motion <= MOVE_ST;
         end
 
       endcase  // case 
