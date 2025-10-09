@@ -399,7 +399,7 @@ module ghost_move (
         case (currMode)
           LEAVE_NEST_M: begin
             // Check if ghost passed the ghost wall (moved down through it)
-            if (aroundGhost[11:8] != GHOST_WALL && Yposition < (INITIAL_Y - TILE_PIXELS) * FIXED_POINT_MULTIPLIER) begin
+            if (aroundGhost[11:8] == GHOST_WALL) begin
               currMode <= CHASE_M;
               modeTimer <= CHASE_DURATION;
             end

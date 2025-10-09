@@ -115,13 +115,18 @@ module pacman_move (
 
     end else begin
 	 
-		// handle speed next do turbo - all in different ff block
-		case (speedChange)
-			0: speed <= NORMAL_SPEED;
-			1: speed <= NORMAL_SPEED*2;
-			2: speed <= NORMAL_SPEED/2;
-			default: speed <= NORMAL_SPEED;
-		endcase
+		// missing - handle speed next do turbo - all in different ff block
+		
+		if (startOfFrame && canTurn) begin
+		  case (speedChange)
+			 0: speed <= NORMAL_SPEED;
+			 1: speed <= NORMAL_SPEED * 2;
+			 2: speed <= NORMAL_SPEED / 2;
+			 default: speed <= NORMAL_SPEED;
+		  endcase
+		  prevSpeed <= speed;
+		end
+
 		
 	 // align if speed has changed - prevent getting stack at the middle
     if (speed != prevSpeed) begin
