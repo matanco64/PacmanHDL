@@ -199,8 +199,8 @@ module pacman_game_controller (
               currentState <= PLAYING_ST;
           end
 
-          WIN_ST:  if (pauseN) currentState <= RESET_ST;
-          LOSE_ST: if (pauseN) currentState <= RESET_ST;
+//          WIN_ST:  if (pauseN) currentState <= RESET_ST;
+//          LOSE_ST: if (pauseN) currentState <= RESET_ST; // CURRENTLY STACK AT WIN OR LOST
 
           PAUSED_ST: begin
             currentState <= pauseN ? prePausedState : PAUSED_ST;
