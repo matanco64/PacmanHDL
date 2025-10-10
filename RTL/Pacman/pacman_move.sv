@@ -103,7 +103,7 @@ module pacman_move (
       curDirKey <= INITIAL_DIRECTION;
 		recovering <= 0;
 		recoveTimer <=0;
-    end else if (collision_pac_ghost != 3'b0 && gameState != POWER_UP_ST) begin  // thoch ghost
+    end else if (collision_pac_ghost != 3'b0 && gameState != POWER_UP_ST && !recovering) begin  // thoch ghost
       SM_Motion <= IDLE_ST;
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
@@ -117,7 +117,7 @@ module pacman_move (
     end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST || gameState == GHOST_HIT_ST || gameState == WIN_ST || gameState == LOSE_ST) begin
       // Pacman stands still in START or PAUSE
       SM_Motion <= WAIT_ST;
-		if(gameState == LOSE_ST) recovering<=0;
+		if(gameState == LOSE_ST || gameState == WIN_ST || gameState == PAUSED_ST) recovering <= 0;
     end else begin
 
       // missing - handle speed next do turbo - all in different ff block

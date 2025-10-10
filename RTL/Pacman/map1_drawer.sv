@@ -1,11 +1,13 @@
 module map1_drawer (
     input logic clk,
     input logic resetN,
+	 input logic pauseN,
     input logic signed [10:0] pixelX,  //  current VGA pixel 
     input logic signed [10:0] pixelY,
     input logic [7:0] rnd,
 	 input logic startOfFrame,
     input logic oneSec,
+	 input logic [ 2:0] gameState,
 
     input logic coinCollision,
     input logic powerCollision,
@@ -22,6 +24,7 @@ module map1_drawer (
     input logic [10:0] pactopLeftX,
     input logic [10:0] pactopLeftY,
     input logic pacmanDR,
+
 
     //outputs//
     output logic isWin,
@@ -58,8 +61,11 @@ module map1_drawer (
   localparam GHOST_WALL_COLOR = 8'b10001111;
   localparam PORTAL_COLOR = 8'b01111111;
   localparam COIN_COLOR = 8'b11111111;
-  localparam POW_COLOR1 = 8'b11111101;
-  localparam POW_COLOR2 = 8'hF4;
+  localparam POW_COLOR1 = 8'HFE;
+  localparam POW_COLOR2 = 8'hF9;
+  localparam POW_RADIUS1 = 5;
+  localparam POW_RADIUS2 = 4;
+  
   localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
   // tiles
   localparam TILE_SIZE = 16;  // IMPORTANT TO KEEP 2^n
@@ -95,6 +101,16 @@ module map1_drawer (
       90,
       110  // never reached
   };  // increasing order
+  
+   // game states
+  localparam RESET_ST = 3'b000;
+  localparam START_WAIT_ST = 3'b001;
+  localparam PLAYING_ST = 3'b010;
+  localparam PAUSED_ST = 3'b011;
+  localparam GHOST_HIT_ST = 3'b100;
+  localparam WIN_ST = 3'b101;
+  localparam LOSE_ST = 3'b110;
+  localparam POWER_UP_ST = 3'b111;
 
   logic pickUpCollision;  // 1= collision
   logic fruitSpawnPending;
@@ -147,6 +163,24 @@ module map1_drawer (
     { 4'd2, 4'd5, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd5, 4'd2 },
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 }
   };
+  
+  logic [0:15] [0:15] [7:0] portal = {
+	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+	{8'h00,8'h00,8'h00,8'h00,8'h9F,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+	{8'h00,8'hfd,8'hfd,8'h9F,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00,8'h00,8'h00},
+	{8'h00,8'h00,8'h9F,8'h9F,8'h00,8'h00,8'h00,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00,8'h00},
+	{8'h00,8'h9F,8'h9F,8'h00,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00},
+	{8'hd2,8'h9F,8'h00,8'h9F,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'hfd,8'h00},
+	{8'h9F,8'h00,8'h9F,8'h9F,8'hDF,8'h00,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'hDF,8'hDF,8'h00,8'h00,8'h00},
+	{8'h9F,8'h00,8'h9F,8'h9F,8'h00,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'hDF,8'hDF,8'h00,8'h00,8'h00},
+	{8'h00,8'h00,8'h9F,8'h9F,8'h00,8'hDF,8'h00,8'h00,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'h00,8'h00},
+	{8'h00,8'h00,8'h9F,8'h9F,8'h00,8'hDF,8'h00,8'h00,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'hDF,8'h00,8'h00},
+	{8'h00,8'h00,8'h9F,8'h9F,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'hDF,8'h00,8'h00},
+	{8'h00,8'h00,8'h9F,8'h9F,8'h9F,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'h00},
+	{8'h00,8'h00,8'h00,8'h9F,8'h9F,8'h9F,8'h00,8'h00,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00},
+	{8'h00,8'hfd,8'h00,8'h00,8'h9F,8'h9F,8'h9F,8'h9F,8'h9F,8'h9F,8'h9F,8'hfd,8'hfd,8'h00,8'h00,8'h00},
+	{8'h00,8'hfd,8'h00,8'h00,8'h00,8'h9F,8'h9F,8'h9F,8'h9F,8'h9F,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00}};
 
   logic [0:4][0:15][0:15][7:0] pickUpsMaps = {  // 5 fruits, 16x16 pixels, 8-bit color
       // cherry
@@ -286,33 +320,68 @@ module map1_drawer (
     end
   endfunction
   
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-	logic [3:0] frameCnt;
-	logic [3:0] frameRnd;
-	logic       togglePow;
+  ////power appearance control//////////////////////////////////////////////////////////////////////////////////////////////
+	logic [3:0] secCnt;
+	logic [7:0] frameRnd;
+	logic [7:0] pulseCnt;
 	logic       shine;
+	logic       togglePow;
 
+//	always_ff @(posedge clk or negedge resetN) begin
+//		 if (!resetN) begin
+//			  secCnt  <= 4'd0;
+//			  shine <= 1'b0;
+//			  togglePow <= 1'b0;
+//			  frameRnd <= rnd ^ (pixelX % TILE_SIZE) ^ (pixelY % TILE_SIZE); // rnd base on power's tile
+//		 end
+//		 else if (pauseN && gameState != WIN_ST && gameState != LOSE_ST) begin 
+//			  if(oneSec) secCnt <= secCnt + 1;
+//			  if(startOfFrame) shine <= ~shine;
+//			  
+//			  if(secCnt == frameRnd)begin
+//					frameRnd  <= rnd ^ (pixelX % TILE_SIZE) ^ (pixelY % TILE_SIZE);
+//					togglePow <= ~togglePow;  
+//			  end
+//		 end
+//	end
+
+
+//------------------------------------------------------
+// Random appearance & pulsing animation
+//------------------------------------------------------
 	always_ff @(posedge clk or negedge resetN) begin
 		 if (!resetN) begin
-			  frameCnt  <= 4'd0;
-			  shine <= 1'b0;
-			  togglePow <= 1'b0;
-			  frameRnd <= rnd;
-		 end
-		 else if (startOfFrame) begin 
-			  frameCnt <= frameCnt + 1;
+			  secCnt     <= 0;
+			  pulseCnt   <= 0;
+			  shine      <= 0;
+			  togglePow  <= 0;
+			  frameRnd   <= rnd ^ (pixelX / TILE_SIZE) ^ (pixelY / TILE_SIZE);
+		 end 
+		 else if (pauseN && gameState != WIN_ST && gameState != LOSE_ST) begin
+			  
+			  // 1 Hz counter (if oneSec = 1 once per second)
+			  if (oneSec) begin
+					secCnt <= secCnt + 1;
 
-			  if (frameCnt % 4 == 0) begin
-					shine <= ~shine;  // bliking of power
+					// random toggle: object disappears/appears
+					if (secCnt >= frameRnd) begin
+						 togglePow <= ~togglePow;
+						 secCnt    <= 0;
+						 // re-randomize interval (between 2–8 sec)
+						 frameRnd  <= (rnd[2:0] + 3) + (pixelX % 5);
+					end
 			  end
 			  
-			  if(frameCnt == frameRnd)begin
-					frameRnd  <= rnd;
-					togglePow <= ~togglePow;  // bliking of power
+			  // slow pulsing (every few frames)
+			  if (startOfFrame) begin
+					pulseCnt <= pulseCnt + 1;
+					if (pulseCnt == 5) begin
+						 shine <= ~shine;
+						 pulseCnt <= 0;
+					end
 			  end
 		 end
 	end
-
 
   // ---------------------------------------------------------------------------
   // rgb output logic + map update
@@ -453,7 +522,9 @@ module map1_drawer (
           end
 
           PORTAL: begin
-            RGBout <= PORTAL_COLOR;
+				offsetX  = pixelX % TILE_SIZE;
+            offsetY  = pixelY % TILE_SIZE;
+            RGBout <= portal[offsetY][offsetX];;
             mapDR  <= 1'b1;
           end
 
@@ -473,11 +544,19 @@ module map1_drawer (
 				dx = offsetX - 8;
 				dy = offsetY - 8;
 				
-				if ((dx*dx + dy*dy) <= (5*5) && togglePow) begin // 5=radius
-					 RGBout  <= (shine)? POW_COLOR1 : POW_COLOR2; // switch color
+				// POWER animation - size&color
+				if(shine) begin
+					if ((dx*dx + dy*dy) <= (POW_RADIUS1*POW_RADIUS1) && togglePow) begin
+					 RGBout  <= POW_COLOR1;
 					 powerDR <= 1'b1;
-				end
-
+					end
+				end else begin
+					if ((dx*dx + dy*dy) <= (POW_RADIUS2*POW_RADIUS2) && togglePow) begin
+					 RGBout  <= POW_COLOR2;
+					 powerDR <= 1'b1;
+					end
+				end 
+			
           end
 
           CHERRY, BANANA, STRAWBERRY, POISION, FEE: begin

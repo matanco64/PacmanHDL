@@ -19,6 +19,7 @@ module pacman_game_controller (
 
     input logic signed [10:0] partialScore,
     input logic [1:0] pacLifeChange,
+	 input logic recovering,
 
     output logic       collision_pac_wall,
     output logic       collision_pac_coin,
@@ -107,7 +108,7 @@ module pacman_game_controller (
 
       if (collision_pac_ghost != 3'd0 && !ghostFlag) begin
         ghostFlag <= 1'b1;
-        if (currentState == PLAYING_ST) begin
+        if (currentState == PLAYING_ST && !recovering) begin
           newLives = newLives - 1;
         end else if (currentState == POWER_UP_ST) begin
           ghostEaten <= ghostEaten + 1;
@@ -174,9 +175,9 @@ module pacman_game_controller (
 
           PLAYING_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-            else if (collision_pac_ghost != 3'd0) currentState <= GHOST_HIT_ST;
-				else if (currLives == 0) currentState <= WIN_ST;
-            else if (isWin) currentState <= LOSE_ST; // if 0 heart caused by a pickUp
+            else if (collision_pac_ghost != 3'd0 && !recovering) currentState <= GHOST_HIT_ST;
+				else if (currLives == 0) currentState <= LOSE_ST;
+            else if (isWin) currentState <= WIN_ST; // if 0 heart caused by a pickUp
             else if (collision_pac_power_reg) currentState <= POWER_UP_ST;
           end
 

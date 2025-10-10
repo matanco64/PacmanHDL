@@ -150,6 +150,13 @@ agreement for further details.
 		(text "pacmanDir[1..0]" (rect 172 91 267 110)(font "Intel Clear" (font_size 8)))
 		(line (pt 288 96)(pt 272 96)(line_width 3))
 	)
+	(port
+		(pt 288 112)
+		(output)
+		(text "recovering" (rect 0 0 61 19)(font "Intel Clear" (font_size 8)))
+		(text "recovering" (rect 206 107 267 126)(font "Intel Clear" (font_size 8)))
+		(line (pt 288 112)(pt 272 112))
+	)
 	(drawing
 		(rectangle (rect 16 16 272 240))
 	)

@@ -144,6 +144,13 @@ agreement for further details.
 		(line (pt 0 288)(pt 16 288)(line_width 3))
 	)
 	(port
+		(pt 0 304)
+		(input)
+		(text "recovering" (rect 0 0 42 12)(font "Arial" ))
+		(text "recovering" (rect 21 299 63 311)(font "Arial" ))
+		(line (pt 0 304)(pt 16 304)(line_width 1))
+	)
+	(port
 		(pt 280 32)
 		(output)
 		(text "collision_pac_wall" (rect 0 0 67 12)(font "Arial" ))

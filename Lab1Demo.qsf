@@ -300,13 +300,11 @@ set_global_assignment -name VERILOG_FILE one_sec_counter.v
 set_global_assignment -name VERILOG_FILE RTL/Pacman/one_sec_counter.v
 set_global_assignment -name BDF_FILE RTL/Pacman/Number.bdf
 set_global_assignment -name VERILOG_FILE output_files/Lab1Demo.v
-set_global_assignment -name BDF_FILE output_files/Letter.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/ScoreBitMap.sv
 set_global_assignment -name BDF_FILE RTL/Pacman/Score.bdf
 set_global_assignment -name BDF_FILE RTL/Pacman/Character.bdf
 set_global_assignment -name BDF_FILE RTL/Pacman/Ghost.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/ghost_move.sv
-set_global_assignment -name VECTOR_WAVEFORM_FILE "output_files/wave-ghost.vwf"
 set_global_assignment -name VECTOR_WAVEFORM_FILE output_files/ghost.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE simulation/qsim/ghost.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE simulation/ghost.vwf
@@ -314,7 +312,6 @@ set_global_assignment -name VECTOR_WAVEFORM_FILE Waveform.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE Waveform1.vwf
 set_global_assignment -name BDF_FILE RTL/Pacman/heart.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/heartBitMap.sv
-set_global_assignment -name VECTOR_WAVEFORM_FILE output_files/Waveform.vwf
 set_location_assignment PIN_AK4 -to switchN
 set_location_assignment PIN_AA14 -to startN
 set_location_assignment PIN_AA15 -to waitN
@@ -404,6 +401,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/melody_selector.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/Text.sv
-set_global_assignment -name SYSTEMVERILOG_FILE output_files/genericBitMap.sv
-set_global_assignment -name BDF_FILE output_files/genericBitMapTop.bdf
+set_global_assignment -name BDF_FILE RTL/Bitmaps/genericBitMapTop.bdf
+set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bitmaps/genericBitMap.sv
+set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bitmaps/sideBitMaps.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
