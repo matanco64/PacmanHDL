@@ -3,6 +3,7 @@ module pacman_move (
     input logic       clk,
     input logic       resetN,
     input logic       startOfFrame,  //short pulse every start of frame 30Hz 
+	 input logic       oneSec, 
     input logic [3:0] keyPadCode,    //move direction
     input logic       keyPadValid,
 
@@ -17,7 +18,8 @@ module pacman_move (
     output logic signed [10:0] topLeftX,  // output the top left corner 
     output logic signed [10:0] topLeftY,  // can be negative , if the object is partliy outside
     output logic [3:0] curDirKey,
-    output logic [1:0] curDir
+    output logic [1:0] curDir,
+	 output logic recovering
 );
 
 
@@ -46,6 +48,7 @@ module pacman_move (
   localparam RIGHT_KEY = 4'd6;
   localparam LEFT_KEY = 4'd4;
   localparam DOWN_KEY = 4'd2;
+  localparam RECOVER_TIME = 4'd3;
 
   const int FIXED_POINT_MULTIPLIER = 64;
   const int OBJECT_WIDTH_X = 32;
@@ -77,10 +80,9 @@ module pacman_move (
 
   logic hit_reg = 1'b0;
   logic is_neg;
-
+  logic [2:0] recoveTimer; 
 
   logic canTurn;
-
   assign canTurn = ((Xposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER)) == 0) &&
                  ((Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER)) == 0);
 
@@ -99,6 +101,8 @@ module pacman_move (
       speed <= NORMAL_SPEED;
       prevSpeed <= 0;
       curDirKey <= INITIAL_DIRECTION;
+		recovering <= 0;
+		recoveTimer <=0;
     end else if (collision_pac_ghost != 3'b0 && gameState != POWER_UP_ST) begin  // thoch ghost
       SM_Motion <= IDLE_ST;
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
@@ -108,13 +112,18 @@ module pacman_move (
       hit_reg <= 1'b0;
       is_neg <= 1'b0;
       curDirKey <= INITIAL_DIRECTION;
+		recovering <= 1'b1;
+		recoveTimer <= RECOVER_TIME;
     end else if (gameState == START_WAIT_ST || gameState == PAUSED_ST || gameState == GHOST_HIT_ST || gameState == WIN_ST || gameState == LOSE_ST) begin
       // Pacman stands still in START or PAUSE
       SM_Motion <= WAIT_ST;
-
+		if(gameState == LOSE_ST) recovering<=0;
     end else begin
 
       // missing - handle speed next do turbo - all in different ff block
+		
+		if(recoveTimer>0 && oneSec) recoveTimer <= recoveTimer- 1;
+		else if(recoveTimer == 0) recovering <= 0 ;
 
       if (startOfFrame && canTurn) begin
         case (speedChange)

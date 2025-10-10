@@ -377,13 +377,14 @@ module ghost_move (
         end
 
         PLAYING_ST: begin
-          // Exiting power mode - return to chase
-          if (lastGameState == POWER_UP_ST && currMode == FRIGHTENED_M) begin
-            currMode <= CHASE_M;
-            modeTimer <= CHASE_DURATION;
-            wasInFrightened <= 1'b0;
-          end
-        end
+			  if (lastGameState == POWER_UP_ST) begin
+				 currMode <= CHASE_M;
+				 SM_Motion <= CHANGE_ST;  // NEW ADDITION- BECAUSE GHOSTS GOT STUCK AFTER FRIGHTENED
+				 modeTimer <= CHASE_DURATION;
+				 wasInFrightened <= 1'b0;
+			  end
+			end
+
       endcase
 
       // ========================================================================

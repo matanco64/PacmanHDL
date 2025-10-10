@@ -27,7 +27,7 @@ module melody_selector (
   localparam LOSE_ST = 3'b110;
   localparam POWER_UP_ST = 3'b111;
 
-  // Melody indices (matching JukeBox)
+  // Melody indices (matching JukeBox) - the number/order = priority 
   localparam MELODY_GAME_START = 4'd0;
   localparam MELODY_WIN = 4'd1;
   localparam MELODY_LOSE = 4'd2;

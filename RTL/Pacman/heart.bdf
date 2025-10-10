@@ -201,7 +201,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 48 136 272 280)
+	(rect 40 136 264 280)
 	(text "square_object" (rect 5 0 73 12)(font "Arial" ))
 	(text "inst8" (rect 8 128 30 145)(font "Intel Clear" ))
 	(port
@@ -292,7 +292,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 208 128))
 	)
-	(annotation_block (parameter)(rect 48 24 288 100))
+	(annotation_block (parameter)(rect 40 24 280 100))
 )
 (symbol
 	(rect 568 96 792 240)
@@ -374,63 +374,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "clk" (rect 33 152 47 169)(font "Intel Clear" ))
-	(pt 16 168)
-	(pt 48 168)
-)
-(connector
-	(text "resetN" (rect 19 168 49 185)(font "Intel Clear" ))
-	(pt 16 184)
-	(pt 48 184)
-)
-(connector
-	(text "pixelX[10..0]" (rect -22 184 38 196)(font "Arial" ))
-	(pt -48 200)
-	(pt 48 200)
-	(bus)
-)
-(connector
-	(text "pixelY[10..0]" (rect -22 200 40 212)(font "Arial" ))
-	(pt -48 216)
-	(pt 48 216)
-	(bus)
-)
-(connector
-	(text "Box_offsetX[10..0]" (rect 282 152 375 164)(font "Arial" ))
-	(pt 384 168)
-	(pt 272 168)
-	(bus)
-)
-(connector
-	(text "Box_offsetY[10..0]" (rect 280 168 375 180)(font "Arial" ))
-	(pt 384 184)
-	(pt 272 184)
-	(bus)
-)
-(connector
-	(text "BoxRGB[7..0]" (rect 290 200 352 217)(font "Intel Clear" ))
-	(pt 272 216)
-	(pt 392 216)
-	(bus)
-)
-(connector
-	(text "BoxDrawingRequest" (rect 290 184 385 201)(font "Intel Clear" ))
-	(pt 272 200)
-	(pt 392 200)
-)
-(connector
-	(text "topLeftX[10..0]" (rect -30 216 40 233)(font "Intel Clear" ))
-	(pt -48 232)
-	(pt 48 232)
-	(bus)
-)
-(connector
-	(text "topLeftY[10..0]" (rect -30 232 40 249)(font "Intel Clear" ))
-	(pt -48 248)
-	(pt 48 248)
-	(bus)
-)
-(connector
 	(text "topLeftX[10..0]" (rect 122 392 195 404)(font "Arial" ))
 	(pt 112 408)
 	(pt 208 408)
@@ -496,5 +439,62 @@ agreement for further details.
 	(text "currLives[2..0]" (rect 470 176 536 193)(font "Intel Clear" ))
 	(pt 568 192)
 	(pt 456 192)
+	(bus)
+)
+(connector
+	(text "clk" (rect 25 152 39 169)(font "Intel Clear" ))
+	(pt 8 168)
+	(pt 40 168)
+)
+(connector
+	(text "resetN" (rect 11 168 41 185)(font "Intel Clear" ))
+	(pt 8 184)
+	(pt 40 184)
+)
+(connector
+	(text "pixelX[10..0]" (rect -30 184 30 196)(font "Arial" ))
+	(pt -56 200)
+	(pt 40 200)
+	(bus)
+)
+(connector
+	(text "pixelY[10..0]" (rect -30 200 32 212)(font "Arial" ))
+	(pt -56 216)
+	(pt 40 216)
+	(bus)
+)
+(connector
+	(text "topLeftX[10..0]" (rect -38 216 32 233)(font "Intel Clear" ))
+	(pt -56 232)
+	(pt 40 232)
+	(bus)
+)
+(connector
+	(text "topLeftY[10..0]" (rect -38 232 32 249)(font "Intel Clear" ))
+	(pt -56 248)
+	(pt 40 248)
+	(bus)
+)
+(connector
+	(text "Box_offsetX[10..0]" (rect 274 152 367 164)(font "Arial" ))
+	(pt 264 168)
+	(pt 376 168)
+	(bus)
+)
+(connector
+	(text "Box_offsetY[10..0]" (rect 272 168 367 180)(font "Arial" ))
+	(pt 264 184)
+	(pt 376 184)
+	(bus)
+)
+(connector
+	(text "BoxDrawingRequest" (rect 282 184 377 201)(font "Intel Clear" ))
+	(pt 264 200)
+	(pt 384 200)
+)
+(connector
+	(text "BoxRGB[7..0]" (rect 282 200 344 217)(font "Intel Clear" ))
+	(pt 264 216)
+	(pt 384 216)
 	(bus)
 )

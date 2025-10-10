@@ -403,4 +403,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/melody_selector.sv
+set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/Text.sv
+set_global_assignment -name SYSTEMVERILOG_FILE output_files/genericBitMap.sv
+set_global_assignment -name BDF_FILE output_files/genericBitMapTop.bdf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

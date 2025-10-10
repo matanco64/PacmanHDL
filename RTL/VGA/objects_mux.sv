@@ -35,6 +35,9 @@ module	objects_mux	(
 			// heart 
 					input		logic heartDR, 
 					input		logic	[7:0] heartRGB,	
+			// end 
+					input		logic endDR, 
+					input		logic	[7:0] endRGB,			
 			  
 		   // Map
 					input		logic MapDR, 
@@ -79,8 +82,13 @@ begin
 		// map	
 		else if (MapDR || CoinDR || powerDR || pickUpDR)
 			RGBOut <= MapRGB;
+		
+		// side	
 		else if (heartDR)
-			RGBOut <= heartRGB;		
+			RGBOut <= heartRGB;
+		else if (endDR)
+			RGBOut <= endRGB;
+			
 		else RGBOut <= RGB_MIF ;// last priority 
 		end ; 
 	end

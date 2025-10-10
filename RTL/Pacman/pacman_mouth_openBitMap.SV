@@ -11,7 +11,8 @@
 			input	logic	InsideRectangle, // input that the pixel is within a bracket 
 			input logic [3:0] inputDirection, // KeyCode from keyboard to derive direction
 			input logic startOfFrame,
-
+			input logic recovering,
+			
 			output	logic	drawingRequest, // output that the pixel should be displayed
 			output	logic	[7:0] RGBout,  // rgb value from the bitmap 
 			output   logic	[2:0] HitEdgeCode
@@ -73,6 +74,7 @@ localparam logic [3:0] DIR_DOWN  = 4'd2;
 
 logic [10:0] srcX, srcY;                 // source coordinates into object_colors
 logic [10:0] displayWidth, displayHeight; // dims of the rectangle that we are drawing into (depends on rotation)
+logic recoverToggle;
 
 // compute mapping and bounding box depending on direction
 always_comb begin
@@ -118,9 +120,6 @@ always_comb begin
         end
     endcase
 
-//    // compute local inside flag using the computed display dims (this prevents index out-of-range
-//    // when the caller didn't swap the rectangle dims for rotated drawing) - displayWidth disH have been deleted look for old version
-//    localInside = (offsetX < displayWidth) && (offsetY < displayHeight);
 end
 
 
@@ -133,6 +132,7 @@ always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
         frameCnt  <= 4'd0;
         mouthOpen <= 1'b0;
+		  recoverToggle <= 0;
     end
     else if (startOfFrame) begin // assuming you have a vertical sync pulse per frame
         frameCnt <= frameCnt + 1;
@@ -141,6 +141,10 @@ always_ff @(posedge clk or negedge resetN) begin
             frameCnt  <= 4'd0;
             mouthOpen <= ~mouthOpen;  // toggle between open/close
         end
+		  
+		  if(recovering && frameCnt % 16 == 0) recoverToggle <= ~recoverToggle ;
+		  else if(!recovering) recoverToggle <= 0;
+
     end
 end
 
@@ -160,8 +164,11 @@ always_ff @(posedge clk or negedge resetN) begin
         if (InsideRectangle) begin
             // Safety: make sure srcX/srcY are in original object index ranges before indexing
             if ((srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y))
-					 RGBout <= (mouthOpen) ? object_colors_open[srcY][srcX] :object_colors_closed[srcY][srcX];
-//                RGBout <= object_colors_close[srcY][srcX]; // note: object_colors[y][x]
+				
+				
+					if(recovering) RGBout <= recoverToggle? TRANSPARENT_ENCODING : object_colors_open[srcY][srcX];
+					else RGBout <= (mouthOpen) ? object_colors_open[srcY][srcX] :object_colors_closed[srcY][srcX];
+					 
             else
                 RGBout <= TRANSPARENT_ENCODING; // out-of-range — don't draw
         end

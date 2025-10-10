@@ -4,6 +4,7 @@ module map1_drawer (
     input logic signed [10:0] pixelX,  //  current VGA pixel 
     input logic signed [10:0] pixelY,
     input logic [7:0] rnd,
+	 input logic startOfFrame,
     input logic oneSec,
 
     input logic coinCollision,
@@ -57,7 +58,8 @@ module map1_drawer (
   localparam GHOST_WALL_COLOR = 8'b10001111;
   localparam PORTAL_COLOR = 8'b01111111;
   localparam COIN_COLOR = 8'b11111111;
-  localparam POW_COLOR = 8'b11111101;
+  localparam POW_COLOR1 = 8'b11111101;
+  localparam POW_COLOR2 = 8'hF4;
   localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
   // tiles
   localparam TILE_SIZE = 16;  // IMPORTANT TO KEEP 2^n
@@ -283,11 +285,39 @@ module map1_drawer (
       };
     end
   endfunction
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+	logic [3:0] frameCnt;
+	logic [3:0] frameRnd;
+	logic       togglePow;
+	logic       shine;
+
+	always_ff @(posedge clk or negedge resetN) begin
+		 if (!resetN) begin
+			  frameCnt  <= 4'd0;
+			  shine <= 1'b0;
+			  togglePow <= 1'b0;
+			  frameRnd <= rnd;
+		 end
+		 else if (startOfFrame) begin 
+			  frameCnt <= frameCnt + 1;
+
+			  if (frameCnt % 4 == 0) begin
+					shine <= ~shine;  // bliking of power
+			  end
+			  
+			  if(frameCnt == frameRnd)begin
+					frameRnd  <= rnd;
+					togglePow <= ~togglePow;  // bliking of power
+			  end
+		 end
+	end
 
 
   // ---------------------------------------------------------------------------
   // rgb output logic + map update
   // ---------------------------------------------------------------------------
+  
 
   always_ff @(posedge clk or negedge resetN) begin
 
@@ -443,8 +473,8 @@ module map1_drawer (
 				dx = offsetX - 8;
 				dy = offsetY - 8;
 				
-				if ((dx*dx + dy*dy) <= (5*5)) begin // 5=radius
-					 RGBout  <= POW_COLOR;
+				if ((dx*dx + dy*dy) <= (5*5) && togglePow) begin // 5=radius
+					 RGBout  <= (shine)? POW_COLOR1 : POW_COLOR2; // switch color
 					 powerDR <= 1'b1;
 				end
 
