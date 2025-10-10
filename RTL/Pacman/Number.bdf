@@ -295,7 +295,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect -256 0 -16 76))
 )
 (symbol
-	(rect 240 80 464 224)
+	(rect 240 64 464 208)
 	(text "NumbersBitMap" (rect 5 0 82 12)(font "Arial" ))
 	(text "inst15" (rect 8 128 36 145)(font "Intel Clear" ))
 	(port
@@ -362,7 +362,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 208 128))
 	)
-	(annotation_block (parameter)(rect 240 16 428 54))
+	(annotation_block (parameter)(rect 240 0 428 38))
 )
 (connector
 	(text "clk" (rect -174 304 -160 321)(font "Intel Clear" ))
@@ -462,50 +462,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "Box_offsetX[10..0]" (rect 138 128 231 140)(font "Arial" ))
-	(pt 240 144)
-	(pt 128 144)
-	(bus)
-)
-(connector
-	(text "Box_offsetY[10..0]" (rect 136 144 231 156)(font "Arial" ))
-	(pt 240 160)
-	(pt 128 160)
-	(bus)
-)
-(connector
-	(text "BoxDrawingRequest" (rect 138 160 233 177)(font "Intel Clear" ))
-	(pt 120 176)
-	(pt 240 176)
-)
-(connector
-	(text "digit[3..0]" (rect 138 176 181 193)(font "Intel Clear" ))
-	(pt 240 192)
-	(pt 128 192)
-	(bus)
-)
-(connector
-	(text "clk" (rect 176 96 190 113)(font "Intel Clear" ))
-	(pt 128 112)
-	(pt 240 112)
-)
-(connector
-	(text "resetN" (rect 168 112 201 124)(font "Arial" ))
-	(pt 128 128)
-	(pt 240 128)
-)
-(connector
-	(text "NumDrawingRequest" (rect 466 96 566 113)(font "Intel Clear" ))
-	(pt 464 112)
-	(pt 568 112)
-)
-(connector
-	(text "RGBNum1[7..0]" (rect 466 112 539 129)(font "Intel Clear" ))
-	(pt 464 128)
-	(pt 560 128)
-	(bus)
-)
-(connector
 	(text "NumDrawingRequest" (rect 282 296 382 313)(font "Intel Clear" ))
 	(pt 280 312)
 	(pt 384 312)
@@ -514,6 +470,50 @@ agreement for further details.
 	(text "RGBNum1[7..0]" (rect 290 312 363 329)(font "Intel Clear" ))
 	(pt 288 328)
 	(pt 384 328)
+	(bus)
+)
+(connector
+	(text "Box_offsetX[10..0]" (rect 138 112 231 124)(font "Arial" ))
+	(pt 240 128)
+	(pt 128 128)
+	(bus)
+)
+(connector
+	(text "Box_offsetY[10..0]" (rect 136 128 231 140)(font "Arial" ))
+	(pt 240 144)
+	(pt 128 144)
+	(bus)
+)
+(connector
+	(text "BoxDrawingRequest" (rect 138 144 233 161)(font "Intel Clear" ))
+	(pt 120 160)
+	(pt 240 160)
+)
+(connector
+	(text "digit[3..0]" (rect 138 160 181 177)(font "Intel Clear" ))
+	(pt 240 176)
+	(pt 128 176)
+	(bus)
+)
+(connector
+	(text "clk" (rect 176 80 190 97)(font "Intel Clear" ))
+	(pt 128 96)
+	(pt 240 96)
+)
+(connector
+	(text "resetN" (rect 168 96 201 108)(font "Arial" ))
+	(pt 128 112)
+	(pt 240 112)
+)
+(connector
+	(text "NumDrawingRequest" (rect 466 80 566 97)(font "Intel Clear" ))
+	(pt 464 96)
+	(pt 568 96)
+)
+(connector
+	(text "RGBNum1[7..0]" (rect 466 96 539 113)(font "Intel Clear" ))
+	(pt 464 112)
+	(pt 560 112)
 	(bus)
 )
 (text "Add here the \"square_object\" and  \"random\" modules" (rect -336 -56 45 -36)(font "Intel Clear" (font_size 10)(bold)))
