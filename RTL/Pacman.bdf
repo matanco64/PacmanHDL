@@ -1078,7 +1078,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect 3304 64 3473 121))
 )
 (symbol
-	(rect -184 2848 88 3008)
+	(rect -184 2864 88 3024)
 	(text "heart" (rect 5 0 35 19)(font "Intel Clear" (font_size 8)))
 	(text "inst37" (rect 8 139 36 156)(font "Intel Clear" ))
 	(port
@@ -1162,7 +1162,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 256 144))
 	)
-	(annotation_block (parameter)(rect -184 2768 -37 2844))
+	(annotation_block (parameter)(rect -184 2784 -37 2860))
 )
 (symbol
 	(rect -880 592 -848 624)
@@ -2255,7 +2255,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 720 552 952 1080)
+	(rect 720 536 952 1064)
 	(text "objects_mux" (rect 5 0 67 12)(font "Arial" ))
 	(text "inst9" (rect 8 512 31 524)(font "Arial" ))
 	(port
@@ -3278,32 +3278,6 @@ agreement for further details.
 	(annotation_block (parameter)(rect -824 2920 -655 2977))
 )
 (symbol
-	(rect -608 3224 -448 3304)
-	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
-	(text "inst41" (rect 8 64 36 81)(font "Intel Clear" ))
-	(port
-		(pt 160 32)
-		(output)
-		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
-		(line (pt 160 32)(pt 144 32)(line_width 3))
-	)
-	(parameter
-		"size"
-		"11"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"MyValue"
-		"504"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 144 64))
-	)
-	(annotation_block (parameter)(rect -816 3224 -647 3281))
-)
-(symbol
 	(rect -184 2448 112 2608)
 	(text "Score" (rect 5 0 38 19)(font "Intel Clear" (font_size 8)))
 	(text "inst25" (rect 8 139 36 156)(font "Intel Clear" ))
@@ -3697,7 +3671,94 @@ agreement for further details.
 	(annotation_block (parameter)(rect -824 3320 -655 3377))
 )
 (symbol
-	(rect -168 3248 80 3408)
+	(rect 496 3600 768 3760)
+	(text "Number" (rect 5 0 53 19)(font "Intel Clear" (font_size 8)))
+	(text "inst47" (rect 8 139 36 156)(font "Intel Clear" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 16 19)(font "Intel Clear" (font_size 8)))
+		(text "clk" (rect 21 27 37 46)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 38 19)(font "Intel Clear" (font_size 8)))
+		(text "resetN" (rect 21 43 59 62)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "pixelX[10..0]" (rect 0 0 75 19)(font "Intel Clear" (font_size 8)))
+		(text "pixelX[10..0]" (rect 21 59 96 78)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 64)(pt 16 64)(line_width 3))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "pixelY[10..0]" (rect 0 0 75 19)(font "Intel Clear" (font_size 8)))
+		(text "pixelY[10..0]" (rect 21 75 96 94)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 80)(pt 16 80)(line_width 3))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "digit[3..0]" (rect 0 0 57 19)(font "Intel Clear" (font_size 8)))
+		(text "digit[3..0]" (rect 21 91 78 110)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 96)(pt 16 96)(line_width 3))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "topLeftX[10..0]" (rect 0 0 90 19)(font "Intel Clear" (font_size 8)))
+		(text "topLeftX[10..0]" (rect 21 107 111 126)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 112)(pt 16 112)(line_width 3))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "topLeftY[10..0]" (rect 0 0 90 19)(font "Intel Clear" (font_size 8)))
+		(text "topLeftY[10..0]" (rect 21 123 111 142)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 128)(pt 16 128)(line_width 3))
+	)
+	(port
+		(pt 272 32)
+		(output)
+		(text "NumDrawingRequest" (rect 0 0 125 19)(font "Intel Clear" (font_size 8)))
+		(text "NumDrawingRequest" (rect 126 27 251 46)(font "Intel Clear" (font_size 8)))
+		(line (pt 272 32)(pt 256 32))
+	)
+	(port
+		(pt 272 48)
+		(output)
+		(text "RGBNum1[7..0]" (rect 0 0 93 19)(font "Intel Clear" (font_size 8)))
+		(text "RGBNum1[7..0]" (rect 158 43 251 62)(font "Intel Clear" (font_size 8)))
+		(line (pt 272 48)(pt 256 48)(line_width 3))
+	)
+	(parameter
+		"WIDTH"
+		"16"
+		""
+	)
+	(parameter
+		"HEIGHT"
+		"16"
+		""
+	)
+	(parameter
+		"COLOR"
+		"11110111"
+		""
+	)
+	(drawing
+		(rectangle (rect 16 16 256 144))
+	)
+	(annotation_block (parameter)(rect 496 3480 643 3556))
+)
+(symbol
+	(rect -352 3800 -104 3960)
 	(text "genericBitMapTop" (rect 5 0 113 19)(font "Intel Clear" (font_size 8)))
 	(text "inst" (rect 8 139 24 156)(font "Intel Clear" ))
 	(port
@@ -3781,7 +3842,120 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 232 144))
 	)
-	(annotation_block (parameter)(rect -168 3168 -21 3244))
+	(annotation_block (parameter)(rect -352 3720 -205 3796))
+)
+(symbol
+	(rect -216 3248 16 3408)
+	(text "sideBitMapTop" (rect 5 0 95 19)(font "Intel Clear" (font_size 8)))
+	(text "inst40" (rect 8 139 36 156)(font "Intel Clear" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 16 19)(font "Intel Clear" (font_size 8)))
+		(text "clk" (rect 21 27 37 46)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 38 19)(font "Intel Clear" (font_size 8)))
+		(text "resetN" (rect 21 43 59 62)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "pixelX[10..0]" (rect 0 0 75 19)(font "Intel Clear" (font_size 8)))
+		(text "pixelX[10..0]" (rect 21 59 96 78)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 64)(pt 16 64)(line_width 3))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "pixelY[10..0]" (rect 0 0 75 19)(font "Intel Clear" (font_size 8)))
+		(text "pixelY[10..0]" (rect 21 75 96 94)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 80)(pt 16 80)(line_width 3))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "gameState[2..0]" (rect 0 0 95 19)(font "Intel Clear" (font_size 8)))
+		(text "gameState[2..0]" (rect 21 91 116 110)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 96)(pt 16 96)(line_width 3))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "topLeftX[10..0]" (rect 0 0 90 19)(font "Intel Clear" (font_size 8)))
+		(text "topLeftX[10..0]" (rect 21 107 111 126)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 112)(pt 16 112)(line_width 3))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "topLeftY[10..0]" (rect 0 0 90 19)(font "Intel Clear" (font_size 8)))
+		(text "topLeftY[10..0]" (rect 21 123 111 142)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 128)(pt 16 128)(line_width 3))
+	)
+	(port
+		(pt 232 32)
+		(output)
+		(text "sideDR" (rect 0 0 42 19)(font "Intel Clear" (font_size 8)))
+		(text "sideDR" (rect 169 27 211 46)(font "Intel Clear" (font_size 8)))
+		(line (pt 232 32)(pt 216 32))
+	)
+	(port
+		(pt 232 48)
+		(output)
+		(text "RGBside[7..0]" (rect 0 0 81 19)(font "Intel Clear" (font_size 8)))
+		(text "RGBside[7..0]" (rect 130 43 211 62)(font "Intel Clear" (font_size 8)))
+		(line (pt 232 48)(pt 216 48)(line_width 3))
+	)
+	(parameter
+		"COLOR"
+		"11111110"
+		""
+	)
+	(parameter
+		"WIDTH"
+		"64"
+		""
+	)
+	(parameter
+		"HEIGHT"
+		"64"
+		""
+	)
+	(drawing
+		(rectangle (rect 16 16 216 144))
+	)
+	(annotation_block (parameter)(rect -216 3160 -69 3236))
+)
+(symbol
+	(rect -608 3224 -448 3304)
+	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
+	(text "inst41" (rect 8 64 36 81)(font "Intel Clear" ))
+	(port
+		(pt 160 32)
+		(output)
+		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
+		(line (pt 160 32)(pt 144 32)(line_width 3))
+	)
+	(parameter
+		"size"
+		"11"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"MyValue"
+		"528"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 144 64))
+	)
+	(annotation_block (parameter)(rect -824 3224 -655 3281))
 )
 (connector
 	(text "address[18..0]" (rect -838 256 -772 273)(font "Intel Clear" ))
@@ -3934,17 +4108,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "clk" (rect 608 568 622 585)(font "Intel Clear" ))
-	(pt 600 584)
-	(pt 720 584)
-)
-(connector
-	(text "RGB[7..0]" (rect 964 568 1008 585)(font "Intel Clear" ))
-	(pt 952 584)
-	(pt 1040 584)
-	(bus)
-)
-(connector
 	(text "address[18..0]" (rect 1258 632 1324 649)(font "Intel Clear" ))
 	(pt 1248 648)
 	(pt 1368 648)
@@ -4002,127 +4165,6 @@ agreement for further details.
 	(text "resetN" (rect 1000 600 1033 612)(font "Arial" ))
 	(pt 992 616)
 	(pt 1040 616)
-)
-(connector
-	(text "resetN" (rect 608 584 641 596)(font "Arial" ))
-	(pt 600 600)
-	(pt 720 600)
-)
-(connector
-	(text "MIF_VGA[7..0]" (rect 610 600 678 617)(font "Intel Clear" ))
-	(pt 600 616)
-	(pt 720 616)
-	(bus)
-)
-(connector
-	(text "PacmanDR" (rect 610 616 663 633)(font "Intel Clear" ))
-	(pt 600 632)
-	(pt 720 632)
-)
-(connector
-	(text "PacmanRGB[7..0]" (rect 612 632 695 649)(font "Intel Clear" ))
-	(pt 600 648)
-	(pt 720 648)
-	(bus)
-)
-(connector
-	(text "PinkyDR" (rect 610 648 651 665)(font "Intel Clear" ))
-	(pt 600 664)
-	(pt 720 664)
-)
-(connector
-	(text "PinkyRGB[7..0]" (rect 610 664 681 681)(font "Intel Clear" ))
-	(pt 600 680)
-	(pt 720 680)
-	(bus)
-)
-(connector
-	(text "InkyDR" (rect 610 680 644 697)(font "Intel Clear" ))
-	(pt 600 696)
-	(pt 720 696)
-)
-(connector
-	(text "InkyRGB[7..0]" (rect 610 696 674 713)(font "Intel Clear" ))
-	(pt 600 712)
-	(pt 720 712)
-	(bus)
-)
-(connector
-	(text "ClydeDR" (rect 610 712 652 729)(font "Intel Clear" ))
-	(pt 600 728)
-	(pt 720 728)
-)
-(connector
-	(text "ClydeRGB[7..0]" (rect 610 728 683 745)(font "Intel Clear" ))
-	(pt 600 744)
-	(pt 720 744)
-	(bus)
-)
-(connector
-	(text "BlinkyDR" (rect 610 744 654 761)(font "Intel Clear" ))
-	(pt 600 760)
-	(pt 720 760)
-)
-(connector
-	(text "BlinkyRGB[7..0]" (rect 610 760 685 777)(font "Intel Clear" ))
-	(pt 600 776)
-	(pt 720 776)
-	(bus)
-)
-(connector
-	(text "Score0DR" (rect 610 776 656 793)(font "Intel Clear" ))
-	(pt 600 792)
-	(pt 720 792)
-)
-(connector
-	(text "RGBScore0[7..0]" (rect 610 792 686 809)(font "Intel Clear" ))
-	(pt 600 808)
-	(pt 720 808)
-	(bus)
-)
-(connector
-	(text "Score1DR" (rect 610 808 656 825)(font "Intel Clear" ))
-	(pt 600 824)
-	(pt 720 824)
-)
-(connector
-	(text "RGBScore1[7..0]" (rect 610 824 686 841)(font "Intel Clear" ))
-	(pt 600 840)
-	(pt 720 840)
-	(bus)
-)
-(connector
-	(text "Score2DR" (rect 610 840 656 857)(font "Intel Clear" ))
-	(pt 600 856)
-	(pt 720 856)
-)
-(connector
-	(text "RGBScore2[7..0]" (rect 610 856 686 873)(font "Intel Clear" ))
-	(pt 600 872)
-	(pt 720 872)
-	(bus)
-)
-(connector
-	(text "ScoreTxtDR" (rect 610 872 664 889)(font "Intel Clear" ))
-	(pt 600 888)
-	(pt 720 888)
-)
-(connector
-	(text "RGBScoreTxt[7..0]" (rect 610 888 694 905)(font "Intel Clear" ))
-	(pt 600 904)
-	(pt 720 904)
-	(bus)
-)
-(connector
-	(text "heartDR" (rect 610 904 648 921)(font "Intel Clear" ))
-	(pt 600 920)
-	(pt 720 920)
-)
-(connector
-	(text "RGBheart[7..0]" (rect 610 920 679 937)(font "Intel Clear" ))
-	(pt 600 936)
-	(pt 720 936)
-	(bus)
 )
 (connector
 	(text "SelectClyde[1..0]" (rect 3466 136 3547 153)(font "Intel Clear" ))
@@ -4846,66 +4888,15 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "pixelX[10..0]" (rect -270 2896 -210 2908)(font "Arial" ))
-	(pt -280 2912)
-	(pt -184 2912)
-	(bus)
-)
-(connector
-	(text "pixelY[10..0]" (rect -270 2912 -208 2924)(font "Arial" ))
-	(pt -280 2928)
-	(pt -184 2928)
-	(bus)
-)
-(connector
-	(text "clk" (rect -271 2864 -257 2881)(font "Intel Clear" ))
-	(pt -280 2880)
-	(pt -184 2880)
-)
-(connector
-	(text "resetN" (rect -269 2880 -239 2897)(font "Intel Clear" ))
-	(pt -280 2896)
-	(pt -184 2896)
-)
-(connector
 	(text "topLeftXHeart[10..0]" (rect -446 2832 -350 2849)(font "Intel Clear" ))
 	(pt -368 2856)
 	(pt -448 2856)
 	(bus)
 )
 (connector
-	(text "topLeftXHeart[10..0]" (rect -270 2928 -174 2945)(font "Intel Clear" ))
-	(pt -280 2944)
-	(pt -184 2944)
-	(bus)
-)
-(connector
 	(text "topLeftYHeart[10..0]" (rect -438 2936 -342 2953)(font "Intel Clear" ))
 	(pt -368 2952)
 	(pt -448 2952)
-	(bus)
-)
-(connector
-	(text "topLeftYHeart[10..0]" (rect -270 2944 -174 2961)(font "Intel Clear" ))
-	(pt -280 2960)
-	(pt -184 2960)
-	(bus)
-)
-(connector
-	(text "RGBheart[7..0]" (rect 98 2880 167 2897)(font "Intel Clear" ))
-	(pt 168 2896)
-	(pt 88 2896)
-	(bus)
-)
-(connector
-	(text "heartDR" (rect 98 2864 136 2881)(font "Intel Clear" ))
-	(pt 168 2880)
-	(pt 88 2880)
-)
-(connector
-	(text "currLives[2..0]" (rect -270 2960 -204 2977)(font "Intel Clear" ))
-	(pt -184 2976)
-	(pt -280 2976)
 	(bus)
 )
 (connector
@@ -5267,43 +5258,6 @@ agreement for further details.
 	(text "topLeftYEnd[10..0]" (rect -438 3336 -350 3353)(font "Intel Clear" ))
 	(pt -368 3352)
 	(pt -448 3352)
-	(bus)
-)
-(connector
-	(text "MapDR" (rect 608 968 643 985)(font "Intel Clear" ))
-	(pt 600 984)
-	(pt 720 984)
-)
-(connector
-	(text "CoinsDR" (rect 608 984 648 1001)(font "Intel Clear" ))
-	(pt 600 1000)
-	(pt 720 1000)
-)
-(connector
-	(text "powerDR" (rect 608 1000 651 1017)(font "Intel Clear" ))
-	(pt 600 1016)
-	(pt 720 1016)
-)
-(connector
-	(text "MapRGB[7..0]" (rect 609 1032 675 1049)(font "Intel Clear" ))
-	(pt 600 1048)
-	(pt 720 1048)
-	(bus)
-)
-(connector
-	(text "pickUpDR" (rect 614 1016 660 1033)(font "Intel Clear" ))
-	(pt 600 1032)
-	(pt 720 1032)
-)
-(connector
-	(text "endDR" (rect 610 936 641 953)(font "Intel Clear" ))
-	(pt 600 952)
-	(pt 720 952)
-)
-(connector
-	(text "RGBend[7..0]" (rect 610 952 672 969)(font "Intel Clear" ))
-	(pt 600 968)
-	(pt 720 968)
 	(bus)
 )
 (connector
@@ -5813,54 +5767,335 @@ agreement for further details.
 	(pt 1096 1376)
 )
 (connector
-	(text "clk" (rect -255 3264 -241 3281)(font "Intel Clear" ))
-	(pt -264 3280)
-	(pt -168 3280)
-)
-(connector
-	(text "resetN" (rect -253 3280 -223 3297)(font "Intel Clear" ))
-	(pt -264 3296)
-	(pt -168 3296)
-)
-(connector
-	(text "pixelX[10..0]" (rect -254 3296 -194 3308)(font "Arial" ))
-	(pt -264 3312)
-	(pt -168 3312)
+	(pt 1040 584)
+	(pt 1032 584)
 	(bus)
 )
 (connector
-	(text "pixelY[10..0]" (rect -254 3312 -192 3324)(font "Arial" ))
-	(pt -264 3328)
-	(pt -168 3328)
+	(text "clk" (rect 608 552 622 569)(font "Intel Clear" ))
+	(pt 600 568)
+	(pt 720 568)
+)
+(connector
+	(pt 1032 584)
+	(pt 1032 568)
 	(bus)
 )
 (connector
-	(text "topLeftXEnd[10..0]" (rect -254 3328 -166 3345)(font "Intel Clear" ))
-	(pt -264 3344)
-	(pt -168 3344)
+	(text "RGB[7..0]" (rect 964 552 1008 569)(font "Intel Clear" ))
+	(pt 1032 568)
+	(pt 952 568)
 	(bus)
 )
 (connector
-	(text "topLeftYEnd[10..0]" (rect -254 3344 -166 3361)(font "Intel Clear" ))
-	(pt -264 3360)
-	(pt -168 3360)
+	(text "resetN" (rect 608 568 641 580)(font "Arial" ))
+	(pt 600 584)
+	(pt 720 584)
+)
+(connector
+	(text "MIF_VGA[7..0]" (rect 610 584 678 601)(font "Intel Clear" ))
+	(pt 600 600)
+	(pt 720 600)
 	(bus)
 )
 (connector
-	(text "gameState[2..0]" (rect -254 3360 -179 3377)(font "Intel Clear" ))
-	(pt -264 3376)
-	(pt -168 3376)
+	(text "PacmanDR" (rect 610 600 663 617)(font "Intel Clear" ))
+	(pt 600 616)
+	(pt 720 616)
+)
+(connector
+	(text "PacmanRGB[7..0]" (rect 612 616 695 633)(font "Intel Clear" ))
+	(pt 600 632)
+	(pt 720 632)
 	(bus)
 )
 (connector
-	(text "endDR" (rect 90 3264 121 3281)(font "Intel Clear" ))
-	(pt 80 3280)
-	(pt 160 3280)
+	(text "PinkyDR" (rect 610 632 651 649)(font "Intel Clear" ))
+	(pt 600 648)
+	(pt 720 648)
 )
 (connector
-	(text "RGBend[7..0]" (rect 90 3280 152 3297)(font "Intel Clear" ))
-	(pt 80 3296)
-	(pt 160 3296)
+	(text "PinkyRGB[7..0]" (rect 610 648 681 665)(font "Intel Clear" ))
+	(pt 600 664)
+	(pt 720 664)
+	(bus)
+)
+(connector
+	(text "InkyDR" (rect 610 664 644 681)(font "Intel Clear" ))
+	(pt 600 680)
+	(pt 720 680)
+)
+(connector
+	(text "InkyRGB[7..0]" (rect 610 680 674 697)(font "Intel Clear" ))
+	(pt 600 696)
+	(pt 720 696)
+	(bus)
+)
+(connector
+	(text "ClydeDR" (rect 610 696 652 713)(font "Intel Clear" ))
+	(pt 600 712)
+	(pt 720 712)
+)
+(connector
+	(text "ClydeRGB[7..0]" (rect 610 712 683 729)(font "Intel Clear" ))
+	(pt 600 728)
+	(pt 720 728)
+	(bus)
+)
+(connector
+	(text "BlinkyDR" (rect 610 728 654 745)(font "Intel Clear" ))
+	(pt 600 744)
+	(pt 720 744)
+)
+(connector
+	(text "BlinkyRGB[7..0]" (rect 610 744 685 761)(font "Intel Clear" ))
+	(pt 600 760)
+	(pt 720 760)
+	(bus)
+)
+(connector
+	(text "Score0DR" (rect 610 760 656 777)(font "Intel Clear" ))
+	(pt 600 776)
+	(pt 720 776)
+)
+(connector
+	(text "RGBScore0[7..0]" (rect 610 776 686 793)(font "Intel Clear" ))
+	(pt 600 792)
+	(pt 720 792)
+	(bus)
+)
+(connector
+	(text "Score1DR" (rect 610 792 656 809)(font "Intel Clear" ))
+	(pt 600 808)
+	(pt 720 808)
+)
+(connector
+	(text "RGBScore1[7..0]" (rect 610 808 686 825)(font "Intel Clear" ))
+	(pt 600 824)
+	(pt 720 824)
+	(bus)
+)
+(connector
+	(text "Score2DR" (rect 610 824 656 841)(font "Intel Clear" ))
+	(pt 600 840)
+	(pt 720 840)
+)
+(connector
+	(text "RGBScore2[7..0]" (rect 610 840 686 857)(font "Intel Clear" ))
+	(pt 600 856)
+	(pt 720 856)
+	(bus)
+)
+(connector
+	(text "ScoreTxtDR" (rect 610 856 664 873)(font "Intel Clear" ))
+	(pt 600 872)
+	(pt 720 872)
+)
+(connector
+	(text "RGBScoreTxt[7..0]" (rect 610 872 694 889)(font "Intel Clear" ))
+	(pt 600 888)
+	(pt 720 888)
+	(bus)
+)
+(connector
+	(text "heartDR" (rect 610 888 648 905)(font "Intel Clear" ))
+	(pt 600 904)
+	(pt 720 904)
+)
+(connector
+	(text "RGBheart[7..0]" (rect 610 904 679 921)(font "Intel Clear" ))
+	(pt 600 920)
+	(pt 720 920)
+	(bus)
+)
+(connector
+	(text "MapDR" (rect 608 952 643 969)(font "Intel Clear" ))
+	(pt 600 968)
+	(pt 720 968)
+)
+(connector
+	(text "CoinsDR" (rect 608 968 648 985)(font "Intel Clear" ))
+	(pt 600 984)
+	(pt 720 984)
+)
+(connector
+	(text "powerDR" (rect 608 984 651 1001)(font "Intel Clear" ))
+	(pt 600 1000)
+	(pt 720 1000)
+)
+(connector
+	(text "MapRGB[7..0]" (rect 609 1016 675 1033)(font "Intel Clear" ))
+	(pt 600 1032)
+	(pt 720 1032)
+	(bus)
+)
+(connector
+	(text "pickUpDR" (rect 614 1000 660 1017)(font "Intel Clear" ))
+	(pt 600 1016)
+	(pt 720 1016)
+)
+(connector
+	(text "endDR" (rect 610 920 641 937)(font "Intel Clear" ))
+	(pt 600 936)
+	(pt 720 936)
+)
+(connector
+	(text "RGBend[7..0]" (rect 610 936 672 953)(font "Intel Clear" ))
+	(pt 600 952)
+	(pt 720 952)
+	(bus)
+)
+(connector
+	(text "clk" (rect 321 3400 335 3417)(font "Intel Clear" ))
+	(pt 312 3416)
+	(pt 408 3416)
+)
+(connector
+	(text "resetN" (rect 323 3416 353 3433)(font "Intel Clear" ))
+	(pt 312 3432)
+	(pt 408 3432)
+)
+(connector
+	(text "pixelX[10..0]" (rect 322 3432 382 3444)(font "Arial" ))
+	(pt 312 3448)
+	(pt 408 3448)
+	(bus)
+)
+(connector
+	(text "pixelY[10..0]" (rect 322 3448 384 3460)(font "Arial" ))
+	(pt 312 3464)
+	(pt 408 3464)
+	(bus)
+)
+(connector
+	(text "topLeftXEnd[10..0]" (rect 322 3480 410 3497)(font "Intel Clear" ))
+	(pt 312 3496)
+	(pt 408 3496)
+	(bus)
+)
+(connector
+	(text "topLeftYEnd[10..0]" (rect 322 3496 410 3513)(font "Intel Clear" ))
+	(pt 312 3512)
+	(pt 408 3512)
+	(bus)
+)
+(connector
+	(text "gameStateFor6Seg[3..0]" (rect 304 3464 418 3481)(font "Intel Clear" ))
+	(pt 319 3480)
+	(pt 408 3480)
+	(bus)
+)
+(connector
+	(text "endDR" (rect 690 3400 721 3417)(font "Intel Clear" ))
+	(pt 680 3416)
+	(pt 760 3416)
+)
+(connector
+	(text "RGBend[7..0]" (rect 690 3416 752 3433)(font "Intel Clear" ))
+	(pt 680 3432)
+	(pt 760 3432)
+	(bus)
+)
+(connector
+	(text "pixelX[10..0]" (rect -270 2912 -210 2924)(font "Arial" ))
+	(pt -280 2928)
+	(pt -184 2928)
+	(bus)
+)
+(connector
+	(text "pixelY[10..0]" (rect -270 2928 -208 2940)(font "Arial" ))
+	(pt -280 2944)
+	(pt -184 2944)
+	(bus)
+)
+(connector
+	(text "clk" (rect -271 2880 -257 2897)(font "Intel Clear" ))
+	(pt -280 2896)
+	(pt -184 2896)
+)
+(connector
+	(text "resetN" (rect -269 2896 -239 2913)(font "Intel Clear" ))
+	(pt -280 2912)
+	(pt -184 2912)
+)
+(connector
+	(text "topLeftXHeart[10..0]" (rect -270 2944 -174 2961)(font "Intel Clear" ))
+	(pt -280 2960)
+	(pt -184 2960)
+	(bus)
+)
+(connector
+	(text "topLeftYHeart[10..0]" (rect -270 2960 -174 2977)(font "Intel Clear" ))
+	(pt -280 2976)
+	(pt -184 2976)
+	(bus)
+)
+(connector
+	(text "RGBheart[7..0]" (rect 98 2896 167 2913)(font "Intel Clear" ))
+	(pt 168 2912)
+	(pt 88 2912)
+	(bus)
+)
+(connector
+	(text "heartDR" (rect 98 2880 136 2897)(font "Intel Clear" ))
+	(pt 168 2896)
+	(pt 88 2896)
+)
+(connector
+	(text "currLives[2..0]" (rect -270 2976 -204 2993)(font "Intel Clear" ))
+	(pt -184 2992)
+	(pt -280 2992)
+	(bus)
+)
+(connector
+	(text "clk" (rect -303 3264 -289 3281)(font "Intel Clear" ))
+	(pt -312 3280)
+	(pt -216 3280)
+)
+(connector
+	(text "resetN" (rect -301 3280 -271 3297)(font "Intel Clear" ))
+	(pt -312 3296)
+	(pt -216 3296)
+)
+(connector
+	(text "pixelX[10..0]" (rect -302 3296 -242 3308)(font "Arial" ))
+	(pt -312 3312)
+	(pt -216 3312)
+	(bus)
+)
+(connector
+	(text "pixelY[10..0]" (rect -302 3312 -240 3324)(font "Arial" ))
+	(pt -312 3328)
+	(pt -216 3328)
+	(bus)
+)
+(connector
+	(text "topLeftXEnd[10..0]" (rect -302 3344 -214 3361)(font "Intel Clear" ))
+	(pt -312 3360)
+	(pt -216 3360)
+	(bus)
+)
+(connector
+	(text "topLeftYEnd[10..0]" (rect -302 3360 -214 3377)(font "Intel Clear" ))
+	(pt -312 3376)
+	(pt -216 3376)
+	(bus)
+)
+(connector
+	(text "gameState[2..0]" (rect -302 3328 -227 3345)(font "Intel Clear" ))
+	(pt -312 3344)
+	(pt -216 3344)
+	(bus)
+)
+(connector
+	(text "endDR" (rect 26 3264 57 3281)(font "Intel Clear" ))
+	(pt 16 3280)
+	(pt 96 3280)
+)
+(connector
+	(text "RGBend[7..0]" (rect 26 3280 88 3297)(font "Intel Clear" ))
+	(pt 16 3296)
+	(pt 96 3296)
 	(bus)
 )
 (junction (pt -648 3744))
