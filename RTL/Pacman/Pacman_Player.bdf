@@ -419,7 +419,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect 856 328 1084 404))
 )
 (symbol
-	(rect 312 224 568 464)
+	(rect 296 224 552 464)
 	(text "pacman_move" (rect 5 0 78 12)(font "Arial" ))
 	(text "inst_pacman" (rect 8 224 70 236)(font "Arial" ))
 	(port
@@ -617,7 +617,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 240 224))
 	)
-	(annotation_block (parameter)(rect 312 24 518 195))
+	(annotation_block (parameter)(rect 296 24 502 195))
 )
 (symbol
 	(rect 1416 144 1664 320)
@@ -831,99 +831,10 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "KeyPadCode[3..0]" (rect 76 304 162 321)(font "Intel Clear" ))
-	(pt 72 320)
-	(pt 312 320)
-	(bus)
-)
-(connector
-	(text "collisionPacWall " (rect 57 336 139 353)(font "Intel Clear" ))
-	(pt 72 352)
-	(pt 312 352)
-)
-(connector
-	(text "collisionPacGhost[2..0]" (rect 233 352 340 369)(font "Intel Clear" ))
-	(pt 312 368)
-	(pt 232 368)
-	(bus)
-)
-(connector
-	(text "gameState[2..0]" (rect 242 384 317 401)(font "Intel Clear" ))
-	(pt 232 400)
-	(pt 312 400)
-	(bus)
-)
-(connector
-	(text "speedChange[1..0]" (rect 242 400 330 417)(font "Intel Clear" ))
-	(pt 312 416)
-	(pt 232 416)
-	(bus)
-)
-(connector
-	(text "aroundPac[15..0]" (rect 242 368 322 385)(font "Intel Clear" ))
-	(pt 232 384)
-	(pt 312 384)
-	(bus)
-)
-(connector
 	(text "gameState[2..0]" (rect 82 480 157 497)(font "Intel Clear" ))
 	(pt 72 496)
 	(pt 152 496)
 	(bus)
-)
-(connector
-	(text "topLeftX[10..0]" (rect 578 240 648 257)(font "Intel Clear" ))
-	(pt 568 256)
-	(pt 656 256)
-	(bus)
-)
-(connector
-	(text "topLeftY[10..0]" (rect 578 256 648 273)(font "Intel Clear" ))
-	(pt 568 272)
-	(pt 656 272)
-	(bus)
-)
-(connector
-	(text "DirKey[3..0]" (rect 576 272 631 289)(font "Intel Clear" ))
-	(pt 568 288)
-	(pt 656 288)
-	(bus)
-)
-(connector
-	(text "pacmanDir[1..0]" (rect 576 288 650 305)(font "Intel Clear" ))
-	(pt 568 304)
-	(pt 656 304)
-	(bus)
-)
-(connector
-	(text "recovering" (rect 576 304 625 321)(font "Intel Clear" ))
-	(pt 568 320)
-	(pt 656 320)
-)
-(connector
-	(text "keyPadValid" (rect 76 320 137 337)(font "Intel Clear" ))
-	(pt 72 336)
-	(pt 312 336)
-)
-(connector
-	(text "clk" (rect 80 240 94 257)(font "Intel Clear" ))
-	(pt 72 256)
-	(pt 312 256)
-)
-(connector
-	(text "resetN" (rect 78 256 108 273)(font "Intel Clear" ))
-	(pt 72 272)
-	(pt 312 272)
-)
-(connector
-	(text "startOfFrame" (rect 80 272 143 289)(font "Intel Clear" ))
-	(pt 72 288)
-	(pt 312 288)
-)
-(connector
-	(text "oneSec" (rect 80 288 114 305)(font "Intel Clear" ))
-	(pt 72 304)
-	(pt 312 304)
 )
 (connector
 	(text "recovering" (rect 1344 272 1393 289)(font "Intel Clear" ))
@@ -934,5 +845,94 @@ agreement for further details.
 	(text "recovering" (rect 2082 272 2131 289)(font "Intel Clear" ))
 	(pt 2072 288)
 	(pt 2168 288)
+)
+(connector
+	(text "startOfFrame" (rect 64 272 127 289)(font "Intel Clear" ))
+	(pt 72 288)
+	(pt 296 288)
+)
+(connector
+	(text "oneSec" (rect 64 288 98 305)(font "Intel Clear" ))
+	(pt 72 304)
+	(pt 296 304)
+)
+(connector
+	(text "KeyPadCode[3..0]" (rect 60 304 146 321)(font "Intel Clear" ))
+	(pt 72 320)
+	(pt 296 320)
+	(bus)
+)
+(connector
+	(text "keyPadValid" (rect 60 320 121 337)(font "Intel Clear" ))
+	(pt 72 336)
+	(pt 296 336)
+)
+(connector
+	(text "collisionPacWall " (rect 41 336 123 353)(font "Intel Clear" ))
+	(pt 72 352)
+	(pt 296 352)
+)
+(connector
+	(text "collisionPacGhost[2..0]" (rect 217 352 324 369)(font "Intel Clear" ))
+	(pt 296 368)
+	(pt 216 368)
+	(bus)
+)
+(connector
+	(text "gameState[2..0]" (rect 226 384 301 401)(font "Intel Clear" ))
+	(pt 216 400)
+	(pt 296 400)
+	(bus)
+)
+(connector
+	(text "speedChange[1..0]" (rect 226 400 314 417)(font "Intel Clear" ))
+	(pt 296 416)
+	(pt 216 416)
+	(bus)
+)
+(connector
+	(text "aroundPac[15..0]" (rect 226 368 306 385)(font "Intel Clear" ))
+	(pt 216 384)
+	(pt 296 384)
+	(bus)
+)
+(connector
+	(text "clk" (rect 64 240 78 257)(font "Intel Clear" ))
+	(pt 72 256)
+	(pt 296 256)
+)
+(connector
+	(text "resetN" (rect 62 256 92 273)(font "Intel Clear" ))
+	(pt 72 272)
+	(pt 296 272)
+)
+(connector
+	(text "topLeftX[10..0]" (rect 562 240 632 257)(font "Intel Clear" ))
+	(pt 552 256)
+	(pt 640 256)
+	(bus)
+)
+(connector
+	(text "topLeftY[10..0]" (rect 562 256 632 273)(font "Intel Clear" ))
+	(pt 552 272)
+	(pt 640 272)
+	(bus)
+)
+(connector
+	(text "DirKey[3..0]" (rect 560 272 615 289)(font "Intel Clear" ))
+	(pt 552 288)
+	(pt 640 288)
+	(bus)
+)
+(connector
+	(text "pacmanDir[1..0]" (rect 560 288 634 305)(font "Intel Clear" ))
+	(pt 552 304)
+	(pt 640 304)
+	(bus)
+)
+(connector
+	(text "recovering" (rect 560 304 609 321)(font "Intel Clear" ))
+	(pt 552 320)
+	(pt 640 320)
 )
 (text " " (rect 320 320 322 337)(font "Intel Clear" ))
