@@ -349,18 +349,18 @@ agreement for further details.
 	)
 	(parameter
 		"OBJECT_HEIGHT_Y"
-		"64"
+		"WIDTH"
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
 		"OBJECT_WIDTH_X"
-		"64"
+		"HEIGHT"
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(drawing
 		(rectangle (rect 16 16 208 128))
 	)
-	(annotation_block (parameter)(rect 968 16 1192 80))
+	(annotation_block (parameter)(rect 968 -8 1198 49))
 )
 (connector
 	(text "pixelX[10..0]" (rect 322 384 382 396)(font "Arial" ))

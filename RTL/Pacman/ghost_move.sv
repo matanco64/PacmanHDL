@@ -336,7 +336,7 @@ module ghost_move (
           lastDir <= DIR_UP;
           SM_Motion <= IDLE_ST;
           currMode <= LEAVE_NEST_M;
-          modeTimer <= 0;
+          modeTimer <= rnd;
           wasInFrightened <= 1'b0;
         end
 
@@ -352,7 +352,7 @@ module ghost_move (
           lastDir <= DIR_UP;
           SM_Motion <= IDLE_ST;
           currMode <= LEAVE_NEST_M;
-          modeTimer <= 0;
+          modeTimer <= rnd;
           wasInFrightened <= 1'b0;
         end
 
@@ -373,6 +373,7 @@ module ghost_move (
             lastDir <= DIR_UP;
             SM_Motion <= IDLE_ST;
             currMode <= LEAVE_NEST_M;
+				modeTimer <= rnd;
           end
         end
 
@@ -400,7 +401,7 @@ module ghost_move (
         case (currMode)
           LEAVE_NEST_M: begin
             // Check if ghost passed the ghost wall (moved down through it)
-            if (aroundGhost[11:8] == GHOST_WALL) begin
+            if (aroundGhost[11:8] == GHOST_WALL && modeTimer == 0) begin // after eaten there will be a rnd deley
               currMode <= CHASE_M;
               modeTimer <= CHASE_DURATION;
             end
@@ -433,6 +434,7 @@ module ghost_move (
             if (absDiff(Xposition/FIXED_POINT_MULTIPLIER, INITIAL_X) < TILE_PIXELS &&
                 absDiff(Yposition/FIXED_POINT_MULTIPLIER, INITIAL_Y) < TILE_PIXELS) begin
               currMode <= LEAVE_NEST_M;
+				  modeTimer <= rnd;
             end
           end
         endcase
@@ -445,7 +447,8 @@ module ghost_move (
         case (SM_Motion)
           IDLE_ST: begin
             if (startOfFrame) begin
-              SM_Motion <= CHANGE_ST;
+				  if(currMode != LEAVE_NEST_M  || modeTimer == 0) // delay for leaving the nest
+						SM_Motion <= CHANGE_ST;	 	
             end
           end
 

@@ -84,15 +84,15 @@ begin
 			RGBOut <= MapRGB;
 		
 		// side	
-		else if (heartDR)
-			RGBOut <= heartRGB;
 		else if (endDR)
 			RGBOut <= endRGB;
+		else if (heartDR)
+			RGBOut <= heartRGB;
+
 			
 		else RGBOut <= RGB_MIF ;// last priority 
 		end ; 
 	end
 
 endmodule
-
 

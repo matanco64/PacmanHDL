@@ -1,0 +1,118 @@
+# Reading C:/intelFPGA_lite/17.0/modelsim_ase/tcl/vsim/pref.tcl
+# ERROR: No extended dataflow license exists
+# do Lab1Demo_run_msim_rtl_verilog.do
+# if ![file isdirectory Lab1Demo_iputf_libs] {
+# 	file mkdir Lab1Demo_iputf_libs
+# }
+# 
+# if {[file exists rtl_work]} {
+# 	vdel -lib rtl_work -all
+# }
+# vlib rtl_work
+# vmap work rtl_work
+# Model Technology ModelSim - Intel FPGA Edition vmap 10.5b Lib Mapping Utility 2016.10 Oct  5 2016
+# vmap work rtl_work 
+# Copying C:/intelFPGA_lite/17.0/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# 
+###### Libraries for IPUTF cores 
+###### End libraries for IPUTF cores 
+###### MIF file copy and HDL compilation commands for IPUTF cores 
+# 
+# 
+# vlog "C:/Users/mayai/Documents/eelabGit/PacmanHDL/CLK_31P5_sim/CLK_31P5.vo"
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:21 on Oct 12,2025
+# vlog -reportprogress 300 C:/Users/mayai/Documents/eelabGit/PacmanHDL/CLK_31P5_sim/CLK_31P5.vo 
+# -- Compiling module CLK_31P5
+# 
+# Top level modules:
+# 	CLK_31P5
+# End time: 14:22:21 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# vlog -sv -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/one_sec_counter.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:21 on Oct 12,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb" C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/one_sec_counter.sv 
+# -- Compiling module one_sec_counter
+# 
+# Top level modules:
+# 	one_sec_counter
+# End time: 14:22:21 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/hexss.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:21 on Oct 12,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb" C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/hexss.sv 
+# -- Compiling module hexss
+# 
+# Top level modules:
+# 	hexss
+# End time: 14:22:21 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/down_counter.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:21 on Oct 12,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb" C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/down_counter.sv 
+# -- Compiling module down_counter
+# 
+# Top level modules:
+# 	down_counter
+# End time: 14:22:21 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/bomb.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:21 on Oct 12,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb" C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/bomb.sv 
+# -- Compiling module bomb
+# 
+# Top level modules:
+# 	bomb
+# End time: 14:22:21 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/bcddn.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:21 on Oct 12,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb" C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Bomb/bcddn.sv 
+# -- Compiling module bcddn
+# 
+# Top level modules:
+# 	bcddn
+# End time: 14:22:21 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/map1_drawer.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:21 on Oct 12,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman" C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/map1_drawer.sv 
+# -- Compiling module map1_drawer
+# 
+# Top level modules:
+# 	map1_drawer
+# End time: 14:22:21 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/characterBitMap.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:22 on Oct 12,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman" C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/characterBitMap.sv 
+# -- Compiling module characterBitMap
+# 
+# Top level modules:
+# 	characterBitMap
+# End time: 14:22:22 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -vlog01compat -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/pacman_mouth_openBitMap.SV}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 14:22:22 on Oct 12,2025
+# vlog -reportprogress 300 -vlog01compat -work work "+incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman" C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/pacman_mouth_openBitMap.SV 
+# ** Warning: (vlog-2644) Conflicting semantics, "-vlog01compat" switch disables SystemVerilog support.
+# -- Compiling module pacman_mouth_openBitMap
+# ** Error: (vlog-13069) C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/pacman_mouth_openBitMap.SV(7): near "clk": syntax error, unexpected IDENTIFIER, expecting ')'.
+# ** Warning: C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/pacman_mouth_openBitMap.SV(181): (vlog-2644) Conflicting semantics, "-vlog01compat" switch disables SystemVerilog support.
+# End time: 14:22:22 on Oct 12,2025, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 2
+# ** Error: C:/intelFPGA_lite/17.0/modelsim_ase/win32aloem/vlog failed.
+# Error in macro ./Lab1Demo_run_msim_rtl_verilog.do line 26
+# C:/intelFPGA_lite/17.0/modelsim_ase/win32aloem/vlog failed.
+#     while executing
+# "vlog -vlog01compat -work work +incdir+C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman {C:/Users/mayai/Documents/eelabGit/PacmanHDL/RTL/Pacman/p..."
