@@ -276,7 +276,7 @@ module ghost_move (
     end else begin
       // Chase/Scatter/Eaten - use distance-based pathfinding
       minDist = 32'h7FFFFFFF;
-      bestDir = lastDir;
+      bestDir = lastDir; /// EXMAIN CHANGE TO ghodtDir
 
       if (canMoveUp && DIR_UP != opposite(lastDir) && distUp < minDist) begin
         minDist = distUp;

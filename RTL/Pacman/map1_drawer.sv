@@ -312,43 +312,25 @@ module map1_drawer (
       gy = ghostTopLeftY / TILE_SIZE - 1;  // in y axis there is a gap row
 
       aroundGhost = {  // bitmap is rotated!
-        (gy > 0) ? pacmanMap[gx][gy-1] : WALL,  // Up
-        (gy < MAP_HEIGHT_Y - 1) ? pacmanMap[gx][gy+1] : WALL,  // Down
-        (gx > 0) ? pacmanMap[gx-1][gy] : WALL,  // Left
-        (gx < MAP_WIDTH_X - 1) ? pacmanMap[gx+1][gy] : WALL  // Right
+        (gy >= 0) ? pacmanMap[gx][gy-1] : WALL,  // Up
+        (gy < MAP_WIDTH_X - 1) ? pacmanMap[gx][gy+1] : WALL,  // Down
+        (gx >= 0) ? pacmanMap[gx-1][gy] : WALL,  // Left
+        (gx < MAP_HEIGHT_Y - 1) ? pacmanMap[gx+1][gy] : WALL  // Right
       };
     end
   endfunction
   
-  ////power appearance control//////////////////////////////////////////////////////////////////////////////////////////////
+
+//------------------------------------------------------
+// Random appearance & pulsing animation
+//------------------------------------------------------
+
 	logic [3:0] secCnt;
 	logic [7:0] frameRnd;
 	logic [7:0] pulseCnt;
 	logic       shine;
 	logic       togglePow;
-
-//	always_ff @(posedge clk or negedge resetN) begin
-//		 if (!resetN) begin
-//			  secCnt  <= 4'd0;
-//			  shine <= 1'b0;
-//			  togglePow <= 1'b0;
-//			  frameRnd <= rnd ^ (pixelX % TILE_SIZE) ^ (pixelY % TILE_SIZE); // rnd base on power's tile
-//		 end
-//		 else if (pauseN && gameState != WIN_ST && gameState != LOSE_ST) begin 
-//			  if(oneSec) secCnt <= secCnt + 1;
-//			  if(startOfFrame) shine <= ~shine;
-//			  
-//			  if(secCnt == frameRnd)begin
-//					frameRnd  <= rnd ^ (pixelX % TILE_SIZE) ^ (pixelY % TILE_SIZE);
-//					togglePow <= ~togglePow;  
-//			  end
-//		 end
-//	end
-
-
-//------------------------------------------------------
-// Random appearance & pulsing animation
-//------------------------------------------------------
+	
 	always_ff @(posedge clk or negedge resetN) begin
 		 if (!resetN) begin
 			  secCnt     <= 0;
