@@ -31,9 +31,8 @@ module ghost_move (
   parameter [TILE_BITS-1:0] GHOST_WALL = 4'd3;
   parameter [TILE_BITS-1:0] PORTAL = 4'd4;
 
-  parameter [10:0] FRIGHTENED_TIME = 10'd8;  // 8 seconds
-  parameter IDLE_DELAY_FRAMES = 120;  // 2 sec at 60fps
-
+  parameter [10:0] FRIGHTENED_TIME = 10'd8;  // 8 sec
+  
   // Home positions
   parameter BLINKY_HOME_X = 464;
   parameter BLINKY_HOME_Y = 32;
@@ -276,7 +275,7 @@ module ghost_move (
     end else begin
       // Chase/Scatter/Eaten - use distance-based pathfinding
       minDist = 32'h7FFFFFFF;
-      bestDir = lastDir; /// EXMAIN CHANGE TO ghodtDir
+      bestDir = lastDir; 
 
       if (canMoveUp && DIR_UP != opposite(lastDir) && distUp < minDist) begin
         minDist = distUp;
@@ -336,7 +335,7 @@ module ghost_move (
           lastDir <= DIR_UP;
           SM_Motion <= IDLE_ST;
           currMode <= LEAVE_NEST_M;
-          modeTimer <= rnd;
+          modeTimer <= 0;
           wasInFrightened <= 1'b0;
         end
 
