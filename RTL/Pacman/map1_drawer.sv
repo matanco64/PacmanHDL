@@ -519,32 +519,40 @@ module map1_drawer (
       // ---------------------------------------------------------------------------
 
       if (numLockKey && startOfFrame) begin
-        // Determine Pacman's current tile
-        logic [0:3] pacX, pacY, targetX, targetY;
-        pacX = pactopLeftX / TILE_SIZE;
-        pacY = pactopLeftY / TILE_SIZE - 1;
-        targetX = pacX;
-        targetY = pacY;
+		  // Determine Pacman's current tile
+		  // FIX 1: Use correct bit width for coordinates
+		  logic [$clog2(MAP_WIDTH_X)-1:0] pacX, targetX;
+		  logic [$clog2(MAP_HEIGHT_Y)-1:0] pacY, targetY;
+		  
+		  pacX = pactopLeftX / TILE_SIZE;
+		  pacY = (pactopLeftY / TILE_SIZE) - 1;  // Account for offset
+		  targetX = pacX;
+		  targetY = pacY;
 
-        // Find the tile in Pacman's direction
-        case (pacDir)
-          0: targetY = pacY - 1;  // UP
-          1: targetY = pacY + 1;  // DOWN
-          2: targetX = pacX - 1;  // LEFT
-          3: targetX = pacX + 1;  // RIGHT
-          default: ;
-        endcase
+		  // Find the tile in Pacman's direction
+		  case (pacDir)
+			 2'd0: targetY = pacY - 1;  // UP
+			 2'd1: targetY = pacY + 1;  // DOWN
+			 2'd2: targetX = pacX - 1;  // LEFT
+			 2'd3: targetX = pacX + 1;  // RIGHT
+			 default: ;
+		  endcase
 
-        // Check bounds
-        if (targetX >= 0 && targetX < MAP_WIDTH_X && targetY >= 0 && targetY < MAP_HEIGHT_Y) begin
-          logic [TILE_BITS-1:0] wallTile;
-          wallTile = pacmanMap[targetX][targetY];
+		  // FIX 2: Proper bounds checking (must check BEFORE accessing array)
+		  if (targetX < MAP_WIDTH_X && targetY < MAP_HEIGHT_Y) begin
+			 logic [TILE_BITS-1:0] wallTile;
+			 wallTile = pacmanMap[targetX][targetY];
 
-          if (wallTile == BREAK3) pacmanMap[targetX][targetY] <= BREAK2;
-          else if (wallTile == BREAK2) pacmanMap[targetX][targetY] <= BREAK1;
-          else if (wallTile == BREAK1) pacmanMap[targetX][targetY] <= EMPTY;
-        end
-      end
+			 // FIX 3: Use non-blocking assignments consistently
+			 if (wallTile == BREAK3) begin
+				pacmanMap[targetX][targetY] <= BREAK2;
+			 end else if (wallTile == BREAK2) begin
+				pacmanMap[targetX][targetY] <= BREAK1;
+			 end else if (wallTile == BREAK1) begin
+				pacmanMap[targetX][targetY] <= EMPTY;
+			 end
+		  end
+		end
 
 
       // ---------------------------------------------------------------------------
