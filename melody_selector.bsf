@@ -116,6 +116,13 @@ agreement for further details.
 		(line (pt 0 224)(pt 16 224)(line_width 1))
 	)
 	(port
+		(pt 0 240)
+		(input)
+		(text "placeBreakFlag" (rect 0 0 60 12)(font "Arial" ))
+		(text "placeBreakFlag" (rect 21 235 81 247)(font "Arial" ))
+		(line (pt 0 240)(pt 16 240)(line_width 1))
+	)
+	(port
 		(pt 256 32)
 		(output)
 		(text "melodySelect[3..0]" (rect 0 0 73 12)(font "Arial" ))
