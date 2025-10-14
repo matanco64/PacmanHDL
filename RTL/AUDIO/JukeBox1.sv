@@ -19,6 +19,23 @@ module JukeBox1
    // Frequency index is 0....15   
    // length is in beats ( 1 to 15 )
    // length = 0 means end of melody	
+	
+  localparam MELODY_GAME_START = 4'd0;
+  localparam MELODY_WIN = 4'd1;
+  localparam MELODY_LOSE = 4'd2;
+  localparam MELODY_LIFE_LOST = 4'd3;
+  localparam MELODY_LIFE_GAINED = 4'd4;
+  localparam MELODY_PICKUP_CHERRY = 4'd5;
+  localparam MELODY_PICKUP_BANANA = 4'd6;
+  localparam MELODY_PICKUP_STRAW = 4'd7;
+  localparam MELODY_PICKUP_POISON = 4'd8;
+  localparam MELODY_PICKUP_PENALTY = 4'd9;
+  localparam MELODY_FRUIT_APPEAR = 4'd10;
+  localparam MELODY_BREAK = 4'd11;
+  localparam MELODY_EAT_GHOST = 4'd12;
+  localparam MELODY_POWER_MODE = 4'd13;
+  localparam MELODY_COIN = 4'd14;
+  localparam MELODY_SILENCE = 4'd15;
    	
 localparam MaxMelodyLength = 6'h32;  // maximum melody length, in notes. 
 musicNote frq[(MaxMelodyLength-1'b1):0]  ;     // frq is the array of frequency indices of the melody. it includes up to 32 notes.  
@@ -30,7 +47,7 @@ always_comb begin
   frq = '{default: 0};
 	 len = '{default: 0}; 
   case (melodySelect) 
-    0: begin 
+    MELODY_GAME_START: begin 
       //************************************************************************************************** 
       // GAME START (Intro melody) 
       //************************************************************************************************** 
@@ -42,7 +59,7 @@ always_comb begin
         frq[5] = do_;  len[5] = 0;
     end 
     
-    1: begin 
+    MELODY_WIN: begin 
       //************************************************************************************************** 
       //  WIN
       //************************************************************************************************** 
@@ -55,7 +72,7 @@ always_comb begin
 			frq[6] = do_ ; len[6] = 0 ; // End
     end 
     
-    2: begin 
+    MELODY_LOSE: begin 
       //************************************************************************************************** 
       // LOSE
       //************************************************************************************************** 
@@ -75,7 +92,7 @@ always_comb begin
 			frq[13] = do_ ; len[13] = 0 ; // End 
     end 
     
-    3: begin 
+    MELODY_LIFE_LOST: begin 
       //************************************************************************************************** 
       // LIFE LOST
       //************************************************************************************************** 
@@ -85,7 +102,7 @@ always_comb begin
         frq[3] = silence; len[3] = 0;
     end 
     
-    4: begin 
+    MELODY_LIFE_GAINED: begin 
       //************************************************************************************************** 
       // LIFE GAINED
       //************************************************************************************************** 
@@ -95,7 +112,7 @@ always_comb begin
         frq[3] = silence; len[3] = 0;
     end 
     
-    5: begin 
+    MELODY_PICKUP_CHERRY: begin 
       //************************************************************************************************** 
       // PICKUP CHERRY
       //************************************************************************************************** 
@@ -105,7 +122,7 @@ always_comb begin
         frq[3] = silence; len[3] = 0;
     end 
     
-    6: begin 
+    MELODY_PICKUP_BANANA: begin 
       //************************************************************************************************** 
       // PICKUP BANANA
       //************************************************************************************************** 
@@ -115,7 +132,7 @@ always_comb begin
         frq[3] = silence; len[3] = 0;
     end 
     
-    7: begin 
+    MELODY_PICKUP_STRAW: begin 
       //************************************************************************************************** 
       // PICKUP STRAWBERRY
       //************************************************************************************************** 
@@ -125,7 +142,7 @@ always_comb begin
         frq[3] = silence; len[3] = 0; 
     end 
     
-    8: begin 
+    MELODY_PICKUP_POISON: begin 
       //************************************************************************************************** 
       // PICKUP POISON
       //************************************************************************************************** 
@@ -136,7 +153,7 @@ always_comb begin
         frq[4] = silence; len[4] = 0;
     end 
     
-    9: begin 
+    MELODY_PICKUP_PENALTY: begin 
       //************************************************************************************************** 
       // PICKUP PENALTY
       //************************************************************************************************** 
@@ -144,7 +161,7 @@ always_comb begin
         frq[1] = do_; len[1] = 2;
         frq[2] = silence; len[2] = 0;
     end 
-    10: begin 
+    MELODY_FRUIT_APPEAR: begin 
       //************************************************************************************************** 
       // PICKUP APPEARS
       //************************************************************************************************** 
@@ -154,7 +171,20 @@ always_comb begin
         frq[3] = do_H;len[3] = 2;
         frq[4] = silence; len[4] = 0;
     end 
-    11: begin 
+	 
+	 MELODY_BREAK: begin 
+      //************************************************************************************************** 
+      // BREAKING WALLS
+      //************************************************************************************************** 
+          frq[0] = fa;     len[0] = 1;  
+			 frq[1] = solD;   len[1] = 1;  
+			 frq[2] = la;     len[2] = 1;  
+			 frq[3] = re_H;   len[3] = 1;  
+			 frq[4] = do_;    len[4] = 2;  
+			 frq[5] = silence; len[5] = 0; 
+    end 
+	  
+    MELODY_EAT_GHOST: begin 
       //************************************************************************************************** 
       // EAT GHOST
       //************************************************************************************************** 
@@ -164,9 +194,9 @@ always_comb begin
 			frq[3] = sol ; len[3] = 1 ; 
 			frq[4] = do_H ; len[4] = 2 ; 
 			frq[5] = do_ ; len[5] = 1 ;
-			frq[0] = silence ; len[6] = 0 ; 
+			frq[6] = silence ;  len[6] = 0 ; // End
     end 
-    12: begin 
+    MELODY_POWER_MODE: begin 
       //************************************************************************************************** 
       // POWER MODE BACKGROUND
       //************************************************************************************************** 
@@ -180,20 +210,14 @@ always_comb begin
         frq[7] = silence; len[7] = 1;
         frq[8] = do_;  len[8] = 0; // loop
     end 
-    13: begin 
+    MELODY_COIN: begin 
       //************************************************************************************************** 
       // COIN COLLECTED
       //************************************************************************************************** 
-//        frq[0] = mi; len[0] = 1;
-//        frq[1] = sol;len[1] = 1;
-//        frq[2] = silence; len[2] = 0;
 			 frq[0]  = mi;      len[0]  = 1;
 			 frq[1]  = sol;     len[1]  = 1;
 			 frq[2]  = do_H;    len[2]  = 2;
-//			 frq[3]  = silence; len[3]  = 1;
-//			 frq[4]  = do_H;    len[4]  = 1;
-//			 frq[5]  = silence; len[5]  = 1;
-//			 frq[6]  = do_;     len[6]  = 0;
+			 frq[3]  = silence; len[3] = 0; // End
     end 
     
     default: begin 

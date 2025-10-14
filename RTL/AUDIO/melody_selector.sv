@@ -12,7 +12,7 @@ module melody_selector (
     input logic [2:0] pickupType,  // 0=none, 1=cherry, 2=banana, 3=strawberry, 4=poison, 5=penalty
     input logic pickupCollectedFlag,
     input logic [1:0] pacLifeChange,  // 0=none, 1=+1, 2=-1
-
+	 input logic breakFlag,
     // Output to JukeBox
     output logic [3:0] melodySelect
 );
@@ -39,9 +39,10 @@ module melody_selector (
   localparam MELODY_PICKUP_POISON = 4'd8;
   localparam MELODY_PICKUP_PENALTY = 4'd9;
   localparam MELODY_FRUIT_APPEAR = 4'd10;
-  localparam MELODY_EAT_GHOST = 4'd11;
-  localparam MELODY_POWER_MODE = 4'd12;
-  localparam MELODY_COIN = 4'd13;
+  localparam MELODY_BREAK = 4'd11;
+  localparam MELODY_EAT_GHOST = 4'd12;
+  localparam MELODY_POWER_MODE = 4'd13;
+  localparam MELODY_COIN = 4'd14;
   localparam MELODY_SILENCE = 4'd15;
 
   // Internal registers
@@ -55,6 +56,7 @@ module melody_selector (
   logic fruitSpawn_sticky;
   logic ghostFlag_sticky;
   logic pickupCollectedFlag_sticky;
+  logic breakFlag_stickey;
   logic melodyEnded_sticky;
   logic enableChange;
 
@@ -72,6 +74,7 @@ module melody_selector (
       pickupType_sticky <= 3'd0;
       pacLifeChange_sticky <= 2'd0;
       melodyEnded_sticky <= 1'b0;
+		breakFlag_stickey <=0;
     end else begin
       // Set flags when events occur
       if (coinFlag) coinFlag_sticky <= 1'b1;
@@ -84,6 +87,7 @@ module melody_selector (
       end
       if (pacLifeChange != 2'd0) pacLifeChange_sticky <= pacLifeChange;
       if (melodyEnded) melodyEnded_sticky <= 1'b1;
+		if(breakFlag) breakFlag_stickey <= 1'b1;
 
       // Clear flags at start of frame after processing
       if (startOfFrame) begin
@@ -95,6 +99,7 @@ module melody_selector (
         pickupType_sticky <= 3'd0;
         pacLifeChange_sticky <= 2'd0;
         melodyEnded_sticky <= 1'b0;
+		  breakFlag_stickey <= 1'b0;
       end
     end
   end
@@ -108,7 +113,9 @@ module melody_selector (
       nextMelody = MELODY_LIFE_GAINED;
     end else if (pacLifeChange_sticky == 2'd2) begin
       nextMelody = MELODY_LIFE_LOST;
-    end  // Second priority: Pickup collected
+    end  
+	 
+	 // Second priority: Pickup collected
     else if (pickupCollectedFlag_sticky) begin
       case (pickupType_sticky)
         3'd1: nextMelody = MELODY_PICKUP_CHERRY;
@@ -118,10 +125,19 @@ module melody_selector (
         3'd5: nextMelody = MELODY_PICKUP_PENALTY;
         default: nextMelody = currentMelody;
       endcase
-    end  // Third priority: Ghost eaten
+    end 
+	 
+	 // Third priority: break wall
+	 else if (breakFlag_stickey) begin
+      nextMelody = MELODY_BREAK;
+    end  
+	 
+	 // Fourth priority: Ghost eaten
     else if (ghostFlag_sticky) begin
       nextMelody = MELODY_EAT_GHOST;
-    end  // Fourth priority: State-based sounds
+    end  
+	 
+	 // FIFTH priority: State-based sounds
     else begin
       case (gameState)
         RESET_ST: begin
