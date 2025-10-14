@@ -52,7 +52,8 @@ module map1_drawer (
     output logic picUpFlag,
     output logic fruitSpawnFlag,
     output logic [2:0] picUpTypeFlag, // 0=no, 1=banana, 2=cherry 3=str 4=strawberry 5=posion 6=fee - for jukebox
-    output logic breakFlag
+    output logic breakFlag,
+    output logic placeBreakFlag 
 
 );
   // map
@@ -162,14 +163,14 @@ module map1_drawer (
     { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
     { 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2 },
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd15, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd14, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
+    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
+    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
     { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd3, 4'd0, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
     { 4'd4, 4'd0, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd5, 4'd3, 4'd0, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd0, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd0, 4'd4 },
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd3, 4'd0, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
     { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd13, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
+    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
     { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
     { 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2 },
@@ -185,22 +186,22 @@ module map1_drawer (
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 }
   };
 
-  logic [0:15] [0:15] [7:0] portal = {
+   logic [0:15] [0:15] [7:0] portal = {
   {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h00,8'h00,8'h9F,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'hfd,8'hfd,8'h9F,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h9F,8'h9F,8'h00,8'h00,8'h00,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'h9F,8'h9F,8'h00,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00},
-  {8'hd2,8'h9F,8'h00,8'h9F,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'hfd,8'h00},
-  {8'h9F,8'h00,8'h9F,8'h9F,8'hDF,8'h00,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'hDF,8'hDF,8'h00,8'h00,8'h00},
-  {8'h9F,8'h00,8'h9F,8'h9F,8'h00,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'hDF,8'hDF,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h9F,8'h9F,8'h00,8'hDF,8'h00,8'h00,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h9F,8'h9F,8'h00,8'hDF,8'h00,8'h00,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'hDF,8'h00,8'h00},
-  {8'h00,8'h00,8'h9F,8'h9F,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'hDF,8'h00,8'h00},
-  {8'h00,8'h00,8'h9F,8'h9F,8'h9F,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'hDF,8'hDF,8'h00,8'h00},
-  {8'h00,8'h00,8'h00,8'h9F,8'h9F,8'h9F,8'h00,8'h00,8'h00,8'h00,8'hDF,8'hDF,8'hDF,8'h00,8'h00,8'h00},
-  {8'h00,8'hfd,8'h00,8'h00,8'h9F,8'h9F,8'h9F,8'h9F,8'h9F,8'h9F,8'h9F,8'hfd,8'hfd,8'h00,8'h00,8'h00},
-  {8'h00,8'hfd,8'h00,8'h00,8'h00,8'h9F,8'h9F,8'h9F,8'h9F,8'h9F,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+  {8'h00,8'h00,8'h00,8'h00,8'h3B,8'h33,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
+  {8'h00,8'hfd,8'hfd,8'h3B,8'h33,8'h33,8'h33,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00,8'h00,8'h00},
+  {8'h00,8'h00,8'h3B,8'h3B,8'h00,8'h00,8'h00,8'h00,8'h00,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00,8'h00},
+  {8'h00,8'h3B,8'h3B,8'h00,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00},
+  {8'hd2,8'h3B,8'h00,8'h3B,8'h33,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h33,8'h33,8'h00,8'hfd,8'h00},
+  {8'h3B,8'h00,8'h3B,8'h3B,8'h33,8'h00,8'h00,8'h00,8'h33,8'h33,8'h00,8'h33,8'h33,8'h00,8'h00,8'h00},
+  {8'h3B,8'h00,8'h3B,8'h3B,8'h00,8'h33,8'h00,8'h00,8'h33,8'h33,8'h00,8'h33,8'h33,8'h00,8'h00,8'h00},
+  {8'h00,8'h00,8'h3B,8'h3B,8'h00,8'h33,8'h00,8'h00,8'h33,8'h00,8'h00,8'h33,8'h33,8'h00,8'h00,8'h00},
+  {8'h00,8'h00,8'h3B,8'h3B,8'h00,8'h33,8'h00,8'h00,8'h00,8'h00,8'h33,8'h33,8'h00,8'h33,8'h00,8'h00},
+  {8'h00,8'h00,8'h3B,8'h3B,8'h00,8'h00,8'h33,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h33,8'h00,8'h00},
+  {8'h00,8'h00,8'h3B,8'h3B,8'h3B,8'h00,8'h00,8'h33,8'h33,8'h33,8'h00,8'h00,8'h33,8'h33,8'h00,8'h00},
+  {8'h00,8'h00,8'h00,8'h3B,8'h3B,8'h3B,8'h00,8'h00,8'h00,8'h00,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00},
+  {8'h00,8'hfd,8'h00,8'h00,8'h3B,8'h3B,8'h3B,8'h3B,8'h3B,8'h3B,8'h3B,8'hfd,8'hfd,8'h00,8'h00,8'h00},
+  {8'h00,8'hfd,8'h00,8'h00,8'h00,8'h3B,8'h3B,8'h3B,8'h3B,8'h3B,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
   {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00}};
 
   logic [0:15] [0:15] break_shape = {
@@ -404,7 +405,6 @@ module map1_drawer (
   end
 
 
-
   // ---------------------------------------------------------------------------
   // rgb output logic + map update
   // ---------------------------------------------------------------------------
@@ -438,32 +438,6 @@ module map1_drawer (
       pacSpeedChange <= NORMAL;
       pacLifeChange <= NORMAL;
 
-
-      // ---------------------------------------------------------------------------
-      // Randomize breakable walls placement (BREAK1 / BREAK2 / BREAK3)
-      // ---------------------------------------------------------------------------
-
-
-      //	  randVal = rnd ^ 8'hA5; // seed mixing for variety
-      //
-      //	  for (x = 0; x < MAP_WIDTH_X; x = x + 1) begin
-      //		 for (y = 0; y < MAP_HEIGHT_Y; y = y + 1) begin
-      //
-      //			// LFSR feedback tap (bits 7 and 5)
-      //			randVal = {randVal[6:0], randVal[7] ^ randVal[5]};
-      //
-      //			// Replace some COINs with breakable walls
-      //			if (OriginalPacmanMap[x][y] == COIN) begin
-      //			  case (randVal[7:5])
-      //				 3'b111: pacmanMap[x][y] <= BREAK3; // rare, hardest wall
-      //				 3'b110: pacmanMap[x][y] <= BREAK2; // medium
-      //				 3'b101: pacmanMap[x][y] <= BREAK1; // easy
-      //				 default: pacmanMap[x][y] <= COIN;  // leave as coin
-      //			  endcase
-      //			end
-      //		 end
-      //	  end
-
     end else begin
       // defaults	
       RGBout <= TRANSPARENT_ENCODING;
@@ -480,7 +454,6 @@ module map1_drawer (
       // ---------------------------------------------------------------------------
       // pick Ups - counters & palcement
       // ---------------------------------------------------------------------------
-
 
       // cherry&banana Counter
       if (pickUpTimer > 0 && oneSec) pickUpTimer <= pickUpTimer - 1;
@@ -510,13 +483,19 @@ module map1_drawer (
       // Place breakable walls
       // ---------------------------------------------------------------------------
 
+
+      
+      // ---------------------------------------------------------------------------
+      // Place breakable walls
+      // ---------------------------------------------------------------------------
+
       if (addBreak == PRE_PLACE && coinsCollected * 100 / coinsPowTot > 5) begin  // just for now 5 is the tresh
         addBreak <= PLACING;  // one time trigger - 0 on reset and 1 forever
       end
 
       // Randomize breakable walls placement (BREAK1 / BREAK2 / BREAK3)	
       if (addBreak == PLACING) begin
-		  logic [$clog2(MAP_WIDTH_X)-1:0] pacX;
+		    logic [$clog2(MAP_WIDTH_X)-1:0] pacX;
         logic [$clog2(MAP_HEIGHT_Y)-1:0] pacY;
 
         pacX = pactopLeftX / TILE_SIZE;
@@ -527,24 +506,21 @@ module map1_drawer (
 
         for (x = 0; x < MAP_WIDTH_X; x = x + 1) begin
           for (y = 0; y < MAP_HEIGHT_Y; y = y + 1) begin
-
-            // LFSR feedback tap (bits 7 and 5)
             randVal = {randVal[6:0], randVal[7] ^ randVal[5]};
 
             // Replace some COINs with breakable walls - far from pacman
             if (OriginalPacmanMap[x][y] == COIN &&
                 ($unsigned(x - pacX) > 1) &&
                 ($unsigned(y - pacY) > 1)) begin
-              case (randVal[4:0])
-                5'd24: pacmanMap[x][y] <= BREAK3;
-                5'd16: pacmanMap[x][y] <= BREAK2;
-                5'd8:  pacmanMap[x][y] <= BREAK1;
-              endcase
+
+                if (randVal[4:0] >= 5'd30) pacmanMap[x][y]      <= BREAK3;
+                else if (randVal[4:0] >= 5'd27) pacmanMap[x][y] <= BREAK2;
+                else if (randVal[4:0] >= 5'd24) pacmanMap[x][y] <= BREAK1;
             end
+
           end
         end
       end
-
 
       // ---------------------------------------------------------------------------
       // colisions
@@ -603,6 +579,8 @@ module map1_drawer (
       // ---------------------------------------------------------------------------
       // Breaking walls
       // ---------------------------------------------------------------------------
+
+      
       if (breakFlag && oneSec) breakFlag <= 0;
 
       if (numLockKey && startOfFrame) begin
@@ -762,5 +740,7 @@ module map1_drawer (
       + pickUpCollected[2] * 2  // strawberry
       - pickUpCollected[3] * 20  // poision
       - pickUpCollected[4] * 50;  //  fee
+
+  assign placeBreakFlag = (addBreak == PLACING);    
 
 endmodule

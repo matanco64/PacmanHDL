@@ -13,6 +13,7 @@ module melody_selector (
     input logic pickupCollectedFlag,
     input logic [1:0] pacLifeChange,  // 0=none, 1=+1, 2=-1
 	 input logic breakFlag,
+	 input logic placeBreakFlag,
     // Output to JukeBox
     output logic [3:0] melodySelect
 );
@@ -57,6 +58,7 @@ module melody_selector (
   logic ghostFlag_sticky;
   logic pickupCollectedFlag_sticky;
   logic breakFlag_stickey;
+  logic placeBreakFlag_stickey;
   logic melodyEnded_sticky;
   logic enableChange;
 
@@ -75,6 +77,7 @@ module melody_selector (
       pacLifeChange_sticky <= 2'd0;
       melodyEnded_sticky <= 1'b0;
 		breakFlag_stickey <=0;
+		placeBreakFlag_stickey <= 0;
     end else begin
       // Set flags when events occur
       if (coinFlag) coinFlag_sticky <= 1'b1;
@@ -88,6 +91,7 @@ module melody_selector (
       if (pacLifeChange != 2'd0) pacLifeChange_sticky <= pacLifeChange;
       if (melodyEnded) melodyEnded_sticky <= 1'b1;
 		if(breakFlag) breakFlag_stickey <= 1'b1;
+		if(placeBreakFlag) placeBreakFlag_stickey <= 1'b1;
 
       // Clear flags at start of frame after processing
       if (startOfFrame) begin
@@ -100,6 +104,7 @@ module melody_selector (
         pacLifeChange_sticky <= 2'd0;
         melodyEnded_sticky <= 1'b0;
 		  breakFlag_stickey <= 1'b0;
+		  placeBreakFlag_stickey <= 1'b0;
       end
     end
   end
@@ -128,7 +133,7 @@ module melody_selector (
     end 
 	 
 	 // Third priority: break wall
-	 else if (breakFlag_stickey) begin
+	 else if (breakFlag_stickey || placeBreakFlag_stickey) begin
       nextMelody = MELODY_BREAK;
     end  
 	 

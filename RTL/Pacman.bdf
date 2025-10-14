@@ -1396,32 +1396,6 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect -608 2824 -448 2904)
-	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
-	(text "inst35" (rect 8 64 36 81)(font "Intel Clear" ))
-	(port
-		(pt 160 32)
-		(output)
-		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
-		(line (pt 160 32)(pt 144 32)(line_width 3))
-	)
-	(parameter
-		"size"
-		"11"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"MyValue"
-		"528"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 144 64))
-	)
-	(annotation_block (parameter)(rect -816 2824 -647 2881))
-)
-(symbol
 	(rect -744 480 -544 560)
 	(text "random2" (rect 5 0 47 12)(font "Arial" ))
 	(text "inst38" (rect 8 64 36 81)(font "Intel Clear" ))
@@ -3364,32 +3338,6 @@ agreement for further details.
 	(annotation_block (parameter)(rect -216 3160 -69 3236))
 )
 (symbol
-	(rect -608 3224 -448 3304)
-	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
-	(text "inst41" (rect 8 64 36 81)(font "Intel Clear" ))
-	(port
-		(pt 160 32)
-		(output)
-		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
-		(line (pt 160 32)(pt 144 32)(line_width 3))
-	)
-	(parameter
-		"size"
-		"11"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"MyValue"
-		"528"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 144 64))
-	)
-	(annotation_block (parameter)(rect -824 3224 -655 3281))
-)
-(symbol
 	(rect 2008 656 2280 1088)
 	(text "map1_drawer" (rect 5 0 69 12)(font "Arial" ))
 	(text "inst45" (rect 8 416 37 428)(font "Arial" ))
@@ -3701,6 +3649,13 @@ agreement for further details.
 		(text "breakFlag" (rect 211 331 251 343)(font "Arial" ))
 		(line (pt 272 336)(pt 256 336))
 	)
+	(port
+		(pt 272 352)
+		(output)
+		(text "placeBreakFlag" (rect 0 0 75 12)(font "Arial" ))
+		(text "placeBreakFlag" (rect 188 347 251 359)(font "Arial" ))
+		(line (pt 272 352)(pt 256 352))
+	)
 	(drawing
 		(rectangle (rect 16 16 256 416))
 	)
@@ -3801,6 +3756,13 @@ agreement for further details.
 		(line (pt 0 224)(pt 16 224))
 	)
 	(port
+		(pt 0 240)
+		(input)
+		(text "placeBreakFlag" (rect 0 0 75 12)(font "Arial" ))
+		(text "placeBreakFlag" (rect 21 235 96 247)(font "Arial" ))
+		(line (pt 0 240)(pt 16 240))
+	)
+	(port
 		(pt 256 32)
 		(output)
 		(text "melodySelect[3..0]" (rect 0 0 93 12)(font "Arial" ))
@@ -3810,6 +3772,58 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 240 256))
 	)
+)
+(symbol
+	(rect -608 2824 -448 2904)
+	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
+	(text "inst35" (rect 8 64 36 81)(font "Intel Clear" ))
+	(port
+		(pt 160 32)
+		(output)
+		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
+		(line (pt 160 32)(pt 144 32)(line_width 3))
+	)
+	(parameter
+		"size"
+		"11"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"MyValue"
+		"512"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 144 64))
+	)
+	(annotation_block (parameter)(rect -816 2824 -647 2881))
+)
+(symbol
+	(rect -608 3224 -448 3304)
+	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
+	(text "inst41" (rect 8 64 36 81)(font "Intel Clear" ))
+	(port
+		(pt 160 32)
+		(output)
+		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
+		(line (pt 160 32)(pt 144 32)(line_width 3))
+	)
+	(parameter
+		"size"
+		"11"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"MyValue"
+		"520"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 144 64))
+	)
+	(annotation_block (parameter)(rect -824 3224 -655 3281))
 )
 (connector
 	(text "address[18..0]" (rect -838 256 -772 273)(font "Intel Clear" ))
@@ -5916,6 +5930,16 @@ agreement for further details.
 	(text "breakFlag" (rect -720 872 -672 889)(font "Intel Clear" ))
 	(pt -728 888)
 	(pt -648 888)
+)
+(connector
+	(text "placeBreakFlag" (rect 2288 992 2363 1009)(font "Intel Clear" ))
+	(pt 2280 1008)
+	(pt 2360 1008)
+)
+(connector
+	(text "placeBreakFlag" (rect -720 888 -645 905)(font "Intel Clear" ))
+	(pt -728 904)
+	(pt -648 904)
 )
 (junction (pt -648 3744))
 (text "31.5 MHz Clock genrtaor" (rect -128 -72 17 -53)(font "Intel Clear" (font_size 8)))
