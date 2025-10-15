@@ -205,6 +205,44 @@ module pacman_move (
         //------------
         START_OF_FRAME_ST: begin  //check if any colision was detected 
           //------------
+			 
+			 
+			 /// TO MATAN A TEST I DID AND KIND OF WORKED TO FIX THE SPEED BUG
+//			  if (hit_reg && !is_neg) begin
+//            // Compute current tile indices
+//            logic [ $clog2(MAP_WIDTH_X)-1:0] curTileX;
+//            logic [$clog2(MAP_HEIGHT_Y)-1:0] curTileY;
+//            curTileX = Xposition / (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
+//            curTileY = Yposition / (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
+//
+//            // Stop motion
+//            Xspeed  <= 0;
+//            Yspeed  <= 0;
+//            hit_reg <= 1'b0;
+//
+//            // Align to nearest safe position based on current direction
+//            case (curDirKey)
+//              UP_KEY:    Yposition <= (curTileY + 1) * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
+//              DOWN_KEY:  Yposition <= curTileY * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
+//              LEFT_KEY:  Xposition <= (curTileX + 1) * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
+//              RIGHT_KEY: Xposition <= curTileX * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
+//              default: begin
+//                Xposition <= curTileX * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
+//                Yposition <= curTileY * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
+//              end
+//            endcase
+//
+//            SM_Motion <= MOVE_ST;  // resume normal movement
+//          end else if (!hit_reg && is_neg) begin
+//            Xspeed <= 0;
+//            Yspeed <= 0;
+//            is_neg <= 1'b0;
+//            SM_Motion <= MOVE_ST;
+//          end else begin
+//            SM_Motion <= POSITION_CHANGE_ST;
+//          end
+			 
+			 
           if (hit_reg && !is_neg) begin
             Xspeed  <= -Xspeed;
             Yspeed  <= -Yspeed;
