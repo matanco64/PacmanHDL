@@ -132,11 +132,7 @@ module melody_selector (
       endcase
     end 
 	 
-	 // Third priority: break wall
-	 else if (breakFlag_stickey || placeBreakFlag_stickey) begin
-      nextMelody = MELODY_BREAK;
-    end  
-	 
+	
 	 // Fourth priority: Ghost eaten
     else if (ghostFlag_sticky) begin
       nextMelody = MELODY_EAT_GHOST;
@@ -165,8 +161,10 @@ module melody_selector (
             nextMelody = MELODY_COIN;
           end else if (powFlag_sticky) begin
             nextMelody = MELODY_POWER_MODE;
-          end else begin
-            // No events - silence (or you could add background music here)
+          end else if (breakFlag_stickey || placeBreakFlag_stickey) begin
+				nextMelody = MELODY_BREAK;
+			 end else begin 
+            // No events - silence
             nextMelody = MELODY_SILENCE;
           end
         end
