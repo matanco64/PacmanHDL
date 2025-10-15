@@ -6,7 +6,7 @@ module sideBitMapV1	(
 					input		logic	InsideRectangle,  
 					input 	logic	[2:0] gameState,
 					
-					output	logic				drawingRequest,  
+					output	logic			drawingRequest,  
 					output	logic	[7:0]	RGBout
 );
 
@@ -365,7 +365,7 @@ begin
     RGBout <= TRANSPARENT_ENCODING;
 	end
 	else begin	
-		if (InsideRectangle == 1'b1 ) begin
+		if (InsideRectangle) begin
 			case (gameState)
 			  RESET_ST: 		  RGBout <= start[offsetY][offsetX];  
 			  START_WAIT_ST:	RGBout <= start[offsetY][offsetX];

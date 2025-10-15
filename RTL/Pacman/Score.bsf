@@ -67,6 +67,13 @@ agreement for further details.
 		(line (pt 0 112)(pt 16 112)(line_width 3))
 	)
 	(port
+		(pt 0 128)
+		(input)
+		(text "text" (rect 0 0 22 19)(font "Intel Clear" (font_size 8)))
+		(text "text" (rect 21 123 43 142)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 128)(pt 16 128))
+	)
+	(port
 		(pt 296 32)
 		(output)
 		(text "ScoreTxtDrawingRequest" (rect 0 0 148 19)(font "Intel Clear" (font_size 8)))
@@ -86,13 +93,13 @@ agreement for further details.
 		""
 	)
 	(parameter
-		"WIDTH"
-		"8"
+		"HEIGHT"
+		"16"
 		""
 	)
 	(parameter
-		"HEIGHT"
-		"16"
+		"WIDTH"
+		"96"
 		""
 	)
 	(drawing
