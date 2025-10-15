@@ -37,7 +37,13 @@ module	objects_mux	(
 					input		logic	[7:0] heartRGB,	
 			// end 
 					input		logic endDR, 
-					input		logic	[7:0] endRGB,			
+					input		logic	[7:0] endRGB,	
+			// level
+					input		logic levelTxtDR, 
+					input		logic	[7:0] levelTxtRGB,	
+			// Num
+					input		logic levelNumDR, 
+					input		logic	[7:0] levelNumRGB,		
 			  
 		   // Map
 					input		logic MapDR, 
@@ -69,7 +75,7 @@ begin
 		else if (blinkyDR)
 			RGBOut <= blinkyRGB;	
 			
-		// score	
+		// text	
 		else if (Score0DR)
 			RGBOut <= Score0RGB;
 		else if (Score1DR)
@@ -77,7 +83,11 @@ begin
 		else if (Score2DR)
 			RGBOut <= Score2RGB;		
 		else if (ScoreTxtDR)
-			RGBOut <= ScoreTxtRGB;
+			RGBOut <= ScoreTxtRGB;	
+		else if (levelTxtDR)
+			RGBOut <= levelTxtRGB;	
+		else if (levelNumDR)
+			RGBOut <= levelNumRGB;	
 			
 		// map	
 		else if (MapDR || CoinDR || powerDR || pickUpDR)

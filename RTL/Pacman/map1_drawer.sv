@@ -25,6 +25,8 @@ module map1_drawer (
     input logic [10:0] pactopLeftY,
     input logic [1:0] pacDir,
     input logic pacmanDR,
+	 input logic starKey,
+	 input logic slashKey,
     input logic numLockKey,
 
     //outputs//
@@ -495,7 +497,7 @@ module map1_drawer (
 
       // Randomize breakable walls placement (BREAK1 / BREAK2 / BREAK3)	
       if (addBreak == PLACING) begin
-		    logic [$clog2(MAP_WIDTH_X)-1:0] pacX;
+		  logic [$clog2(MAP_WIDTH_X)-1:0] pacX;
         logic [$clog2(MAP_HEIGHT_Y)-1:0] pacY;
 
         pacX = pactopLeftX / TILE_SIZE;
@@ -514,8 +516,8 @@ module map1_drawer (
                 ($unsigned(y - pacY) > 1)) begin
 
                 if (randVal[4:0] >= 5'd30) pacmanMap[x][y]      <= BREAK3;
-                else if (randVal[4:0] >= 5'd27) pacmanMap[x][y] <= BREAK2;
-                else if (randVal[4:0] >= 5'd24) pacmanMap[x][y] <= BREAK1;
+                else if (randVal[4:0] >= 5'd28) pacmanMap[x][y] <= BREAK2;
+                else if (randVal[4:0] >= 5'd25) pacmanMap[x][y] <= BREAK1;
             end
 
           end
@@ -583,7 +585,7 @@ module map1_drawer (
       
       if (breakFlag && oneSec) breakFlag <= 0;
 
-      if (numLockKey && startOfFrame) begin
+      if ((numLockKey || starKey || slashKey) && startOfFrame) begin
         // Determine Pacman's current tile
         logic [$clog2(MAP_WIDTH_X)-1:0] pacX, targetX;
         logic [$clog2(MAP_HEIGHT_Y)-1:0] pacY, targetY;
@@ -609,13 +611,13 @@ module map1_drawer (
 
           // non-blocking assignments
           if (!breakFlag) begin
-            if (wallTile == BREAK3) begin
+            if (wallTile == BREAK3 && starKey) begin
               breakFlag <= 1'b1;
               pacmanMap[targetX][targetY] <= BREAK2;
-            end else if (wallTile == BREAK2) begin
+            end else if (wallTile == BREAK2 && slashKey) begin
               breakFlag <= 1'b1;
               pacmanMap[targetX][targetY] <= BREAK1;
-            end else if (wallTile == BREAK1) begin
+            end else if (wallTile == BREAK1 && numLockKey) begin
               breakFlag <= 1'b1;
               pacmanMap[targetX][targetY] <= COIN;
             end
