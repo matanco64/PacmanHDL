@@ -2,7 +2,6 @@ module	objects_mux	(
 //		--------	Clock Input	 	
 					input		logic	clk,
 					input		logic	resetN,
-					input		logic	[7:0] RGB_MIF, 
 		   // pacman 
 					input		logic PacmanDR, 
 					input		logic	[7:0] PacmanRGB, 
@@ -100,7 +99,7 @@ begin
 			RGBOut <= heartRGB;
 
 			
-		else RGBOut <= RGB_MIF ;// last priority 
+		else RGBOut	<= 8'b0 ;// last priority black background
 		end ; 
 	end
 
