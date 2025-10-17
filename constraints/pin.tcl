@@ -25,7 +25,7 @@ set_location_assignment PIN_AF14 -to CLOCK_50
 #============================================================
 set_location_assignment PIN_AJ4 -to resetN_key0 ; # KEY[0]
 set_location_assignment PIN_AK4 -to startN_key1 ; #KEY[1]
-set_location_assignment PIN_AA14 -to KEY[2];
+set_location_assignment PIN_AA14 -to level_key2 ; #KEY[2]
 set_location_assignment PIN_AA15 -to volume_key3 ;#KEY[3]
 
 #============================================================

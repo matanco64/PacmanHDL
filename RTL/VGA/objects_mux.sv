@@ -3,6 +3,11 @@ module	objects_mux	(
 					input		logic	clk,
 					input		logic	resetN,
 					input		logic	[7:0] RGB_MIF, 
+					
+			// fog 
+					input		logic fogDR, 
+					input		logic	[7:0] fogRGB, 
+					
 		   // pacman 
 					input		logic PacmanDR, 
 					input		logic	[7:0] PacmanRGB, 
@@ -64,6 +69,10 @@ begin
 	else begin	
 		if (PacmanDR) 
 			RGBOut <= PacmanRGB;  //first priority 
+		
+		// fog	
+		else if (fogDR)
+			RGBOut <= fogRGB;	
 			
 		// ghosts	
 		else if (pinkyDR)
