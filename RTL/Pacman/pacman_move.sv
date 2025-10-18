@@ -90,8 +90,23 @@ module pacman_move (
 
 
   always_ff @(posedge clk or negedge resetN) begin
-    if (resetN == 1'b0) begin
+    if (!resetN) begin
       SM_Motion <= IDLE_ST;
+      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+
+      Xspeed <= 0;
+      Yspeed <= 0;
+      hit_reg <= 1'b0;
+      is_neg <= 1'b0;
+      speed <= NORMAL_SPEED;
+      prevSpeed <= 0;
+      curDirKey <= INITIAL_DIRECTION;
+		recovering <= 0;
+		recoveTimer <=0;
+		
+	end else if(gameState == RESET_ST) begin
+		SM_Motion <= IDLE_ST;
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
 

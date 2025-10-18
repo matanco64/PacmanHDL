@@ -319,6 +319,16 @@ module ghost_move (
       modeTimer <= 0;
       lastGameState <= RESET_ST;
       wasInFrightened <= 1'b0;
+	end else if(gameState == RESET_ST) begin
+		Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+      Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
+      ghostDir <= DIR_UP;
+      lastDir <= DIR_UP;
+      SM_Motion <= IDLE_ST;
+      currMode <= LEAVE_NEST_M;
+      modeTimer <= 0;
+      lastGameState <= RESET_ST;
+      wasInFrightened <= 1'b0;
     end else begin
       
       // Track game state transitions
