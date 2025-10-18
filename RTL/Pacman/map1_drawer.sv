@@ -28,6 +28,7 @@ module map1_drawer (
 	 input logic starKey,
 	 input logic slashKey,
     input logic numLockKey,
+	 input logic [3:0] level,
 
     //outputs//
     output logic isWin,
@@ -151,42 +152,23 @@ module map1_drawer (
 
   integer x, y;
   logic [7:0] randVal;
+  
+  logic [0:30][0:27][3:0] currentMap;
+  
+  map_manager #(
+		 .MAP_WIDTH_X(31),
+		 .MAP_HEIGHT_Y(28),
+		 .TILE_BITS(4)
+	) manager_inst (
+		 .clk(clk),
+		 .resetN(resetN),
+		 .gameState(gameState),
+		 .rnd(rnd),
+		 .currentMap(currentMap),
+		 .coinsPowTot(coinsPowTot)
+	);
 
 
-
-    logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
-    { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
-    { 4'd2, 4'd5, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd5, 4'd2, 4'd2, 4'd5, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd5, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2 },
-    { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
-    { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd3, 4'd0, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
-    { 4'd4, 4'd0, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd5, 4'd3, 4'd0, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd0, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd0, 4'd4 },
-    { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd3, 4'd0, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
-    { 4'd0, 4'd0, 4'd0, 4'd0, 4'd0, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd0, 4'd0, 4'd0, 4'd0, 4'd0 },
-    { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 },
-    { 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd2 },
-    { 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2 },
-    { 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2 },
-    { 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2, 4'd2, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd1, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd1, 4'd2 },
-    { 4'd2, 4'd5, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd5, 4'd2 },
-    { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 }
-  };
 
    logic [0:15] [0:15] [7:0] portal = {
   {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
@@ -328,24 +310,9 @@ module map1_drawer (
 
 
   // ---------------------------------------------------------------------------
-  // functions
+  // Around me 
   // ---------------------------------------------------------------------------
 
-  // count coins in start map
-  function automatic int countCoins();
-    int total;
-    begin
-      total = 0;
-      for (int y = 0; y < MAP_WIDTH_X; y++) begin
-        for (int x = 0; x < MAP_HEIGHT_Y; x++) begin
-          if (OriginalPacmanMap[y][x] == COIN || OriginalPacmanMap[y][x] == POWER) total++;
-        end
-      end
-      return total;
-    end
-  endfunction
-
-  // Around me 
   function automatic [4*TILE_BITS-1:0] aroundGhost(input [10:0] ghostTopLeftX,
                                                    input [10:0] ghostTopLeftY);
     logic [10:0] gx, gy;
@@ -362,6 +329,29 @@ module map1_drawer (
     end
   endfunction
 
+  
+  
+  //------------------------------------------------------
+  // thresholds for placing a wall
+  //------------------------------------------------------
+
+//  logic [4:0] threshold1, threshold2, threshold3;
+//
+//	always_comb begin
+//		 // Default values (safety)
+//		 threshold1 = 25;
+//		 threshold2 = 28;
+//		 threshold3 = 30;
+//
+//		 // Adjust based on level
+//		 case (level)
+//			  1: begin threshold1 = 31; threshold2 = 32; threshold3 = 33; end
+//			  2: begin threshold1 = 27; threshold2 = 29; threshold3 = 31; end
+//			  3: begin threshold1 = 24; threshold2 = 27; threshold3 = 30; end
+//			  4: begin threshold1 = 20; threshold2 = 25; threshold3 = 28; end
+//			  5: begin threshold1 = 15; threshold2 = 20; threshold3 = 25; end
+//		 endcase
+//	end
 
   //------------------------------------------------------
   // Random appearance & pulsing animation
@@ -372,7 +362,7 @@ module map1_drawer (
   logic [7:0] pulseCnt;
   logic       shine;
   logic       togglePow;
-
+  
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
       secCnt    <= 0;
@@ -416,8 +406,7 @@ module map1_drawer (
       RGBout <= 8'b0;
       mapDR <= 1'b0;
       pickUpDR <= 1'b0;
-      pacmanMap <= OriginalPacmanMap;
-      coinsPowTot <= countCoins();
+      pacmanMap <= currentMap;
 
       coinsCollected <= 0;
       powerCollected <= 0;
@@ -440,7 +429,34 @@ module map1_drawer (
       pacSpeedChange <= NORMAL;
       pacLifeChange <= NORMAL;
 
-    end else begin
+    end else if(gameState == RESET_ST) begin
+		RGBout <= 8'b0;
+      mapDR <= 1'b0;
+      pickUpDR <= 1'b0;
+      pacmanMap <= currentMap;
+
+      coinsCollected <= 0;
+      powerCollected <= 0;
+      pickUpCollected <= '{default: 0};  // all elements reset to 0
+      fruitSpawnPending <= 1'b0;
+
+      addBreak <= PRE_PLACE;
+      randVal <= 8'hA5;
+
+      coinFlag <= 0;
+      powFlag <= 0;
+      picUpFlag <= 0;
+      picUpTypeFlag <= 0;
+      fruitSpawnFlag <= 0;
+      breakFlag <= 0;
+      currPicUp <= 0;
+      isWin <= 0;
+
+      pickUpTimer <= 0;
+      pacSpeedChange <= NORMAL;
+      pacLifeChange <= NORMAL;
+
+	 end else begin
       // defaults	
       RGBout <= TRANSPARENT_ENCODING;
       mapDR <= 1'b0;
@@ -505,19 +521,21 @@ module map1_drawer (
             randVal = {randVal[6:0], randVal[7] ^ randVal[5]};
 
             // Replace some COINs with breakable walls - far from pacman
-            if (OriginalPacmanMap[x][y] == COIN &&
+            if (currentMap[x][y] == COIN &&
                 ($unsigned(x - pacX) > 1) &&
                 ($unsigned(y - pacY) > 1)) begin
 
-                if (randVal[4:0] >= 5'd30) pacmanMap[x][y]      <= BREAK3;
-                else if (randVal[4:0] >= 5'd28) pacmanMap[x][y] <= BREAK2;
-                else if (randVal[4:0] >= 5'd25) pacmanMap[x][y] <= BREAK1;
+               
+                if (randVal[4:0] >= 32 - level) pacmanMap[x][y]      <= BREAK3;
+                else if (randVal[4:0] >= 32 - level*2) pacmanMap[x][y] <= BREAK2;
+                else if (randVal[4:0] >= 32 - level*3) pacmanMap[x][y] <= BREAK1;
+
             end
 
           end
         end
       end
-
+	
       // ---------------------------------------------------------------------------
       // colisions
       // ---------------------------------------------------------------------------

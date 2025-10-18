@@ -9,7 +9,7 @@ module fog_mask  #(
     input  logic signed [10:0] pixelX,   // current VGA pixel
     input  logic signed [10:0] pixelY,
 
-    input  logic [3:0]  level,           // game level
+    input  logic [3:0]  level,           
     input  logic [10:0] pactopLeftX,     // Pac-Man top-left position
     input  logic [10:0] pactopLeftY,
 
@@ -17,34 +17,33 @@ module fog_mask  #(
     output logic [7:0]  RGBfog           // fog color
 );
 
-    // Color constants
+    // Color
     localparam [7:0] FOG_COLOR = 8'h6D;   // gray fog
     localparam [7:0] TRANSPARENT_ENCODING = 8'hE3;
+	 
+	 logic signed [11:0] dx, dy;
+    logic [23:0] dist2;
+    logic [19:0] R2;
 
-    // Radius depending on level
+    // Radius per level
     logic [9:0] vis_radius;
     always_comb begin
         case (level)
-				4'd3: vis_radius = 100;
-				4'd4: vis_radius = 80;
-				4'd5: vis_radius = 60;
+				4'd3: vis_radius = 120;
+				4'd4: vis_radius = 90;
+				4'd5: vis_radius = 70;
             default: vis_radius = 1000;
         endcase
     end
 
-    // Internal values
-    logic signed [11:0] dx, dy;
-    logic [23:0] dist2;
-    logic [19:0] R2;
-
     always_comb begin
-        dx =   pixelX - (pactopLeftX + TILE_SIZE/2); 
-        dy = ((pixelY - (pactopLeftY + TILE_SIZE/2) ) *3 ) /2 ; // aspect ratio 
+        dx =  ((pixelX - (pactopLeftX + TILE_SIZE/2))*5)/4;  ; // pac center & aspect ratio ~1.25
+        dy = pixelY - (pactopLeftY + TILE_SIZE/2);
         dist2 = dx*dx + dy*dy;
         R2 = vis_radius * vis_radius;
 
-        // Fog active outside visible circle but within map
-        fogDR = (dist2 > R2) && pixelX < MAP_WIDTH_X * TILE_SIZE;
+        fogDR = (dist2 > R2) && pixelX < MAP_WIDTH_X * TILE_SIZE; // Fog active outside visible circle but within map
+
     end
 
     // Fixed fog color
