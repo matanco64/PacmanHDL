@@ -67,12 +67,17 @@ begin
 	end
 	
 	else begin	
-		if (PacmanDR) 
-			RGBOut <= PacmanRGB;  //first priority 
 		
 		// fog	
-		else if (fogDR)
+		if (fogDR)
 			RGBOut <= fogRGB;	
+		// map	
+		else if (MapDR || CoinDR || powerDR || pickUpDR) // since ghosts and pacman have black background we don't want it to overlay the map
+			RGBOut <= MapRGB;
+		
+		// pacman
+		else if (PacmanDR) 
+			RGBOut <= PacmanRGB;
 			
 		// ghosts	
 		else if (pinkyDR)
@@ -98,10 +103,6 @@ begin
 		else if (levelNumDR)
 			RGBOut <= levelNumRGB;	
 			
-		// map	
-		else if (MapDR || CoinDR || powerDR || pickUpDR)
-			RGBOut <= MapRGB;
-		
 		// side	
 		else if (endDR)
 			RGBOut <= endRGB;
