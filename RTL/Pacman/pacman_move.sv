@@ -66,6 +66,8 @@ module pacman_move (
   int Yposition;
   int Xspeed;
   int Yspeed;
+  logic speedChangeRequested;
+  logic keyPadValidAction;
 
 
   enum logic [2:0] {
@@ -79,7 +81,6 @@ module pacman_move (
   } SM_Motion;
 
   logic hit_reg = 1'b0;
-  logic is_neg;
   logic [2:0] recoveTimer; 
 
   logic canTurn;
@@ -97,20 +98,20 @@ module pacman_move (
       Xspeed <= 0;
       Yspeed <= 0;
       hit_reg <= 1'b0;
-      is_neg <= 1'b0;
+		speedChangeRequested <= 1'b0;
       speed <= NORMAL_SPEED;
       prevSpeed <= 0;
       curDirKey <= INITIAL_DIRECTION;
 		recovering <= 0;
 		recoveTimer <=0;
-    end else if (collision_pac_ghost != 3'b0 && gameState != POWER_UP_ST && !recovering) begin  // thoch ghost
+    end else if (collision_pac_ghost != 3'b0 && gameState != POWER_UP_ST && !recovering) begin  // touch ghost
       SM_Motion <= IDLE_ST;
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
       Xspeed <= 0;
       Yspeed <= 0;
       hit_reg <= 1'b0;
-      is_neg <= 1'b0;
+		speedChangeRequested <= 1'b0;
       curDirKey <= INITIAL_DIRECTION;
 		recovering <= 1'b1;
 		recoveTimer <= RECOVER_TIME;
@@ -122,7 +123,7 @@ module pacman_move (
 
       // missing - handle speed next do turbo - all in different ff block
 		
-		if(recoveTimer>0 && oneSec) recoveTimer <= recoveTimer- 1;
+		if(recoveTimer > 0 && oneSec) recoveTimer <= recoveTimer- 1;
 		else if(recoveTimer == 0) recovering <= 0 ;
 
       if (startOfFrame && canTurn) begin
@@ -135,11 +136,12 @@ module pacman_move (
         prevSpeed <= speed;
       end
 
-      // align if speed has changed - prevent getting stack at the middle
+      // align if speed has changed - prevent getting stuck at the middle
       if (speed != prevSpeed) begin
         Xposition <= ((Xposition / FIXED_POINT_MULTIPLIER)/ TILE_PIXELS ) * FIXED_POINT_MULTIPLIER*TILE_PIXELS;
         Yposition <= ((Yposition / FIXED_POINT_MULTIPLIER)/ TILE_PIXELS ) * FIXED_POINT_MULTIPLIER*TILE_PIXELS;
         prevSpeed <= speed;
+		  speedChangeRequested <= 1'b1;
       end
 
       case (SM_Motion)
@@ -160,38 +162,41 @@ module pacman_move (
         //------------
         MOVE_ST: begin  // moving collecting colisions 
           //------------
-
-          if ((speedChange != 0 || keyPadValid) && !is_neg && canTurn) begin
-            case (keyPadCode)
+          if (keyPadValidAction && canTurn && keyPadCode != curDirKey) begin
+              curDirKey <= keyPadCode;
+              speedChangeRequested <= 1'b1;
+          end
+			 
+			
+				
+          if (speedChangeRequested) begin
+            case (curDirKey)
               UP_KEY: begin
                 Yspeed <= -speed;
                 Xspeed <= 0;
-                curDirKey <= UP_KEY;
               end
               RIGHT_KEY: begin
                 Xspeed <= speed;
                 Yspeed <= 0;
-                curDirKey <= RIGHT_KEY;
               end
               LEFT_KEY: begin
                 Xspeed <= -speed;
                 Yspeed <= 0;
-                curDirKey <= LEFT_KEY;
               end
               DOWN_KEY: begin
                 Yspeed <= speed;
                 Xspeed <= 0;
-                curDirKey <= DOWN_KEY;
               end
+              default: ;
             endcase
 
             // ensure there is no accumaltive 1/64th pixel error:
             Xposition <= ((Xposition / FIXED_POINT_MULTIPLIER) * FIXED_POINT_MULTIPLIER);
             Yposition <= ((Yposition / FIXED_POINT_MULTIPLIER) * FIXED_POINT_MULTIPLIER);
-
+				speedChangeRequested <= 1'b0;
           end
 
-
+			
           // Collecting collisions during wait for new frame
           if (collision_pac_wall) begin
             hit_reg <= 1'b1;
@@ -206,55 +211,35 @@ module pacman_move (
         START_OF_FRAME_ST: begin  //check if any colision was detected 
           //------------
 			 
-			 
-			 /// TO MATAN A TEST I DID AND KIND OF WORKED TO FIX THE SPEED BUG
-//			  if (hit_reg && !is_neg) begin
-//            // Compute current tile indices
-//            logic [ $clog2(MAP_WIDTH_X)-1:0] curTileX;
-//            logic [$clog2(MAP_HEIGHT_Y)-1:0] curTileY;
-//            curTileX = Xposition / (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
-//            curTileY = Yposition / (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
-//
-//            // Stop motion
-//            Xspeed  <= 0;
-//            Yspeed  <= 0;
-//            hit_reg <= 1'b0;
-//
-//            // Align to nearest safe position based on current direction
-//            case (curDirKey)
-//              UP_KEY:    Yposition <= (curTileY + 1) * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
-//              DOWN_KEY:  Yposition <= curTileY * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
-//              LEFT_KEY:  Xposition <= (curTileX + 1) * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
-//              RIGHT_KEY: Xposition <= curTileX * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
-//              default: begin
-//                Xposition <= curTileX * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
-//                Yposition <= curTileY * TILE_PIXELS * FIXED_POINT_MULTIPLIER;
-//              end
-//            endcase
-//
-//            SM_Motion <= MOVE_ST;  // resume normal movement
-//          end else if (!hit_reg && is_neg) begin
-//            Xspeed <= 0;
-//            Yspeed <= 0;
-//            is_neg <= 1'b0;
-//            SM_Motion <= MOVE_ST;
-//          end else begin
-//            SM_Motion <= POSITION_CHANGE_ST;
-//          end
-			 
-			 
-          if (hit_reg && !is_neg) begin
-            Xspeed  <= -Xspeed;
-            Yspeed  <= -Yspeed;
-            hit_reg <= 1'b0;
-            is_neg  <= 1'b1;
+			 if (hit_reg) begin
+				 int curTileX;
+				 int curTileY;
+				 int nextX, nextY;
+				 int tileMultiplier = (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
+				
 
-          end else if (!hit_reg && is_neg) begin
-            Xspeed <= 0;
-            Yspeed <= 0;
-            is_neg <= 1'b0;
-          end
+				 curTileX = Xposition / tileMultiplier;
+				 curTileY = Yposition / tileMultiplier;
 
+				 nextX = curTileX * tileMultiplier;
+				 nextY = curTileY * tileMultiplier;
+
+				 // Nudge to the opposite edge when coming from UP/LEFT
+				 case (curDirKey)
+					UP_KEY: nextY = (curTileY + 1) * tileMultiplier;
+					DOWN_KEY:  nextY = curTileY * tileMultiplier;
+					LEFT_KEY: nextX = (curTileX + 1) * tileMultiplier;
+					RIGHT_KEY: nextX = curTileX * tileMultiplier;
+					default: ;
+				 endcase
+				 Xposition <= nextX;
+				 Yposition <= nextY;
+				 Xspeed  <= 0;
+				 Yspeed  <= 0;
+				 hit_reg <= 1'b0;
+			end
+						
+	
 
           SM_Motion <= POSITION_CHANGE_ST;
         end
@@ -314,6 +299,7 @@ module pacman_move (
       RIGHT_KEY: curDir = 2'd3;
       default: curDir = 2'd0;  // fallback value if none match
     endcase
+	  keyPadValidAction = keyPadValid && (keyPadCode == UP_KEY || keyPadCode == DOWN_KEY || keyPadCode == LEFT_KEY || keyPadCode == RIGHT_KEY);
   end
 
 
