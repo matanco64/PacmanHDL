@@ -126,6 +126,7 @@ module map1_drawer (
   localparam WIN_ST = 3'b101;
   localparam LOSE_ST = 3'b110;
   localparam POWER_UP_ST = 3'b111;
+  localparam AMOUNT_OF_BREAKABLES_TO_GENERATE = 40; // by chance it will be less than this (max)
 
   localparam PRE_PLACE = 0;
   localparam PLACING = 1;
@@ -134,7 +135,13 @@ module map1_drawer (
   logic pickUpCollision;  // 1= collision
   logic fruitSpawnPending;
 
+  // breakable walls placement
   logic [1:0] addBreak;  // 0 = pre-placement 1=placing 2=post-placement
+  logic [7:0] amountOfBreakableWallsPlaced;
+  logic [3:0] randTileX;
+  logic [3:0] randTileY; 
+  logic [1:0] randTileType;
+
 
   logic [3:0] offsetX;
   logic [3:0] offsetY;
@@ -142,6 +149,7 @@ module map1_drawer (
   logic [8:0] coinsCollected;
   logic [8:0] powerCollected;
   logic [8:0] coinsPowTot;  // pow and coins!
+  
 
   logic [$clog2(MAP_HEIGHT_Y)-1:0] emptyTilesX[0:TILE_SAVED-1];
   logic [$clog2(MAP_WIDTH_X)-1:0] emptyTilesY[0:TILE_SAVED-1];
@@ -480,6 +488,7 @@ module map1_drawer (
 
       if (addBreak == PRE_PLACE && coinsCollected * 100 / coinsPowTot > 5) begin  // just for now 5 is the tresh
         addBreak <= PLACING;  // one time trigger - 0 on reset and 1 forever
+        amountOfBreakableWallsPlaced <= 0;
       end
 
       // Randomize breakable walls placement (BREAK1 / BREAK2 / BREAK3)	
@@ -490,26 +499,23 @@ module map1_drawer (
         pacX = pactopLeftX / TILE_SIZE;
         pacY = (pactopLeftY / TILE_SIZE) - 1;  // Account for offset
 		  
-        addBreak <= POST_PLACE;
         randVal = clk ^ rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX;  // seed mixing for variety
 
-        for (x = 0; x < MAP_WIDTH_X; x = x + 1) begin
-          for (y = 0; y < MAP_HEIGHT_Y; y = y + 1) begin
-            randVal = {randVal[6:0], randVal[7] ^ randVal[5]};
+        randTileX = randVal[3:0];
+        randTileY = randVal[7:4];
+        randTileType = randVal[6:5];
+        if (pacmanMap[x][y] == COIN &&
+            ($unsigned(x - pacX) > 1 ) &&
+            ($unsigned(y - pacY) > 1) && 
+            x < MAP_WIDTH_X && y < MAP_HEIGHT_Y) begin  // avoid placing near pacman
+                if (randTileType == 2'b00) pacmanMap[x][y]      <= BREAK3;
+                else if (randTileType == 2'b01) pacmanMap[x][y] <= BREAK2;
+                else pacmanMap[x][y] <= BREAK1;
+        end
 
-            // Replace some COINs with breakable walls - far from pacman
-            if (currentMap[x][y] == COIN &&
-                ($unsigned(x - pacX) > 1) &&
-                ($unsigned(y - pacY) > 1)) begin
-
-               
-                if (randVal[4:0] >= 32 - level) pacmanMap[x][y]      <= BREAK3;
-                else if (randVal[4:0] >= 32 - level*2) pacmanMap[x][y] <= BREAK2;
-                else if (randVal[4:0] >= 32 - level*3) pacmanMap[x][y] <= BREAK1;
-
-            end
-
-          end
+        amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
+        if (amountOfBreakableWallsPlaced >= AMOUNT_OF_BREAKABLES_TO_GENERATE) begin
+          addBreak <= POST_PLACE;
         end
       end
 	
