@@ -1,0 +1,2 @@
+*.sof filter=lfs diff=lfs merge=lfs -text
+*.pof filter=lfs diff=lfs merge=lfs -text
