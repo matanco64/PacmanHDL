@@ -98,7 +98,6 @@ module pacman_move (
       Xspeed <= 0;
       Yspeed <= 0;
       hit_reg <= 1'b0;
-      is_neg <= 1'b0;
       speed <= NORMAL_SPEED;
       prevSpeed <= 0;
       curDirKey <= INITIAL_DIRECTION;
@@ -177,7 +176,7 @@ module pacman_move (
         //------------
         MOVE_ST: begin  // moving collecting colisions 
           //------------
-          if (keyPadValidAction && canTurn && keyPadCode != curDirKey) begin
+          if (keyPadValidAction && canTurn) begin
               curDirKey <= keyPadCode;
               speedChangeRequested <= 1'b1;
           end
