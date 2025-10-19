@@ -329,29 +329,6 @@ module map1_drawer (
     end
   endfunction
 
-  
-  
-  //------------------------------------------------------
-  // thresholds for placing a wall
-  //------------------------------------------------------
-
-//  logic [4:0] threshold1, threshold2, threshold3;
-//
-//	always_comb begin
-//		 // Default values (safety)
-//		 threshold1 = 25;
-//		 threshold2 = 28;
-//		 threshold3 = 30;
-//
-//		 // Adjust based on level
-//		 case (level)
-//			  1: begin threshold1 = 31; threshold2 = 32; threshold3 = 33; end
-//			  2: begin threshold1 = 27; threshold2 = 29; threshold3 = 31; end
-//			  3: begin threshold1 = 24; threshold2 = 27; threshold3 = 30; end
-//			  4: begin threshold1 = 20; threshold2 = 25; threshold3 = 28; end
-//			  5: begin threshold1 = 15; threshold2 = 20; threshold3 = 25; end
-//		 endcase
-//	end
 
   //------------------------------------------------------
   // Random appearance & pulsing animation

@@ -26,6 +26,11 @@ module characterBitMap (
   localparam logic [7:0] BODY = 8'he0;
   localparam logic [7:0] EYE = 8'hff;
 
+  // 2-bit encoding values (saves 75% memory!)
+  localparam logic [1:0] ENC_TRANSPARENT = 2'd0;
+  localparam logic [1:0] ENC_BODY = 2'd1;
+  localparam logic [1:0] ENC_DETAIL = 2'd2;  // Eyes or other details
+
   // Format: {top, bottom, left, right} per eye of the pupil
   // [direction][eye_index][top/bottom/left/right]
   localparam logic [3:0] EYE_BOUNDARIES[0:3][0:1][0:3] = '{
@@ -62,45 +67,45 @@ module characterBitMap (
   logic localInside;
 
 
-  // // -----------------------------------------------------------------------------
-  // // Ghosts bitmaps
-  // // -----------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------
+  // Optimized 2-bit ghost bitmaps
+  // -----------------------------------------------------------------------------
 
-  logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] ghostShape =  {
-  	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  	{8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3},
-  	{8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
-  	{8'he3,8'he3,8'he0,8'he0,8'hff,8'hff,8'he0,8'he0,8'he0,8'hff,8'hff,8'he0,8'he0,8'he3,8'he3,8'he3},
-  	{8'he3,8'he3,8'he0,8'hff,8'hff,8'hff,8'hff,8'he0,8'hff,8'hff,8'hff,8'hff,8'he0,8'he0,8'he3,8'he3},
-  	{8'he3,8'he0,8'he0,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'he0,8'he0,8'he3,8'he3},
-  	{8'he3,8'he0,8'he0,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'he0,8'he0,8'he0,8'he3},
-  	{8'he3,8'he0,8'he0,8'hff,8'hff,8'hff,8'hff,8'he0,8'hff,8'hff,8'hff,8'hff,8'he0,8'he0,8'he0,8'he3},
-  	{8'he3,8'he0,8'he0,8'he0,8'hff,8'hff,8'he0,8'he0,8'he0,8'hff,8'hff,8'he0,8'he0,8'he0,8'he0,8'he3},
-  	{8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3},
-  	{8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3},
-  	{8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3},
-  	{8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3},
-  	{8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3},
-  	{8'he3,8'he0,8'he0,8'he3,8'he3,8'he0,8'he3,8'he3,8'he3,8'he0,8'he0,8'he3,8'he3,8'he0,8'he3,8'he3},
-  	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
+  logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][1:0] ghostShape = {
+  	{2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0},
+  	{2'd0,2'd0,2'd0,2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0,2'd0,2'd0,2'd0,2'd0},
+  	{2'd0,2'd0,2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0,2'd0,2'd0,2'd0},
+  	{2'd0,2'd0,2'd1,2'd1,2'd2,2'd2,2'd1,2'd1,2'd1,2'd2,2'd2,2'd1,2'd1,2'd0,2'd0,2'd0},
+  	{2'd0,2'd0,2'd1,2'd2,2'd2,2'd2,2'd2,2'd1,2'd2,2'd2,2'd2,2'd2,2'd1,2'd1,2'd0,2'd0},
+  	{2'd0,2'd1,2'd1,2'd2,2'd2,2'd2,2'd2,2'd2,2'd2,2'd2,2'd2,2'd2,2'd1,2'd1,2'd0,2'd0},
+  	{2'd0,2'd1,2'd1,2'd2,2'd2,2'd2,2'd2,2'd2,2'd2,2'd2,2'd2,2'd2,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd2,2'd2,2'd2,2'd2,2'd1,2'd2,2'd2,2'd2,2'd2,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd2,2'd2,2'd1,2'd1,2'd1,2'd2,2'd2,2'd1,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0,2'd0,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd0,2'd0,2'd1,2'd0,2'd0,2'd0,2'd1,2'd1,2'd0,2'd0,2'd1,2'd0,2'd0},
+  	{2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0}};
 
-  logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][7:0] power = {
-  	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-  	{8'he3,8'he3,8'he3,8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3,8'he3,8'he3,8'he3,8'he3},
-  	{8'he3,8'he3,8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3,8'he3,8'he3,8'he3},
-  	{8'he3,8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3,8'he3,8'he3},
-  	{8'he3,8'he3,8'hCA,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hCA,8'he3,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hCA,8'he3,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'hCA,8'hFF,8'hFF,8'hCA,8'hFF,8'hFF,8'hCA,8'hFF,8'hFF,8'hCA,8'hCA,8'hCA,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'hFF,8'hCA,8'hCA,8'hFF,8'hCA,8'hCA,8'hFF,8'hCA,8'hCA,8'hFF,8'hCA,8'hCA,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'hCA,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3,8'he3,8'hCA,8'hCA,8'he3,8'hCA,8'hCA,8'hCA,8'he3},
-  	{8'he3,8'hCA,8'hCA,8'he3,8'he3,8'hCA,8'he3,8'he3,8'he3,8'hCA,8'hCA,8'he3,8'he3,8'hCA,8'he3,8'he3},
-  	{8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}};
+  logic [0:OBJECT_HEIGHT_Y-1][0:OBJECT_WIDTH_X-1][1:0] power = {
+  	{2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0},
+  	{2'd0,2'd0,2'd0,2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0,2'd0,2'd0,2'd0,2'd0},
+  	{2'd0,2'd0,2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0,2'd0,2'd0,2'd0},
+  	{2'd0,2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0,2'd0,2'd0},
+  	{2'd0,2'd0,2'd1,2'd1,2'd1,2'd2,2'd2,2'd1,2'd1,2'd2,2'd2,2'd1,2'd1,2'd1,2'd0,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd1,2'd2,2'd2,2'd1,2'd1,2'd2,2'd2,2'd1,2'd1,2'd1,2'd0,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd2,2'd2,2'd1,2'd2,2'd2,2'd1,2'd2,2'd2,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd2,2'd1,2'd1,2'd2,2'd1,2'd1,2'd2,2'd1,2'd1,2'd2,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0,2'd0,2'd1,2'd1,2'd0,2'd1,2'd1,2'd1,2'd0},
+  	{2'd0,2'd1,2'd1,2'd0,2'd0,2'd1,2'd0,2'd0,2'd0,2'd1,2'd1,2'd0,2'd0,2'd1,2'd0,2'd0},
+  	{2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0,2'd0}};
   // -----------------------------------------------------------------------------
 
 
@@ -134,7 +139,7 @@ module characterBitMap (
   end
 
   // ---------------------------------------------------------------------------
-  // ghost map
+  // ghost map with 2-bit encoding decoder
   // ---------------------------------------------------------------------------
 
   always_ff @(posedge clk or negedge resetN) begin
@@ -146,17 +151,27 @@ module characterBitMap (
       if (localInside && (srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y)) begin
         if (gameState == POWER_UP_ST) begin
           // --- Power pellet mode ---
-          RGBout <= power[srcY][srcX];
+          case (power[srcY][srcX])
+            ENC_BODY:        RGBout <= COLOR1;
+            ENC_DETAIL:      RGBout <= COLOR2;
+            default:         RGBout <= TRANSPARENT_ENCODING;
+          endcase
 
           // --- flickering mode ---
-          if ((countH == 4'd0) && (countL <= 4'd4) && countL[0]) begin // Alternate every second using countL LSB
-            RGBout <= power[srcY][srcX] == COLOR1 ? COLOR2 :
-						 power[srcY][srcX] == COLOR2 ? COLOR1 :
-						 power[srcY][srcX] ; // Keep other colors unchanged
+          if ((countH == 4'd0) && (countL <= 4'd4) && countL[0]) begin
+            case (power[srcY][srcX])
+              ENC_BODY:   RGBout <= COLOR2;
+              ENC_DETAIL: RGBout <= COLOR1;
+              default:    RGBout <= RGBout; // Keep transparent unchanged
+            endcase
           end
         end else begin
           // --- Normal mode ---
-          RGBout <= (ghostShape[srcY][srcX] == BODY) ? ghostBodyColor : (isPupil(srcX, srcY, 0) || isPupil(srcX, srcY, 1))?  8'h00 : ghostShape[srcY][srcX];
+          case (ghostShape[srcY][srcX])
+            ENC_BODY:        RGBout <= ghostBodyColor;
+            ENC_DETAIL:      RGBout <= (isPupil(srcX, srcY, 0) || isPupil(srcX, srcY, 1)) ? 8'h00 : EYE;
+            default:         RGBout <= TRANSPARENT_ENCODING;
+          endcase
         end
       end
     end
@@ -169,4 +184,3 @@ module characterBitMap (
   assign drawingRequest = (RGBout != TRANSPARENT_ENCODING) ? 1'b1 : 1'b0;
 
 endmodule
-
