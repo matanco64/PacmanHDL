@@ -162,7 +162,7 @@ module characterBitMap (
             case (power[srcY][srcX])
               ENC_BODY:   RGBout <= COLOR2;
               ENC_DETAIL: RGBout <= COLOR1;
-              default:    RGBout <= RGBout; // Keep transparent unchanged
+              default:    RGBout <= TRANSPARENT_ENCODING; 
             endcase
           end
         end else begin
