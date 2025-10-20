@@ -240,12 +240,16 @@ module pacman_game_controller (
       end
     end
   end
+  
+  binary_to_bcd binary_to_bcd_inst (
+		 .binary_in(totalScore),
+		 .hundreds(score2),
+		 .tens(score1),
+		 .ones(score0),
+	);
 
   // Outputs
   assign gameState = currentState;
-  assign gameStateFor7Seg = {1'b0, currentState};  // 3->4 bits
-  assign score0 = totalScore % 10;
-  assign score1 = (totalScore / 10) % 10;
-  assign score2 = (totalScore / 100) % 10;
+
 
 endmodule
