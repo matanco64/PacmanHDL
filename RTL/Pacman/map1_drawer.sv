@@ -126,7 +126,7 @@ module map1_drawer (
   localparam WIN_ST = 3'b101;
   localparam LOSE_ST = 3'b110;
   localparam POWER_UP_ST = 3'b111;
-  localparam AMOUNT_OF_BREAKABLES_TO_GENERATE = 15; // by chance it will be less than this (max)
+  localparam AMOUNT_OF_BREAKABLES_TO_GENERATE = 40; // by chance it will be less than this (max)
   
   typedef enum logic [1:0] {
     PRE_PLACE,
@@ -159,8 +159,8 @@ module map1_drawer (
   logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] pacmanMap;
   logic [TILE_BITS-1:0] tile;
   logic [PICKUPS_TO_PLACE-1:0][5:0] pickUpCollected;  //  how many of each pickup collected
-
-  integer x, y;
+  
+  
   logic [7:0] randVal;
   
   logic [0:30][0:27][3:0] currentMap;
@@ -468,7 +468,7 @@ module map1_drawer (
 
       // flags
       if (!fruitSpawnPending && currPicUp < PICKUPS_TO_PLACE && 
-			 (coinsCollected * 100 / coinsPowTot) > FRUIT_THRESH[currPicUp]) begin
+			 (coinsCollected * 100) > (FRUIT_THRESH[currPicUp] * coinsPowTot)) begin
         fruitSpawnPending <= 1'b1;
       end
 
@@ -509,14 +509,13 @@ module map1_drawer (
 		  
         // randVal = rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX;  // seed mixing for variety
 
-        if (pacmanMap[x][y] == COIN &&
-            ($unsigned(x - pacX) > 1 ) &&
-            ($unsigned(y - pacY) > 1) && 
-            x < MAP_WIDTH_X && y < MAP_HEIGHT_Y) begin  // avoid placing near pacman
-                if (randTileType == 2'b00) pacmanMap[x][y]      <= BREAK3;
-                else if (randTileType == 2'b01) pacmanMap[x][y] <= BREAK2;
-                else pacmanMap[x][y] <= BREAK1;
-					 amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
+        if (pacmanMap[randTileX][randTileY] == COIN &&
+            ($unsigned(randTileX - pacX) > 1 ) &&
+            ($unsigned(randTileY - pacY) > 1) && 
+            randTileX < MAP_WIDTH_X && randTileY < MAP_HEIGHT_Y) begin  // avoid placing near pacman
+
+					amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
+					pacmanMap[randTileX][randTileY] <= randTileType;
         end
 
        
@@ -746,12 +745,16 @@ module map1_drawer (
 
   assign placeBreakFlag = (addBreak_st == PLACING); 
 
- always_comb begin
-    		randVal = rnd;
+  always_comb begin
 
-        randTileX = randVal[3:0];
-        randTileY = randVal[7:4];
-        randTileType = randVal[6:5];
- end
+    randTileX = rnd[3:0];
+    randTileY = rnd[7:4];
+
+		case(rnd[6:5])
+			2'b00: randTileType = BREAK3;
+			2'b01: randTileType = BREAK2;
+			default: randTileType = BREAK1;
+		endcase
+  end
 
 endmodule
