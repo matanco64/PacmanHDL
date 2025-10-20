@@ -9,6 +9,7 @@ sim_out/
 *.summary
 *.bak
 *.qarlog
+*.qws
 
 # Compiled bitstreams (optional)
 *.sof
