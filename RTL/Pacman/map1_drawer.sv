@@ -142,7 +142,7 @@ module map1_drawer (
   logic [7:0] amountOfBreakableWallsPlaced;
   logic [3:0] randTileX;
   logic [3:0] randTileY; 
-  logic [1:0] randTileType;
+  logic [3:0] randTileType;
 
 
   logic [3:0] offsetX;
