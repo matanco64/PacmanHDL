@@ -494,7 +494,7 @@ module map1_drawer (
       // Place breakable walls
       // ---------------------------------------------------------------------------
 
-      if (addBreak_st == PRE_PLACE && coinsCollected * 100 / coinsPowTot > 5) begin  // just for now 5 is the tresh
+      if (addBreak_st == PRE_PLACE && ((coinsCollected * 100) > (5  * coinsPowTot))) begin  // just for now 5 is the tresh
         addBreak_st <= PLACING;  // one time trigger - 0 on reset and 1 forever
         amountOfBreakableWallsPlaced <= 0;
       end
@@ -507,11 +507,8 @@ module map1_drawer (
         pacX = pactopLeftX / TILE_SIZE;
         pacY = (pactopLeftY / TILE_SIZE) - 1;  // Account for offset
 		  
-        randVal = rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX;  // seed mixing for variety
+        // randVal = rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX;  // seed mixing for variety
 
-        randTileX = randVal[3:0];
-        randTileY = randVal[7:4];
-        randTileType = randVal[6:5];
         if (pacmanMap[x][y] == COIN &&
             ($unsigned(x - pacX) > 1 ) &&
             ($unsigned(y - pacY) > 1) && 
@@ -747,6 +744,14 @@ module map1_drawer (
       - pickUpCollected[3] * 20  // poision
       - pickUpCollected[4] * 50;  //  fee
 
-  assign placeBreakFlag = (addBreak_st == PLACING);    
+  assign placeBreakFlag = (addBreak_st == PLACING); 
+
+ always_comb begin
+    		randVal = rnd;
+
+        randTileX = randVal[3:0];
+        randTileY = randVal[7:4];
+        randTileType = randVal[6:5];
+ end
 
 endmodule

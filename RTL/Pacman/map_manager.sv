@@ -338,7 +338,7 @@ localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][TILE_BITS-1:0] changeVal = '{
 		loadedNewMap <= 1'b0;
    end else if (loadingMap ==  1'b1) begin
       // Apply changes for the new map
-      if (currentIndex < MAX_CHANGES) begin
+      if (currentIndex < MAX_CHANGES - 1) begin
          currentMap[changeX[currentMapIndex][currentIndex]][changeY[currentMapIndex][currentIndex]] <= changeVal[currentMapIndex][currentIndex];
          currentIndex <= currentIndex + 7'd1;
       end else begin
