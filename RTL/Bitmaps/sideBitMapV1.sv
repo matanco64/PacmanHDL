@@ -348,6 +348,15 @@ logic [0:63][0:63] pause =  {
 	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
 	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}};
 
+// load the .mem files (hex, one byte per line). Tools often support this for simulation and FPGA init.
+// initial begin
+//   // Files are expected in the simulation/synthesis path; adjust paths if needed.
+//   $readmemh("start.mem", start_mem);
+//   $readmemh("play.mem",  play_mem);
+//   $readmemh("win.mem",   win_mem);
+//   $readmemh("lose.mem",  lose_mem);
+//   $readmemh("pause.mem", pause_mem);
+// end
 
 // -----------------------------------------------------------------------------
 
@@ -362,10 +371,16 @@ logic [0:63][0:63] pause =  {
   parameter LOSE_ST = 3'b110;
   parameter POWER_UP_ST = 3'b111;
 
+  localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
+
+  // compute linear address from X,Y (64 wide -> shift left by 6)
+	logic [11:0] pixAddr;
+	always_comb pixAddr = (offsetY << 6) + offsetX;
+
 always_ff@(posedge clk or negedge resetN)
 begin
 	if(!resetN) begin
-    drawingRequest <= 1'b0;
+    	RGBout <= TRANSPARENT_ENCODING;
 	end
 	else begin	
 		if (InsideRectangle) begin
@@ -376,11 +391,17 @@ begin
 			  WIN_ST: 			  drawingRequest <= win[offsetY][offsetX];
 			  LOSE_ST: 			  drawingRequest <= lose[offsetY][offsetX];
 			  default: 			  drawingRequest <= play[offsetY][offsetX];
+// 				RESET_ST,
+// 				START_WAIT_ST: RGBout <= start_mem[pixAddr];
+// 				PAUSED_ST:      RGBout <= pause_mem[pixAddr];
+// 				WIN_ST:         RGBout <= win_mem[pixAddr];
+// 				LOSE_ST:        RGBout <= lose_mem[pixAddr];
+// 				default:        RGBout <= play_mem[pixAddr];
 			endcase
-		end
-    else begin
+		end else begin
       drawingRequest <= 0; // outside the rectangle
     end		
+
 	end 
 end
 
