@@ -126,17 +126,19 @@ module map1_drawer (
   localparam WIN_ST = 3'b101;
   localparam LOSE_ST = 3'b110;
   localparam POWER_UP_ST = 3'b111;
-  localparam AMOUNT_OF_BREAKABLES_TO_GENERATE = 40; // by chance it will be less than this (max)
-
-  localparam PRE_PLACE = 0;
-  localparam PLACING = 1;
-  localparam POST_PLACE = 2;
+  localparam AMOUNT_OF_BREAKABLES_TO_GENERATE = 15; // by chance it will be less than this (max)
+  
+  typedef enum logic [1:0] {
+    PRE_PLACE,
+    PLACING,
+    POST_PLACE
+  } wall_placement_st;
 
   logic pickUpCollision;  // 1= collision
   logic fruitSpawnPending;
 
   // breakable walls placement
-  logic [1:0] addBreak;  // 0 = pre-placement 1=placing 2=post-placement
+  wall_placement_st addBreak_st;  // 0 = pre-placement 1=placing 2=post-placement
   logic [7:0] amountOfBreakableWallsPlaced;
   logic [3:0] randTileX;
   logic [3:0] randTileY; 
@@ -162,6 +164,7 @@ module map1_drawer (
   logic [7:0] randVal;
   
   logic [0:30][0:27][3:0] currentMap;
+  logic newMapAvailable;
   
   map_manager #(
 		 .MAP_WIDTH_X(31),
@@ -173,7 +176,8 @@ module map1_drawer (
 		 .gameState(gameState),
 		 .rnd(rnd),
 		 .currentMap(currentMap),
-		 .coinsPowTot(coinsPowTot)
+		 .coinsPowTot(coinsPowTot),
+		 .loadedNewMap(newMapAvailable)
 	);
 
 
@@ -398,7 +402,7 @@ module map1_drawer (
       pickUpCollected <= '{default: 0};  // all elements reset to 0
       fruitSpawnPending <= 1'b0;
 
-      addBreak <= PRE_PLACE;
+      addBreak_st <= PRE_PLACE;
       randVal <= 8'hA5;
 
       coinFlag <= 0;
@@ -425,7 +429,7 @@ module map1_drawer (
       pickUpCollected <= '{default: 0};  // all elements reset to 0
       fruitSpawnPending <= 1'b0;
 
-      addBreak <= PRE_PLACE;
+      addBreak_st <= PRE_PLACE;
       randVal <= 8'hA5;
 
       coinFlag <= 0;
@@ -482,24 +486,28 @@ module map1_drawer (
       end
 
       
+		if (newMapAvailable) begin
+			pacmanMap <= currentMap;
+		end
+		
       // ---------------------------------------------------------------------------
       // Place breakable walls
       // ---------------------------------------------------------------------------
 
-      if (addBreak == PRE_PLACE && coinsCollected * 100 / coinsPowTot > 5) begin  // just for now 5 is the tresh
-        addBreak <= PLACING;  // one time trigger - 0 on reset and 1 forever
+      if (addBreak_st == PRE_PLACE && coinsCollected * 100 / coinsPowTot > 5) begin  // just for now 5 is the tresh
+        addBreak_st <= PLACING;  // one time trigger - 0 on reset and 1 forever
         amountOfBreakableWallsPlaced <= 0;
       end
 
       // Randomize breakable walls placement (BREAK1 / BREAK2 / BREAK3)	
-      if (addBreak == PLACING) begin
+      if (addBreak_st == PLACING) begin
 		  logic [$clog2(MAP_WIDTH_X)-1:0] pacX;
         logic [$clog2(MAP_HEIGHT_Y)-1:0] pacY;
 
         pacX = pactopLeftX / TILE_SIZE;
         pacY = (pactopLeftY / TILE_SIZE) - 1;  // Account for offset
 		  
-        randVal = clk ^ rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX;  // seed mixing for variety
+        randVal = rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX;  // seed mixing for variety
 
         randTileX = randVal[3:0];
         randTileY = randVal[7:4];
@@ -511,11 +519,12 @@ module map1_drawer (
                 if (randTileType == 2'b00) pacmanMap[x][y]      <= BREAK3;
                 else if (randTileType == 2'b01) pacmanMap[x][y] <= BREAK2;
                 else pacmanMap[x][y] <= BREAK1;
+					 amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
         end
 
-        amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
+       
         if (amountOfBreakableWallsPlaced >= AMOUNT_OF_BREAKABLES_TO_GENERATE) begin
-          addBreak <= POST_PLACE;
+          addBreak_st <= POST_PLACE;
         end
       end
 	
@@ -738,6 +747,6 @@ module map1_drawer (
       - pickUpCollected[3] * 20  // poision
       - pickUpCollected[4] * 50;  //  fee
 
-  assign placeBreakFlag = (addBreak == PLACING);    
+  assign placeBreakFlag = (addBreak_st == PLACING);    
 
 endmodule
