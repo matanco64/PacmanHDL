@@ -201,6 +201,7 @@ module pacman_game_controller (
 
           POWER_UP_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
+				else if (isWin) currentState <= WIN_ST; 
             else if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
               startCountN <= 1'b0;
               datainL     <= TIME_POWER_L;
