@@ -26,14 +26,13 @@ module map_manager (
       354,
       318
   };  // original, map 1 2 3 4
-
-
-// # ===================== Summary =====================
-// # Map 0: 62 changes | Total coins & power: 322
-// # Map 1: 110 changes | Total coins & power: 326
-// # Map 2: 122 changes | Total coins & power: 354
-// # Map 3: 66 changes | Total coins & power: 318
-// # ====================================================
+  
+//# ===================== Summary =====================
+//# Map 0: 62 changes | Total coins & power: 322
+//# Map 1: 110 changes | Total coins & power: 326
+//# Map 2: 122 changes | Total coins & power: 354
+//# Map 3: 66 changes | Total coins & power: 318
+//# ====================================================
 
 
   integer i;
@@ -319,7 +318,6 @@ localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][TILE_BITS-1:0] changeVal = '{
        4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2
     }
 };
-
 
 
 
