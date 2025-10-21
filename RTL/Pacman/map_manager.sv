@@ -3,6 +3,7 @@ module map_manager (
     input logic resetN,
     input logic [2:0] gameState,
     input logic [7:0] rnd,
+	 input logic startOfFrame,
 
     output logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] currentMap,
     output logic [8:0] coinsPowTot,
@@ -37,9 +38,10 @@ module map_manager (
 
   integer i;
   logic [2:0] currentMapIndex;  // 0=original, map 1 2 3 4 
-  logic [1:0] newMapIdx;  // 0=map1 1=map2 .... 3=map4
-  logic loadingMap;
+  logic [1:0] newMapIdx;  // 0=map1 1=map2 .... 3=map4 4=original
   logic [$clog2(MAX_CHANGES) - 1:0] currentIndex;
+  logic inReset;
+  logic loadingMap;
 
   assign coinsPowTot = COINS_POW_TOT[currentMapIndex];  // 0=original, map 1 2 3 4
   assign newMapIdx   = currentMapIndex - 1;
@@ -321,34 +323,51 @@ localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][TILE_BITS-1:0] changeVal = '{
 
 
 
-  // ========Main state machine================================
-  always_ff @(posedge clk or negedge resetN) begin
-    if (!resetN) begin
-      // Load the original map on reset
-      currentMap <= OriginalPacmanMap;
-      currentMapIndex <= 2'd0;
-      currentIndex <= 7'd0;
-      loadingMap <= 1'b0;
-		doneLoading <= 1'b0;
-    end else if (gameState == RESET_ST && !loadingMap) begin // 1-st
-      currentMap <= OriginalPacmanMap; // load base map
-      currentIndex <= 7'd0;
-      loadingMap <= 1'b1;
-		doneLoading <= 1'b0;
-   end else if (loadingMap) begin
-      // Apply changes
-      if (currentIndex < MAX_CHANGES - 1) begin
-         currentMap[changeX[currentMapIndex][currentIndex]][changeY[currentMapIndex][currentIndex]] <= changeVal[currentMapIndex][currentIndex];
-         currentIndex <= currentIndex + 7'd1;
-      end else begin
-         loadingMap <= 1'b0; // Finished loading the map
-			doneLoading <= 1'b1; // Will be up for 1 clock
-			currentIndex <= 7'd0;
-      end
-    end else begin 
-		 currentMapIndex <= rnd[2:0] % (N_NEW_MAPS+1); // 0-5
-		 doneLoading <= 1'b0;
+	// ========Main state machine================================
+	always_ff @(posedge clk or negedge resetN) begin
+	  if (!resetN) begin
+		 // Load the original map on reset
+		 currentMap <= OriginalPacmanMap;
+		 currentMapIndex <= 2'd0;
+		 currentIndex <= 7'd0;
 		 loadingMap <= 1'b0;
-	 end
-  end
+		 doneLoading <= 1'b0;
+		 inReset <= 1'b0;
+	  end else begin
+
+		if (startOfFrame) inReset <= 1'b0; // RESET_ST is up for 1 frame
+
+		// ---  first enter RESET_ST ---
+		 if (gameState == RESET_ST && !inReset) begin 
+			inReset <= 1'b1;
+			currentMap <= OriginalPacmanMap;  // load base map
+			currentIndex <= 7'd0;
+			if (currentMapIndex == N_NEW_MAPS) begin  // original map - dont load changes
+			 loadingMap <= 1'b0;
+			  doneLoading <= 1'b1;
+			end else begin
+			  loadingMap <= 1'b1;
+			doneLoading <= 1'b0;
+			end
+
+		// ---  load  changes  ---
+		 end else if (loadingMap) begin
+			if (currentIndex < MAX_CHANGES - 1) begin
+			  currentMap[changeX[currentMapIndex][currentIndex]][changeY[currentMapIndex][currentIndex]] <= changeVal[currentMapIndex][currentIndex];
+			  currentIndex <= currentIndex + 7'd1;
+			end else begin
+			  loadingMap   <= 1'b0;  // Finished loading the map
+			  doneLoading  <= 1'b1;  // Will be up for 1 clock
+			  currentIndex <= 7'd0;
+			end
+
+		// ---  default - no changes ---  
+		 end else begin
+			currentMapIndex <= rnd[2:0] % (N_NEW_MAPS + 1);  // 0-5 last code for originalMap
+			doneLoading <= 1'b0;
+			loadingMap <= 1'b0;
+		 end
+	  end
+	end
+
 endmodule

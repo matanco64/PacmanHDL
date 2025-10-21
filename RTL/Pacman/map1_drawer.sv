@@ -175,6 +175,7 @@ module map1_drawer (
 		 .resetN(resetN),
 		 .gameState(gameState),
 		 .rnd(rnd),
+		 .startOfFrame(startOfFrame),
 		 .currentMap(currentMap),
 		 .coinsPowTot(coinsPowTot),
 		 .doneLoading(newMapAvailable)
@@ -422,7 +423,6 @@ module map1_drawer (
 		RGBout <= 8'b0;
       mapDR <= 1'b0;
       pickUpDR <= 1'b0;
-//      pacmanMap <= currentMap;
 		
 		if(newMapAvailable) pacmanMap <= currentMap;
 
@@ -754,10 +754,10 @@ module map1_drawer (
 
   always_comb begin
 
-    randTileX = rnd[4:0];
-    randTileY = rnd[7:3];
+    randTileX = clk ^ rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX; // 5bits <= 8 bits (3 are lost)
+    randTileY = clk ^ rnd ^ 8'hCB ^ BlinkytopLeftY ^ pactopLeftX;
 
-		case(rnd[6:5])
+		case(randTileX[1:0])
 			2'b00: randTileType = BREAK3;
 			2'b01: randTileType = BREAK2;
 			default: randTileType = BREAK1;
