@@ -32,7 +32,7 @@ module ghost_move (
   parameter [TILE_BITS-1:0] PORTAL = 4'd4;
 
   parameter [10:0] FRIGHTENED_TIME = 10'd8;  // 8 sec
-  
+
   // Home positions
   parameter BLINKY_HOME_X = 464;
   parameter BLINKY_HOME_Y = 32;
@@ -74,8 +74,8 @@ module ghost_move (
 
   reg signed [31:0] targetX, targetY;
   reg signed [31:0] distUp, distDown, distLeft, distRight;
-  reg [1:0] nextDir;
-  reg [7:0] lfsr;
+  reg  [1:0] nextDir;
+  reg  [7:0] lfsr;
   wire [1:0] rnd;
   assign rnd = lfsr[1:0];
 
@@ -135,10 +135,22 @@ module ghost_move (
   reg signed [31:0] homeX, homeY;
   always_comb begin
     case (ghostSelect)
-      2'd0: begin homeX = BLINKY_HOME_X; homeY = BLINKY_HOME_Y; end
-      2'd1: begin homeX = PINKY_HOME_X; homeY = PINKY_HOME_Y; end
-      2'd2: begin homeX = INKY_HOME_X; homeY = INKY_HOME_Y; end
-      2'd3: begin homeX = CLYDE_HOME_X; homeY = CLYDE_HOME_Y; end
+      2'd0: begin
+        homeX = BLINKY_HOME_X;
+        homeY = BLINKY_HOME_Y;
+      end
+      2'd1: begin
+        homeX = PINKY_HOME_X;
+        homeY = PINKY_HOME_Y;
+      end
+      2'd2: begin
+        homeX = INKY_HOME_X;
+        homeY = INKY_HOME_Y;
+      end
+      2'd3: begin
+        homeX = CLYDE_HOME_X;
+        homeY = CLYDE_HOME_Y;
+      end
     endcase
   end
 
@@ -168,10 +180,22 @@ module ghost_move (
           end
           2'd1: begin  // Pinky - 4 tiles ahead
             case (pacmanDir)
-              DIR_UP:    begin targetX = pacmanX; targetY = pacmanY - 4 * TILE_PIXELS; end
-              DIR_DOWN:  begin targetX = pacmanX; targetY = pacmanY + 4 * TILE_PIXELS; end
-              DIR_LEFT:  begin targetX = pacmanX - 4 * TILE_PIXELS; targetY = pacmanY; end
-              DIR_RIGHT: begin targetX = pacmanX + 4 * TILE_PIXELS; targetY = pacmanY; end
+              DIR_UP: begin
+                targetX = pacmanX;
+                targetY = pacmanY - 4 * TILE_PIXELS;
+              end
+              DIR_DOWN: begin
+                targetX = pacmanX;
+                targetY = pacmanY + 4 * TILE_PIXELS;
+              end
+              DIR_LEFT: begin
+                targetX = pacmanX - 4 * TILE_PIXELS;
+                targetY = pacmanY;
+              end
+              DIR_RIGHT: begin
+                targetX = pacmanX + 4 * TILE_PIXELS;
+                targetY = pacmanY;
+              end
             endcase
           end
           2'd2: begin  // Inky - random offset
@@ -241,7 +265,7 @@ module ghost_move (
   always_comb begin
     int minDist;
     int bestDir;
-    
+
     nextDir = ghostDir;
 
     if (currMode == FRIGHTENED_M) begin
@@ -252,48 +276,77 @@ module ghost_move (
           else if (canMoveDown && DIR_DOWN != opposite(ghostDir)) nextDir = DIR_DOWN;
           else if (canMoveLeft && DIR_LEFT != opposite(ghostDir)) nextDir = DIR_LEFT;
           else if (canMoveRight && DIR_RIGHT != opposite(ghostDir)) nextDir = DIR_RIGHT;
+          else  nextDir = opposite(ghostDir);
         end
         2'b01: begin
           if (canMoveDown && DIR_DOWN != opposite(ghostDir)) nextDir = DIR_DOWN;
           else if (canMoveLeft && DIR_LEFT != opposite(ghostDir)) nextDir = DIR_LEFT;
           else if (canMoveRight && DIR_RIGHT != opposite(ghostDir)) nextDir = DIR_RIGHT;
           else if (canMoveUp && DIR_UP != opposite(ghostDir)) nextDir = DIR_UP;
+          else  nextDir = opposite(ghostDir);
         end
         2'b10: begin
           if (canMoveLeft && DIR_LEFT != opposite(ghostDir)) nextDir = DIR_LEFT;
           else if (canMoveRight && DIR_RIGHT != opposite(ghostDir)) nextDir = DIR_RIGHT;
           else if (canMoveUp && DIR_UP != opposite(ghostDir)) nextDir = DIR_UP;
           else if (canMoveDown && DIR_DOWN != opposite(ghostDir)) nextDir = DIR_DOWN;
+          else  nextDir = opposite(ghostDir);
         end
         2'b11: begin
           if (canMoveRight && DIR_RIGHT != opposite(ghostDir)) nextDir = DIR_RIGHT;
           else if (canMoveUp && DIR_UP != opposite(ghostDir)) nextDir = DIR_UP;
           else if (canMoveDown && DIR_DOWN != opposite(ghostDir)) nextDir = DIR_DOWN;
           else if (canMoveLeft && DIR_LEFT != opposite(ghostDir)) nextDir = DIR_LEFT;
+          else  nextDir = opposite(ghostDir);
         end
       endcase
     end else begin
-      // Chase/Scatter/Eaten - use distance-based pathfinding
+      // Chase/Scatter/Eaten - best direction toward target
       minDist = 32'h7FFFFFFF;
-      bestDir = lastDir; 
+      bestDir = lastDir;
 
-      if (canMoveUp && DIR_UP != opposite(lastDir) && distUp < minDist) begin
-        minDist = distUp;
-        bestDir = DIR_UP;
+      // Check all possible directions and pick the closest one
+      if (canMoveUp && DIR_UP != opposite(lastDir)) begin
+        if (distUp < minDist) begin
+          minDist = distUp;
+          bestDir = DIR_UP;
+        end else if (distUp == minDist && lfsr[0]) begin
+          bestDir = DIR_UP;  // Random tie-break
+        end
       end
-      if (canMoveDown && DIR_DOWN != opposite(lastDir) && distDown < minDist) begin
-        minDist = distDown;
-        bestDir = DIR_DOWN;
+
+      if (canMoveDown && DIR_DOWN != opposite(lastDir)) begin
+        if (distDown < minDist) begin
+          minDist = distDown;
+          bestDir = DIR_DOWN;
+        end else if (distDown == minDist && lfsr[1]) begin
+          bestDir = DIR_DOWN;
+        end
       end
-      if (canMoveLeft && DIR_LEFT != opposite(lastDir) && distLeft < minDist) begin
-        minDist = distLeft;
-        bestDir = DIR_LEFT;
+
+      if (canMoveLeft && DIR_LEFT != opposite(lastDir)) begin
+        if (distLeft < minDist) begin
+          minDist = distLeft;
+          bestDir = DIR_LEFT;
+        end else if (distLeft == minDist && lfsr[2]) begin
+          bestDir = DIR_LEFT;
+        end
       end
-      if (canMoveRight && DIR_RIGHT != opposite(lastDir) && distRight < minDist) begin
-        minDist = distRight;
-        bestDir = DIR_RIGHT;
+
+      if (canMoveRight && DIR_RIGHT != opposite(lastDir)) begin
+        if (distRight < minDist) begin
+          minDist = distRight;
+          bestDir = DIR_RIGHT;
+        end else if (distRight == minDist && lfsr[3]) begin
+          bestDir = DIR_RIGHT;
+        end
       end
+
+      // If no better direction found, turn back (dead end)
+      if (bestDir == lastDir) bestDir = opposite(lastDir);
+
       nextDir = bestDir;
+
     end
   end
 
@@ -319,8 +372,8 @@ module ghost_move (
       modeTimer <= 0;
       lastGameState <= RESET_ST;
       wasInFrightened <= 1'b0;
-	end else if(gameState == RESET_ST) begin
-		Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+    end else if (gameState == RESET_ST) begin
+      Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
       ghostDir <= DIR_UP;
       lastDir <= DIR_UP;
@@ -330,7 +383,7 @@ module ghost_move (
       lastGameState <= RESET_ST;
       wasInFrightened <= 1'b0;
     end else begin
-      
+
       // Track game state transitions
       lastGameState <= gameState;
 
@@ -372,7 +425,7 @@ module ghost_move (
             currMode <= FRIGHTENED_M;
             wasInFrightened <= 1'b0;  // Will trigger reverse on next frame
           end
-          
+
           // Handle collision - only this ghost returns
           if (collidedThisGhost) begin
             Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
@@ -382,18 +435,18 @@ module ghost_move (
             lastDir <= DIR_UP;
             SM_Motion <= IDLE_ST;
             currMode <= LEAVE_NEST_M;
-				modeTimer <= rnd;
+            modeTimer <= rnd;
           end
         end
 
         PLAYING_ST: begin
-			  if (lastGameState == POWER_UP_ST) begin
-				 currMode <= CHASE_M;
-				 SM_Motion <= CHANGE_ST;  // NEW ADDITION- BECAUSE GHOSTS GOT STUCK AFTER FRIGHTENED
-				 modeTimer <= CHASE_DURATION;
-				 wasInFrightened <= 1'b0;
-			  end
-			end
+          if (lastGameState == POWER_UP_ST) begin
+            currMode <= CHASE_M;
+            SM_Motion <= CHANGE_ST;  // NEW ADDITION- BECAUSE GHOSTS GOT STUCK AFTER FRIGHTENED
+            modeTimer <= CHASE_DURATION;
+            wasInFrightened <= 1'b0;
+          end
+        end
 
       endcase
 
@@ -401,7 +454,7 @@ module ghost_move (
       // MODE STATE MACHINE (only runs during PLAYING or POWER_UP)
       // ========================================================================
       if (gameState == PLAYING_ST || gameState == POWER_UP_ST) begin
-        
+
         // Decrement timers
         if (oneSec) begin
           if (modeTimer > 0) modeTimer <= modeTimer - 1;
@@ -411,21 +464,21 @@ module ghost_move (
           LEAVE_NEST_M: begin
             // Check if ghost passed the ghost wall (moved down through it)
             if (aroundGhost[11:8] == GHOST_WALL && modeTimer == 0) begin // after eaten there will be a rnd deley
-              currMode <= CHASE_M;
+              currMode  <= CHASE_M;
               modeTimer <= CHASE_DURATION;
             end
           end
 
           SCATTER_M: begin
             if (modeTimer == 0) begin
-              currMode <= CHASE_M;
+              currMode  <= CHASE_M;
               modeTimer <= CHASE_DURATION;
             end
           end
 
           CHASE_M: begin
             if (modeTimer == 0) begin
-              currMode <= SCATTER_M;
+              currMode  <= SCATTER_M;
               modeTimer <= SCATTER_DURATION;
             end
           end
@@ -433,17 +486,20 @@ module ghost_move (
           FRIGHTENED_M: begin
             // Frightened mode ends when timer expires or game exits POWER_UP_ST
             if (gameState != POWER_UP_ST) begin
-              currMode <= CHASE_M;
+              currMode  <= CHASE_M;
               modeTimer <= CHASE_DURATION;
             end
           end
 
           EATEN_M: begin
             // Return to nest, then leave
-            if (absDiff(Xposition/FIXED_POINT_MULTIPLIER, INITIAL_X) < TILE_PIXELS &&
-                absDiff(Yposition/FIXED_POINT_MULTIPLIER, INITIAL_Y) < TILE_PIXELS) begin
-              currMode <= LEAVE_NEST_M;
-				  modeTimer <= rnd;
+            if (absDiff(
+                    Xposition / FIXED_POINT_MULTIPLIER, INITIAL_X
+                ) < TILE_PIXELS && absDiff(
+                    Yposition / FIXED_POINT_MULTIPLIER, INITIAL_Y
+                ) < TILE_PIXELS) begin
+              currMode  <= LEAVE_NEST_M;
+              modeTimer <= rnd;
             end
           end
         endcase
@@ -456,8 +512,8 @@ module ghost_move (
         case (SM_Motion)
           IDLE_ST: begin
             if (startOfFrame) begin
-				  if(currMode != LEAVE_NEST_M  || modeTimer == 0) // delay for leaving the nest
-						SM_Motion <= CHANGE_ST;	 	
+              if (currMode != LEAVE_NEST_M || modeTimer == 0)  // delay for leaving the nest
+                SM_Motion <= CHANGE_ST;
             end
           end
 
@@ -476,7 +532,7 @@ module ghost_move (
                       if (aroundGhost[15:12] == PORTAL) begin
                         Yposition <= (SCREEN_HEIGHT - 2 * TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
                       end else if (!canMoveUp || isJunction) begin
-                        lastDir <= ghostDir;
+                        lastDir  <= ghostDir;
                         ghostDir <= nextDir;
                       end
                     end
@@ -484,19 +540,19 @@ module ghost_move (
                       if (aroundGhost[11:8] == PORTAL) begin
                         Yposition <= (2 * TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
                       end else if (!canMoveDown || isJunction) begin
-                        lastDir <= ghostDir;
+                        lastDir  <= ghostDir;
                         ghostDir <= nextDir;
                       end
                     end
                     DIR_LEFT: begin
                       if (!canMoveLeft || isJunction) begin
-                        lastDir <= ghostDir;
+                        lastDir  <= ghostDir;
                         ghostDir <= nextDir;
                       end
                     end
                     DIR_RIGHT: begin
                       if (!canMoveRight || isJunction) begin
-                        lastDir <= ghostDir;
+                        lastDir  <= ghostDir;
                         ghostDir <= nextDir;
                       end
                     end
