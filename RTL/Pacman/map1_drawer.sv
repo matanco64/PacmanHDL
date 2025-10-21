@@ -177,7 +177,7 @@ module map1_drawer (
 		 .rnd(rnd),
 		 .currentMap(currentMap),
 		 .coinsPowTot(coinsPowTot),
-		 .loadedNewMap(newMapAvailable)
+		 .doneLoading(newMapAvailable)
 	);
 
 
@@ -422,7 +422,9 @@ module map1_drawer (
 		RGBout <= 8'b0;
       mapDR <= 1'b0;
       pickUpDR <= 1'b0;
-      pacmanMap <= currentMap;
+//      pacmanMap <= currentMap;
+		
+		if(newMapAvailable) pacmanMap <= currentMap;
 
       coinsCollected <= 0;
       powerCollected <= 0;
@@ -486,9 +488,9 @@ module map1_drawer (
       end
 
       
-		if (newMapAvailable) begin
-			pacmanMap <= currentMap;
-		end
+//		if (newMapAvailable) begin
+//			pacmanMap <= currentMap;
+//		end
 		
       // ---------------------------------------------------------------------------
       // Place breakable walls
@@ -501,6 +503,8 @@ module map1_drawer (
 
       // Randomize breakable walls placement (BREAK1 / BREAK2 / BREAK3)	
       if (addBreak_st == PLACING) begin
+		
+		
 		  logic [$clog2(MAP_WIDTH_X)-1:0] pacX;
         logic [$clog2(MAP_HEIGHT_Y)-1:0] pacY;
 
@@ -522,6 +526,9 @@ module map1_drawer (
         if (amountOfBreakableWallsPlaced >= AMOUNT_OF_BREAKABLES_TO_GENERATE) begin
           addBreak_st <= POST_PLACE;
         end
+		  
+		  
+		  
       end
 	
       // ---------------------------------------------------------------------------
@@ -747,8 +754,8 @@ module map1_drawer (
 
   always_comb begin
 
-    randTileX = rnd[3:0];
-    randTileY = rnd[7:4];
+    randTileX = rnd[4:0];
+    randTileY = rnd[7:3];
 
 		case(rnd[6:5])
 			2'b00: randTileType = BREAK3;

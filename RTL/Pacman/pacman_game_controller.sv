@@ -19,15 +19,15 @@ module pacman_game_controller (
 
     input logic signed [10:0] partialScore,
     input logic [1:0] pacLifeChange,
-	 input logic recovering,
-	 input logic levelChanged,
-	 
+    input logic recovering,
+    input logic levelChanged,
+
 
     output logic       collision_pac_wall,
     output logic       collision_pac_coin,
     output logic       collision_pac_power,
     output logic [2:0] collision_pac_ghost,
-	 output logic       ghostFlag,
+    output logic       ghostFlag,
 
     output logic [2:0] gameState,
     output logic [3:0] gameStateFor7Seg,
@@ -90,21 +90,21 @@ module pacman_game_controller (
 
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
-      ghostFlag <= 1'b0;
+      ghostFlag  <= 1'b0;
       currLives  <= START_HEARTS;
       ghostEaten <= 0;
-      totalScore <= 0;	
+      totalScore <= 0;
     end else if (currentState == RESET_ST) begin
-      ghostFlag <= 1'b0;
+      ghostFlag  <= 1'b0;
       currLives  <= START_HEARTS;
       ghostEaten <= 0;
-		totalScore <= 0;
+      totalScore <= 0;
     end else begin
       logic signed [4:0] newLives;
-		newLives = currLives;
-		
-		if(pacLifeChange == INCREASE_HEARTS) newLives = newLives+1;
-		else if(pacLifeChange == DECREASE_HEARTS) newLives = newLives - 1;
+      newLives = currLives;
+
+      if (pacLifeChange == INCREASE_HEARTS) newLives = newLives + 1;
+      else if (pacLifeChange == DECREASE_HEARTS) newLives = newLives - 1;
 
       totalScore = (partialScore + ghostEaten * 5 > 0) ? (partialScore + ghostEaten * 5) : 0;
       if (startOfFrame && collision_pac_ghost == 0) ghostFlag <= 1'b0;
@@ -119,9 +119,9 @@ module pacman_game_controller (
       end
 
       // Only update currLives
-		if (newLives != currLives) 
-		   currLives <= (newLives >= MAX_HEARTS)? MAX_HEARTS : (newLives <= 0)? 0 : newLives;
-		
+      if (newLives != currLives)
+        currLives <= (newLives >= MAX_HEARTS) ? MAX_HEARTS : (newLives <= 0) ? 0 : newLives;
+
     end
   end
 
@@ -132,9 +132,9 @@ module pacman_game_controller (
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
       collision_pac_power_reg <= 1'b0;
-    end else if(currentState == RESET_ST) begin
-		collision_pac_power_reg <= 1'b0;
-	 end else begin
+    end else if (currentState == RESET_ST) begin
+      collision_pac_power_reg <= 1'b0;
+    end else begin
 
       if (startOfFrame) collision_pac_power_reg <= 1'b0;  // clear at the start of frame
       else if (pacDR && powerDR) collision_pac_power_reg <= 1'b1;
@@ -154,99 +154,96 @@ module pacman_game_controller (
       datainL        <= 4'd0;
       datainH        <= 4'd0;
 
-    end else  begin
+    end else begin
       // default
       startCountN <= 1'b1;
 
       // State machine updates once per frame
-      if (startOfFrame) begin
+      if (levelChanged) currentState <= RESET_ST;
+      else if (startOfFrame) begin
         lastState <= currentState;
-		  
-		  if (levelChanged) currentState <= RESET_ST;
-		  else begin
-	 
 
 
-			  case (currentState)
 
-				 RESET_ST: begin
-					currentState <= pauseN ? START_WAIT_ST : PAUSED_ST;
-				 end
 
-				 START_WAIT_ST: begin
-					if (!pauseN) currentState <= PAUSED_ST;
-					else if (lastState != START_WAIT_ST) begin  // 1st enter
-					  startCountN <= 1'b0;
-					  datainL     <= TIME_START_L;
-					  datainH     <= TIME_START_H;
-					end else if (timerEnd) currentState <= PLAYING_ST;
-				 end
 
-				 PLAYING_ST: begin
-					if (!pauseN) currentState <= PAUSED_ST;
-					else if (collision_pac_ghost != 3'd0 && !recovering) currentState <= GHOST_HIT_ST;
-					else if (currLives == 0) currentState <= LOSE_ST;
-					else if (isWin) currentState <= WIN_ST; // if 0 heart caused by a pickUp
-					else if (collision_pac_power_reg) currentState <= POWER_UP_ST;
-				 end
+        case (currentState)
 
-				 GHOST_HIT_ST: begin
-					if (!pauseN) currentState <= PAUSED_ST;
-					else if (lastState != GHOST_HIT_ST) begin  // 1st enter
-					  startCountN <= 1'b0;
-					  datainL     <= TIME_START_L;
-					  datainH     <= TIME_START_H;
-					end else if (timerEnd) currentState <= (currLives > 1) ? PLAYING_ST : LOSE_ST;
-				 end
+          RESET_ST: begin
+            currentState <= pauseN ? START_WAIT_ST : PAUSED_ST;
+          end
 
-				 POWER_UP_ST: begin
-					if (!pauseN) currentState <= PAUSED_ST;
-					else if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
-					  startCountN <= 1'b0;
-					  datainL     <= TIME_POWER_L;
-					  datainH     <= TIME_POWER_H;
-					end else if (timerEnd)  // +2st enter
-					  currentState <= PLAYING_ST;
-				 end
-				 
-				 WIN_ST: begin
-					if (!pauseN) currentState <= PAUSED_ST;
-					else if (lastState != WIN_ST) begin  // 1st enter
-					  startCountN <= 1'b0;
-					  datainL     <= 10;
-					  datainH     <= 0;
-					end else if (timerEnd) currentState <= RESET_ST;
-				 end
-				 
-				 LOSE_ST: begin
-					if (!pauseN) currentState <= PAUSED_ST;
-					else if (lastState != LOSE_ST) begin  // 1st enter
-					  startCountN <= 1'b0;
-					  datainL     <= 10;
-					  datainH     <= 0;
-					end else if (timerEnd) currentState <= RESET_ST;
-				 end
+          START_WAIT_ST: begin
+            if (!pauseN) currentState <= PAUSED_ST;
+            else if (lastState != START_WAIT_ST) begin  // 1st enter
+              startCountN <= 1'b0;
+              datainL     <= TIME_START_L;
+              datainH     <= TIME_START_H;
+            end else if (timerEnd) currentState <= PLAYING_ST;
+          end
 
-	//          WIN_ST:  if (pauseN) currentState <= RESET_ST;
-	//          LOSE_ST: if (pauseN) currentState <= RESET_ST; // CURRENTLY STACK AT WIN OR LOST
+          PLAYING_ST: begin
+            if (!pauseN) currentState <= PAUSED_ST;
+            else if (collision_pac_ghost != 3'd0 && !recovering) currentState <= GHOST_HIT_ST;
+            else if (currLives == 0) currentState <= LOSE_ST;
+            else if (isWin) currentState <= WIN_ST;  // if 0 heart caused by a pickUp
+            else if (collision_pac_power_reg) currentState <= POWER_UP_ST;
+          end
 
-				 PAUSED_ST: begin
-					currentState <= pauseN ? prePausedState : PAUSED_ST;
-					if (lastState != PAUSED_ST) prePausedState <= lastState;
-				 end
+          GHOST_HIT_ST: begin
+            if (!pauseN) currentState <= PAUSED_ST;
+            else if (lastState != GHOST_HIT_ST) begin  // 1st enter
+              startCountN <= 1'b0;
+              datainL     <= TIME_START_L;
+              datainH     <= TIME_START_H;
+            end else if (timerEnd) currentState <= (currLives > 1) ? PLAYING_ST : LOSE_ST;
+          end
 
-			  endcase
-			end  
+          POWER_UP_ST: begin
+            if (!pauseN) currentState <= PAUSED_ST;
+            else if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
+              startCountN <= 1'b0;
+              datainL     <= TIME_POWER_L;
+              datainH     <= TIME_POWER_H;
+            end else if (timerEnd)  // +2st enter
+              currentState <= PLAYING_ST;
+          end
+
+          WIN_ST: begin
+            if (!pauseN) currentState <= PAUSED_ST;
+            else if (lastState != WIN_ST) begin  // 1st enter
+              startCountN <= 1'b0;
+              datainL     <= 10;
+              datainH     <= 0;
+            end else if (timerEnd) currentState <= RESET_ST;
+          end
+
+          LOSE_ST: begin
+            if (!pauseN) currentState <= PAUSED_ST;
+            else if (lastState != LOSE_ST) begin  // 1st enter
+              startCountN <= 1'b0;
+              datainL     <= 10;
+              datainH     <= 0;
+            end else if (timerEnd) currentState <= RESET_ST;
+          end
+
+          PAUSED_ST: begin
+            currentState <= pauseN ? prePausedState : PAUSED_ST;
+            if (lastState != PAUSED_ST) prePausedState <= lastState;
+          end
+
+        endcase
+
       end
     end
   end
-  
+
   binary_to_bcd binary_to_bcd_inst (
-		 .binary_in(totalScore),
-		 .hundreds(score2),
-		 .tens(score1),
-		 .ones(score0),
-	);
+      .binary_in(totalScore),
+      .hundreds(score2),
+      .tens(score1),
+      .ones(score0),
+  );
 
   // Outputs
   assign gameState = currentState;

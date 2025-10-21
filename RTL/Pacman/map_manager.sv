@@ -6,7 +6,7 @@ module map_manager (
 
     output logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] currentMap,
     output logic [8:0] coinsPowTot,
-	 output logic loadedNewMap
+	 output logic doneLoading
 );
 
   // map
@@ -329,26 +329,25 @@ localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][TILE_BITS-1:0] changeVal = '{
       currentMapIndex <= 2'd0;
       currentIndex <= 7'd0;
       loadingMap <= 1'b0;
-		loadedNewMap <= 1'b0;
-    end else if (gameState == RESET_ST) begin
-      // Start from the base map
-      currentMap <= OriginalPacmanMap;
+		doneLoading <= 1'b0;
+    end else if (gameState == RESET_ST && !loadingMap) begin // 1-st
+      currentMap <= OriginalPacmanMap; // load base map
       currentIndex <= 7'd0;
       loadingMap <= 1'b1;
-		loadedNewMap <= 1'b0;
-   end else if (loadingMap ==  1'b1) begin
-      // Apply changes for the new map
+		doneLoading <= 1'b0;
+   end else if (loadingMap) begin
+      // Apply changes
       if (currentIndex < MAX_CHANGES - 1) begin
          currentMap[changeX[currentMapIndex][currentIndex]][changeY[currentMapIndex][currentIndex]] <= changeVal[currentMapIndex][currentIndex];
          currentIndex <= currentIndex + 7'd1;
       end else begin
          loadingMap <= 1'b0; // Finished loading the map
-			loadedNewMap <= 1'b1; // Will be up for 1 clock
+			doneLoading <= 1'b1; // Will be up for 1 clock
 			currentIndex <= 7'd0;
       end
     end else begin 
-		 currentMapIndex <= rnd[0:0] % (N_NEW_MAPS+1); // 0-5
-		 loadedNewMap <= 1'b0;
+		 currentMapIndex <= rnd[2:0] % (N_NEW_MAPS+1); // 0-5
+		 doneLoading <= 1'b0;
 		 loadingMap <= 1'b0;
 	 end
   end
