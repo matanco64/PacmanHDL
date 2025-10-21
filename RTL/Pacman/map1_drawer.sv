@@ -754,7 +754,7 @@ module map1_drawer (
       - pickUpCollected[4] * 50;  //  fee
 
   assign placeBreakFlag = (addBreak_st == PLACING); 
-  assign wallsToGenerate = BASE_BREAKABLES + (level * 4);
+  assign wallsToGenerate = BASE_BREAKABLES + (level * 6);
   always_comb begin
 
       randTileX = rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX; // 0-31 - as map width size
