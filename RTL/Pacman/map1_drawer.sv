@@ -126,7 +126,8 @@ module map1_drawer (
   localparam WIN_ST = 3'b101;
   localparam LOSE_ST = 3'b110;
   localparam POWER_UP_ST = 3'b111;
-  localparam AMOUNT_OF_BREAKABLES_TO_GENERATE = 40; // by chance it will be less than this (max)
+
+  localparam BASE_BREAKABLES = 15; // walls at level 1
   
   typedef enum logic [1:0] {
     PRE_PLACE,
@@ -134,14 +135,16 @@ module map1_drawer (
     POST_PLACE
   } wall_placement_st;
 
+  logic [7:0] wallsToGenerate;
   logic pickUpCollision;  // 1= collision
   logic fruitSpawnPending;
 
   // breakable walls placement
   wall_placement_st addBreak_st;  // 0 = pre-placement 1=placing 2=post-placement
   logic [7:0] amountOfBreakableWallsPlaced;
-  logic [3:0] randTileX;
-  logic [3:0] randTileY; 
+  logic [$clog2(MAP_WIDTH_X)-1:0] randTileX;
+  logic [$clog2(MAP_HEIGHT_Y)-1:0] randTileY;
+
   logic [3:0] randTileType;
 
 
@@ -523,7 +526,7 @@ module map1_drawer (
         end
 
        
-        if (amountOfBreakableWallsPlaced >= AMOUNT_OF_BREAKABLES_TO_GENERATE) begin
+        if (amountOfBreakableWallsPlaced >= wallsToGenerate) begin
           addBreak_st <= POST_PLACE;
         end
 		  
@@ -751,11 +754,12 @@ module map1_drawer (
       - pickUpCollected[4] * 50;  //  fee
 
   assign placeBreakFlag = (addBreak_st == PLACING); 
-
+  assign wallsToGenerate = BASE_BREAKABLES + (level * 4);
   always_comb begin
 
-    randTileX = clk ^ rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX; // 5bits <= 8 bits (3 are lost)
-    randTileY = clk ^ rnd ^ 8'hCB ^ BlinkytopLeftY ^ pactopLeftX;
+      randTileX = rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX; // 0-31 - as map width size
+		randTileY = ( rnd ^ 8'hCB ^ BlinkytopLeftY ^ pactopLeftX); // 0-31
+		randTileY = (randTileY >= MAP_HEIGHT_Y) ? randTileY - MAP_HEIGHT_Y : randTileY;  // cut top 0-3
 
 		case(randTileX[1:0])
 			2'b00: randTileType = BREAK3;
