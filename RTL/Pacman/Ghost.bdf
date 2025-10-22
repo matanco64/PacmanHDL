@@ -396,22 +396,6 @@ agreement for further details.
 		(line (pt 78 12)(pt 82 8))
 	)
 )
-(pin
-	(output)
-	(rect 1912 512 2088 528)
-	(text "OUTPUT" (rect 1 0 39 10)(font "Arial" (font_size 6)))
-	(text "HEX4[6..0]" (rect 90 0 139 17)(font "Intel Clear" ))
-	(pt 0 8)
-	(drawing
-		(line (pt 0 8)(pt 52 8))
-		(line (pt 52 4)(pt 78 4))
-		(line (pt 52 12)(pt 78 12))
-		(line (pt 52 12)(pt 52 4))
-		(line (pt 78 4)(pt 82 8))
-		(line (pt 82 8)(pt 78 12))
-		(line (pt 78 12)(pt 82 8))
-	)
-)
 (symbol
 	(rect 960 152 1184 296)
 	(text "square_object" (rect 5 0 73 12)(font "Arial" ))
@@ -620,69 +604,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 1576 488 1752 600)
-	(text "hexss" (rect 5 0 34 12)(font "Arial" ))
-	(text "inst1" (rect 8 96 30 113)(font "Intel Clear" ))
-	(port
-		(pt 0 32)
-		(input)
-		(text "hexin[3..0]" (rect 0 0 51 12)(font "Arial" ))
-		(text "hexin[3..0]" (rect 21 27 72 39)(font "Arial" ))
-		(line (pt 0 32)(pt 16 32)(line_width 3))
-	)
-	(port
-		(pt 0 48)
-		(input)
-		(text "darkN" (rect 0 0 29 12)(font "Arial" ))
-		(text "darkN" (rect 21 43 50 55)(font "Arial" ))
-		(line (pt 0 48)(pt 16 48))
-	)
-	(port
-		(pt 0 64)
-		(input)
-		(text "LampTest" (rect 0 0 48 12)(font "Arial" ))
-		(text "LampTest" (rect 21 59 69 71)(font "Arial" ))
-		(line (pt 0 64)(pt 16 64))
-	)
-	(port
-		(pt 176 32)
-		(output)
-		(text "ss[6..0]" (rect 0 0 37 12)(font "Arial" ))
-		(text "ss[6..0]" (rect 124 27 161 39)(font "Arial" ))
-		(line (pt 176 32)(pt 160 32)(line_width 3))
-	)
-	(drawing
-		(rectangle (rect 16 16 160 96))
-	)
-)
-(symbol
-	(rect 1296 504 1456 584)
-	(text "MyConstant" (rect 5 0 65 12)(font "Arial" ))
-	(text "inst15" (rect 8 64 36 81)(font "Intel Clear" ))
-	(port
-		(pt 160 32)
-		(output)
-		(text "value[size-1..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "value[size-1..0]" (rect 76 27 151 39)(font "Arial" ))
-		(line (pt 160 32)(pt 144 32)(line_width 3))
-	)
-	(parameter
-		"size"
-		"1"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"MyValue"
-		"1"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 144 64))
-	)
-	(annotation_block (parameter)(rect 1080 504 1249 561))
-)
-(symbol
-	(rect 312 144 600 384)
+	(rect 312 144 560 384)
 	(text "ghost_move" (rect 5 0 66 12)(font "Arial" ))
 	(text "inst" (rect 8 224 25 236)(font "Arial" ))
 	(port
@@ -763,32 +685,25 @@ agreement for further details.
 		(line (pt 0 192)(pt 16 192)(line_width 3))
 	)
 	(port
-		(pt 288 32)
+		(pt 248 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 73 12)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 206 27 279 39)(font "Arial" ))
-		(line (pt 288 32)(pt 272 32)(line_width 3))
+		(text "topLeftX[10..0]" (rect 166 27 227 39)(font "Arial" ))
+		(line (pt 248 32)(pt 232 32)(line_width 3))
 	)
 	(port
-		(pt 288 48)
+		(pt 248 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 75 12)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 204 43 279 55)(font "Arial" ))
-		(line (pt 288 48)(pt 272 48)(line_width 3))
+		(text "topLeftY[10..0]" (rect 164 43 227 55)(font "Arial" ))
+		(line (pt 248 48)(pt 232 48)(line_width 3))
 	)
 	(port
-		(pt 288 64)
+		(pt 248 64)
 		(output)
 		(text "ghostDir[1..0]" (rect 0 0 67 12)(font "Arial" ))
-		(text "ghostDir[1..0]" (rect 211 59 278 71)(font "Arial" ))
-		(line (pt 288 64)(pt 272 64)(line_width 3))
-	)
-	(port
-		(pt 288 80)
-		(output)
-		(text "ghostStateFor7Seg[3..0]" (rect 0 0 120 12)(font "Arial" ))
-		(text "ghostStateFor7Seg[3..0]" (rect 166 75 286 87)(font "Arial" ))
-		(line (pt 288 80)(pt 272 80)(line_width 3))
+		(text "ghostDir[1..0]" (rect 171 59 227 71)(font "Arial" ))
+		(line (pt 248 64)(pt 232 64)(line_width 3))
 	)
 	(parameter
 		"FIXED_POINT_MULTIPLIER"
@@ -807,11 +722,6 @@ agreement for further details.
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
 		"TILE_PIXELS"
-		"16"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"SAFETY_MARGIN"
 		"16"
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
@@ -843,6 +753,11 @@ agreement for further details.
 	(parameter
 		"PORTAL"
 		"100"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"FRIGHTENED_TIME"
+		"00010110100"
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
@@ -956,6 +871,21 @@ agreement for further details.
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
+		"SCATTER_DURATION"
+		"7"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"CHASE_DURATION"
+		"20"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"SAFETY_MARGIN"
+		"16"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
 		"MODE_MIN_SEC"
 		"25"
 		""
@@ -1021,11 +951,6 @@ agreement for further details.
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(parameter
-		"FRIGHTENED_TIME"
-		"00010110100"
-		""
-		(type "PARAMETER_UNSIGNED_BIN")	)
-	(parameter
 		"OBJECT_WIDTH"
 		"16"
 		""
@@ -1076,7 +1001,7 @@ agreement for further details.
 		""
 		(type "PARAMETER_UNSIGNED_BIN")	)
 	(drawing
-		(rectangle (rect 16 16 272 224))
+		(rectangle (rect 16 16 232 224))
 	)
 	(annotation_block (parameter)(rect 312 72 494 129))
 )
@@ -1309,21 +1234,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "ghostStateFor6Seg[3..0]" (rect 1472 504 1585 521)(font "Intel Clear" ))
-	(pt 1487 520)
-	(pt 1576 520)
-	(bus)
-)
-(connector
-	(pt 1752 520)
-	(pt 1912 520)
-	(bus)
-)
-(connector
-	(pt 1456 536)
-	(pt 1576 536)
-)
-(connector
 	(text "clk" (rect 216 160 230 177)(font "Intel Clear" ))
 	(pt 208 176)
 	(pt 312 176)
@@ -1386,27 +1296,20 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "topLeftX[10..0]" (rect 614 160 684 177)(font "Intel Clear" ))
-	(pt 600 176)
-	(pt 712 176)
+	(text "topLeftX[10..0]" (rect 574 160 644 177)(font "Intel Clear" ))
+	(pt 560 176)
+	(pt 672 176)
 	(bus)
 )
 (connector
-	(text "topLeftY[10..0]" (rect 614 176 684 193)(font "Intel Clear" ))
-	(pt 600 192)
-	(pt 712 192)
+	(text "topLeftY[10..0]" (rect 574 176 644 193)(font "Intel Clear" ))
+	(pt 560 192)
+	(pt 672 192)
 	(bus)
 )
 (connector
-	(text "ghostDir[1..0]" (rect 610 192 672 209)(font "Intel Clear" ))
-	(pt 600 208)
-	(pt 712 208)
+	(text "ghostDir[1..0]" (rect 570 192 632 209)(font "Intel Clear" ))
+	(pt 560 208)
+	(pt 672 208)
 	(bus)
 )
-(connector
-	(text "ghostStateFor6Seg[3..0]" (rect 608 208 721 225)(font "Intel Clear" ))
-	(pt 600 224)
-	(pt 712 224)
-	(bus)
-)
-(text "7SEG - just for testing delet me " (rect 1304 448 1530 468)(font "Intel Clear" (font_size 10)(bold)))

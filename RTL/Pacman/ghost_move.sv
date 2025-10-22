@@ -9,13 +9,11 @@ module ghost_move (
     input logic [10:0] pacmanY,
     input logic [1:0] pacmanDir,
     input logic [2:0] collisionPacGhost,
-    input logic [1:0] forceMode,
     input logic [2:0] gameState,
 
     output logic signed [10:0] topLeftX,
     output logic signed [10:0] topLeftY,
-    output logic        [ 1:0] ghostDir,
-    output logic        [ 3:0] ghostStateFor7Seg
+    output logic        [ 1:0] ghostDir
 );
 
   // Parameters
