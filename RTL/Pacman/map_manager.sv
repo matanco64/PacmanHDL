@@ -19,13 +19,13 @@ module map_manager (
   localparam MAX_CHANGES = 128;
   // game state
   localparam RESET_ST = 3'b000;
-  localparam logic [N_NEW_MAPS:0][8:0] COINS_POW_TOT = '{
-      300,
-      322,
-      326,
-      354,
-      318
-  };  // original, map 1 2 3 4
+   localparam logic [N_NEW_MAPS:0][8:0] COINS_POW_TOT = '{
+      322,  // Map 0 (62 changes)
+      326,  // Map 1 (110 changes)  
+      354,  // Map 2 (122 changes)
+      318,  // Map 3 (66 changes)
+      300   // Map 4 (original, 0 changes)
+  };
   
 //# ===================== Summary =====================
 //# Map 0: 62 changes | Total coins & power: 322
@@ -36,7 +36,7 @@ module map_manager (
 
 
   integer i;
-  logic [2:0] currentMapIndex;  // 0=original, map 1 2 3 4 
+  logic [2:0] currentMapIndex;  // 0=map1 ... 3=map4 4=original
   logic [1:0] newMapIdx;  // 0=map1 1=map2 .... 3=map4 4=original
   logic [$clog2(MAX_CHANGES) - 1:0] currentIndex;
   logic inReset;
@@ -326,7 +326,7 @@ localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][TILE_BITS-1:0] changeVal = '{
 	  if (!resetN) begin
 		 // Load the original map on reset
 		 currentMap <= OriginalPacmanMap;
-		 currentMapIndex <= 2'd0;
+		 currentMapIndex <= N_NEW_MAPS;  // Start with original
 		 currentIndex <= 7'd0;
 		 loadingMap <= 1'b0;
 		 doneLoading <= 1'b0;
@@ -361,7 +361,7 @@ localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][TILE_BITS-1:0] changeVal = '{
 
 		// ---  default - no changes ---  
 		 end else begin
-			currentMapIndex <= rnd[2:0] % (N_NEW_MAPS + 1);  // 0-5 last code for originalMap
+			currentMapIndex <= rnd[1:0];  // 0-3 just new maps
 			doneLoading <= 1'b0;
 			loadingMap <= 1'b0;
 		 end
