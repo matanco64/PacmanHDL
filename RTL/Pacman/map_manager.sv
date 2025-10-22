@@ -79,10 +79,10 @@ logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] OriginalPacmanMap = { /
     { 4'd2, 4'd5, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd5, 4'd2 },
     { 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2, 4'd2 }
   };
-  
+ 
 	 
 // ======================== Change Arrays ========================
-localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][7:0] changeX = '{
+localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][7:0] changeX = '{
     // Map 0 (62 real changes + 66 zeros)
     '{
        8'd2, 8'd2, 8'd3, 8'd3, 8'd3, 8'd3, 8'd3, 8'd3,
@@ -161,7 +161,7 @@ localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][7:0] changeX = '{
     }
 };
 
-localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][7:0] changeY = '{
+localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][7:0] changeY = '{
     // Map 0
     '{
        8'd9, 8'd18, 8'd2, 8'd3, 8'd7, 8'd8, 8'd9, 8'd18,
@@ -240,7 +240,7 @@ localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][7:0] changeY = '{
     }
 };
 
-localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][TILE_BITS-1:0] changeVal = '{
+localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][TILE_BITS-1:0] changeVal = '{
     // Map 0
     '{
        4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1, 4'd1,

@@ -183,11 +183,11 @@ maps = [map1_str, map2_str, map3_str, map4_str]
 # -------------------------------------------------------------
 # Utility functions
 # -------------------------------------------------------------
-def parse_map(map_str):
+def parse_map(map_str: str) -> list[list[int]]:
     return [[int(c) for c in line.strip()] for line in map_str.strip().splitlines()]
 
 
-def generate_sv_arrays(original, new):
+def generate_sv_arrays(original: list[list[int]], new: list[list[int]]) -> tuple[list[int], list[int], list[int]]:
     changeX, changeY, changeVal = [], [], []
     for y in range(len(original)):
         for x in range(len(original[0])):
@@ -243,6 +243,7 @@ def main():
         if total_changes > MAX_CHANGES:
             print(
                 f"# ⚠️ Map {idx} has {total_changes} changes (truncated to {MAX_CHANGES})")
+            exit(1)
 
         cx = cx[:MAX_CHANGES]
         cy = cy[:MAX_CHANGES]
@@ -256,7 +257,7 @@ def main():
 
 
     # ---------------- changeY ----------------
-    print("localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][7:0] changeX = '{")
+    print("localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][7:0] changeX = '{")
     for i, vals in enumerate(changeYs):
         print(
             f"    // Map {i} ({len(vals)} real changes + {MAX_CHANGES - len(vals)} zeros)")
@@ -266,7 +267,7 @@ def main():
     print("};\n")
 
     # ---------------- changeX ----------------
-    print("localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][7:0] changeY = '{")
+    print("localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][7:0] changeY = '{")
     for i, vals in enumerate(changeXs):
         print(f"    // Map {i}")
         print("    '{")
@@ -276,7 +277,7 @@ def main():
 
     # ---------------- changeVal ----------------
     print(
-        "localparam logic [N_NEW_MAPS-1:0][MAX_CHANGES-1:0][TILE_BITS-1:0] changeVal = '{")
+        "localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][TILE_BITS-1:0] changeVal = '{")
     for i, vals in enumerate(changeVals):
         print(f"    // Map {i}")
         print("    '{")
