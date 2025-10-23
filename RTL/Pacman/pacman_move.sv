@@ -53,11 +53,6 @@ module pacman_move (
   const int FIXED_POINT_MULTIPLIER = 64;
   const int OBJECT_WIDTH_X = 32;
   const int OBJECT_HIGHT_Y = 32;
-  const int SafetyMargin = 16;
-  const int x_FRAME_LEFT = (TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
-  const int x_FRAME_RIGHT = (640 - TILE_PIXELS - OBJECT_WIDTH_X) * FIXED_POINT_MULTIPLIER;
-  const int y_FRAME_TOP = (TILE_PIXELS) * FIXED_POINT_MULTIPLIER;
-  const int y_FRAME_BOTTOM = (480 - TILE_PIXELS) * FIXED_POINT_MULTIPLIER;  //- OBJECT_HIGHT_Y
   const int NORMAL_SPEED = 64;
 
   int speed;
