@@ -85,26 +85,6 @@ always @(posedge clk or negedge resetN)
 				end
 			end
 			
-//			s_delay: begin
-//				 lampEnable  <= 1'b0;
-//				 if (OneSecPulse)
-//					timer <= timer + 'b1;
-//				 if (timer == 3'b111)
-//					SMbomb <= s_run;
-//			end
-
-//			s_lampOff: begin
-//				 lampEnable <= 1'b0;
-//				 if (OneSecPulse)
-//					  SMbomb <= s_lampOn;
-//			end
-//
-//			s_lampOn: begin
-//				 show88 <= 1'b1;
-//				 if (OneSecPulse)
-//					  SMbomb <= s_lampOff;
-//			end					
-
 //  		  =========		
 			  default : begin   
 //         =========			

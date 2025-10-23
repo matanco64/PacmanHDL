@@ -239,27 +239,21 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pauseN
 set_location_assignment PIN_AB30 -to pause
 set_location_assignment PIN_AB30 -to pauseN_SW0
 set_global_assignment -name BDF_FILE RTL/Bomb/topBomb.bdf
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bomb/ramzor.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bomb/one_sec_counter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bomb/hexss.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bomb/down_counter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bomb/bomb.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bomb/bcddn.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/map1_drawer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/maze/maze_part.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/characterBitMap.sv
 set_global_assignment -name SOURCE_FILE CLK_31P5.cmp
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/pacman_mouth_openBitMap.SV
 set_global_assignment -name BDF_FILE RTL/Pacman.bdf
-set_global_assignment -name BDF_FILE RTL/VGA/TOP_START.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/Mili_sec_counter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/melody_player_1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/JukeBox1.sv
 set_global_assignment -name QXP_FILE KBDINTF.qxp
 set_global_assignment -name BDF_FILE RTL/VGA/TOP_VGA_DEMO_KBD.bdf
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/game_controller.sv
-set_global_assignment -name BDF_FILE RTL/VGA/Smiley_Block_T.bdf
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/smileyBitMap.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/square_object.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/back_ground_draw.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/square_Hart_object.sv
@@ -291,13 +285,10 @@ set_global_assignment -name QIP_FILE CLK_31P5.qip
 set_global_assignment -name SIP_FILE CLK_31P5.sip
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/MyConstant.sv
 set_global_assignment -name CDF_FILE output_files/Chain2.cdf
-set_global_assignment -name SIGNALTAP_FILE stp1.stp
 set_global_assignment -name BDF_FILE RTL/Pacman/Pacman_Player.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/pacman_move.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/pacman_game_controller.sv
-set_global_assignment -name VERILOG_FILE RTL/Pacman/one_sec_conter.v
 set_global_assignment -name VERILOG_FILE one_sec_counter.v
-set_global_assignment -name VERILOG_FILE RTL/Pacman/one_sec_counter.v
 set_global_assignment -name BDF_FILE RTL/Pacman/Number.bdf
 set_global_assignment -name VERILOG_FILE output_files/Lab1Demo.v
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/ScoreBitMap.sv
@@ -306,10 +297,6 @@ set_global_assignment -name BDF_FILE RTL/Pacman/Character.bdf
 set_global_assignment -name BDF_FILE RTL/Pacman/Ghost.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/ghost_move.sv
 set_global_assignment -name VECTOR_WAVEFORM_FILE output_files/ghost.vwf
-set_global_assignment -name VECTOR_WAVEFORM_FILE simulation/qsim/ghost.vwf
-set_global_assignment -name VECTOR_WAVEFORM_FILE simulation/ghost.vwf
-set_global_assignment -name VECTOR_WAVEFORM_FILE Waveform.vwf
-set_global_assignment -name VECTOR_WAVEFORM_FILE Waveform1.vwf
 set_global_assignment -name BDF_FILE RTL/Pacman/heart.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/heartBitMap.sv
 set_location_assignment PIN_AK4 -to switchN
@@ -382,11 +369,11 @@ set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 0.3
 set_global_assignment -name ALLOW_REGISTER_DUPLICATION OFF
 set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MINIMUM
 set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
-set_global_assignment -name FINAL_PLACEMENT_OPTIMIZATION NEVER
-set_global_assignment -name FITTER_AGGRESSIVE_ROUTABILITY_OPTIMIZATION NEVER
-set_global_assignment -name ENABLE_BENEFICIAL_SKEW_OPTIMIZATION OFF
-set_global_assignment -name ALM_REGISTER_PACKING_EFFORT LOW
-set_global_assignment -name ADVANCED_PHYSICAL_OPTIMIZATION OFF
+set_global_assignment -name FINAL_PLACEMENT_OPTIMIZATION AUTOMATICALLY
+set_global_assignment -name FITTER_AGGRESSIVE_ROUTABILITY_OPTIMIZATION AUTOMATICALLY
+set_global_assignment -name ENABLE_BENEFICIAL_SKEW_OPTIMIZATION ON
+set_global_assignment -name ALM_REGISTER_PACKING_EFFORT HIGH
+set_global_assignment -name ADVANCED_PHYSICAL_OPTIMIZATION ON
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/random2.sv
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[6]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[5]
@@ -397,16 +384,14 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/melody_selector.sv
-set_global_assignment -name BDF_FILE RTL/Bitmaps/genericBitMapTop.bdf
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bitmaps/sideBitMaps.sv
 set_global_assignment -name BDF_FILE RTL/Bitmaps/sideBitMapTop.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bitmaps/sideBitMapV1.sv
-set_global_assignment -name ALLOW_REGISTER_MERGING OFF
-set_global_assignment -name BLOCK_RAM_TO_MLAB_CELL_CONVERSION OFF
-set_global_assignment -name AUTO_DELAY_CHAINS OFF
-set_global_assignment -name IO_PLACEMENT_OPTIMIZATION OFF
+set_global_assignment -name ALLOW_REGISTER_MERGING ON
+set_global_assignment -name BLOCK_RAM_TO_MLAB_CELL_CONVERSION ON
+set_global_assignment -name AUTO_DELAY_CHAINS ON
+set_global_assignment -name IO_PLACEMENT_OPTIMIZATION ON
 set_global_assignment -name AUTO_GLOBAL_CLOCK ON
-set_global_assignment -name AUTO_GLOBAL_REGISTER_CONTROLS OFF
+set_global_assignment -name AUTO_GLOBAL_REGISTER_CONTROLS ON
 set_global_assignment -name OPTIMIZE_FOR_METASTABILITY OFF
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Pacman/level.sv
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to level_key2

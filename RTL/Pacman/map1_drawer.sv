@@ -162,10 +162,7 @@ module map1_drawer (
   logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] pacmanMap;
   logic [TILE_BITS-1:0] tile;
   logic [PICKUPS_TO_PLACE-1:0][5:0] pickUpCollected;  //  how many of each pickup collected
-  
-  
-  logic [7:0] randVal;
-  
+    
   logic [0:30][0:27][3:0] currentMap;
   logic newMapAvailable;
   
@@ -407,7 +404,6 @@ module map1_drawer (
       fruitSpawnPending <= 1'b0;
 
       addBreak_st <= PRE_PLACE;
-      randVal <= 8'hA5;
 
       coinFlag <= 0;
       powFlag <= 0;
@@ -435,7 +431,6 @@ module map1_drawer (
       fruitSpawnPending <= 1'b0;
 
       addBreak_st <= PRE_PLACE;
-      randVal <= 8'hA5;
 
       coinFlag <= 0;
       powFlag <= 0;
@@ -514,8 +509,6 @@ module map1_drawer (
         pacX = pactopLeftX / TILE_SIZE;
         pacY = (pactopLeftY / TILE_SIZE) - 1;  // Account for offset
 		  
-        // randVal = rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX;  // seed mixing for variety
-
         if (pacmanMap[randTileX][randTileY] == COIN &&
             ($unsigned(randTileX - pacX) > 1 ) &&
             ($unsigned(randTileY - pacY) > 1) && 
