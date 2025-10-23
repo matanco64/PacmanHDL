@@ -21,7 +21,7 @@ module fog_mask  #(
     localparam [7:0] FOG_COLOR = 8'h6D;   // gray fog
     localparam [7:0] TRANSPARENT_ENCODING = 8'hE3;
 	 
-	 logic signed [11:0] dx, dy;
+	 logic signed [10:0] dx, dy;
     logic [23:0] dist2;
     logic [19:0] R2;
 
@@ -42,7 +42,7 @@ module fog_mask  #(
         dist2 = dx*dx + dy*dy;
         R2 = vis_radius * vis_radius;
 
-        fogDR = (dist2 > R2) && pixelX < MAP_WIDTH_X * TILE_SIZE; // Fog active outside visible circle but within map
+        fogDR = (dist2 > R2) && pixelX <= MAP_WIDTH_X * TILE_SIZE; // Fog active outside visible circle but within map
 
     end
 

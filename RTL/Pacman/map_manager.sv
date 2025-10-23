@@ -37,13 +37,11 @@ module map_manager (
 
   integer i;
   logic [2:0] currentMapIndex;  // 0=map1 ... 3=map4 4=original
-  logic [1:0] newMapIdx;  // 0=map1 1=map2 .... 3=map4 4=original
   logic [$clog2(MAX_CHANGES) - 1:0] currentIndex;
   logic inReset;
   logic loadingMap;
 
   assign coinsPowTot = COINS_POW_TOT[currentMapIndex];  // 0=original, map 1 2 3 4
-  assign newMapIdx   = currentMapIndex - 1;
 
   
 logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it

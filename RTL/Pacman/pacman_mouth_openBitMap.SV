@@ -25,45 +25,45 @@ localparam  int OBJECT_HEIGHT_Y = 1 <<  OBJECT_NUMBER_OF_Y_BITS ;
 localparam  int OBJECT_WIDTH_X = 1 <<  OBJECT_NUMBER_OF_X_BITS;
 
 localparam logic [7:0] TRANSPARENT_ENCODING = 8'h00;
- 
- 
-logic [0:OBJECT_HEIGHT_Y-1] [0:OBJECT_WIDTH_X-1] [7:0] object_colors_closed = {
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00},
-	{8'h00,8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00},
-	{8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00},
-	{8'h00,8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h6c,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00}};
+localparam logic [7:0] PAC_ENCODING = 8'hfc;
+
+logic [0:OBJECT_HEIGHT_Y-1] [0:OBJECT_WIDTH_X-1] object_colors_closed = {
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0},
+	{1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}};
 
 	
 
-logic [0:OBJECT_HEIGHT_Y-1] [0:OBJECT_WIDTH_X-1] [7:0] object_colors_open = {
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'h24,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00}};
+logic [0:OBJECT_HEIGHT_Y-1] [0:OBJECT_WIDTH_X-1] object_colors_open = {
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
+	{1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}};
 	
 	
 	// helper direction names (adjust if your decoder gives different values)
@@ -73,22 +73,17 @@ localparam logic [3:0] DIR_LEFT  = 4'd4;
 localparam logic [3:0] DIR_DOWN  = 4'd2;
 
 logic [10:0] srcX, srcY;                 // source coordinates into object_colors
-logic [10:0] displayWidth, displayHeight; // dims of the rectangle that we are drawing into (depends on rotation)
 logic recoverToggle;
 
 // compute mapping and bounding box depending on direction
 always_comb begin
     // defaults
-    displayWidth  = OBJECT_WIDTH_X;
-    displayHeight = OBJECT_HEIGHT_Y;
     srcX = 0;
     srcY = 0;
 
     case (inputDirection)
         DIR_RIGHT: begin
             // no rotation
-            displayWidth  = OBJECT_WIDTH_X;
-            displayHeight = OBJECT_HEIGHT_Y;
             srcX = offsetX;
             srcY = offsetY;
         end
@@ -165,9 +160,11 @@ always_ff @(posedge clk or negedge resetN) begin
             // Safety: make sure srcX/srcY are in original object index ranges before indexing
             if ((srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y))
 				
-				
-					if(recovering) RGBout <= recoverToggle? TRANSPARENT_ENCODING : object_colors_open[srcY][srcX];
-					else RGBout <= (mouthOpen) ? object_colors_open[srcY][srcX] :object_colors_closed[srcY][srcX];
+					if(recovering) RGBout <= (recoverToggle || !object_colors_open[srcY][srcX])? TRANSPARENT_ENCODING : PAC_ENCODING;
+               else if (mouthOpen) 
+                  RGBout <= (object_colors_open[srcY][srcX])? PAC_ENCODING : TRANSPARENT_ENCODING;
+               else // mouth closed   
+                  RGBout <= (object_colors_closed[srcY][srcX])? PAC_ENCODING : TRANSPARENT_ENCODING;
 					 
             else
                 RGBout <= TRANSPARENT_ENCODING; // out-of-range — don't draw
@@ -176,6 +173,6 @@ always_ff @(posedge clk or negedge resetN) begin
 end
 
 
-assign drawingRequest = InsideRectangle; //(RGBout != TRANSPARENT_ENCODING ) ? 1'b1 : 1'b0 ;
+assign drawingRequest = InsideRectangle;
 
 endmodule 

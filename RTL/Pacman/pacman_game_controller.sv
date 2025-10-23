@@ -30,7 +30,6 @@ module pacman_game_controller (
     output logic       ghostFlag,
 
     output logic [2:0] gameState,
-    output logic [3:0] gameStateFor7Seg,
     output logic [2:0] currLives,
     output logic [3:0] score0,
     output logic [3:0] score1,
@@ -165,8 +164,6 @@ module pacman_game_controller (
 
 
 
-
-
         case (currentState)
 
           RESET_ST: begin
@@ -201,7 +198,7 @@ module pacman_game_controller (
 
           POWER_UP_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-				else if (isWin) currentState <= WIN_ST; 
+            else if (isWin) currentState <= WIN_ST;
             else if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
               startCountN <= 1'b0;
               datainL     <= TIME_POWER_L;
@@ -243,7 +240,7 @@ module pacman_game_controller (
       .binary_in(totalScore),
       .hundreds(score2),
       .tens(score1),
-      .ones(score0),
+      .ones(score0)
   );
 
   // Outputs
