@@ -163,20 +163,22 @@ module map1_drawer (
   logic [TILE_BITS-1:0] tile;
   logic [PICKUPS_TO_PLACE-1:0][5:0] pickUpCollected;  //  how many of each pickup collected
     
-  logic [0:30][0:27][3:0] currentMap;
+  // map loading
   logic newMapAvailable;
+  logic finishedLoading;
+  logic [$clog2(MAP_WIDTH_X)-1:0] raddrX;
+  logic [$clog2(MAP_HEIGHT_Y)-1:0] raddrY;
+  logic [2:0] newMapData;
   
-  map_manager #(
-		 .MAP_WIDTH_X(31),
-		 .MAP_HEIGHT_Y(28),
-		 .TILE_BITS(4)
-	) manager_inst (
+  map_manager manager_inst (
 		 .clk(clk),
 		 .resetN(resetN),
 		 .gameState(gameState),
 		 .rnd(rnd),
 		 .startOfFrame(startOfFrame),
-		 .currentMap(currentMap),
+		 .raddrX(raddrX),
+     .raddrY(raddrY),
+     .rdata(newMapData),
 		 .coinsPowTot(coinsPowTot),
 		 .doneLoading(newMapAvailable)
 	);
@@ -396,7 +398,7 @@ module map1_drawer (
       RGBout <= 8'b0;
       mapDR <= 1'b0;
       pickUpDR <= 1'b0;
-      pacmanMap <= currentMap;
+      finishedLoading <= 1'b0;
 
       coinsCollected <= 0;
       powerCollected <= 0;
@@ -417,13 +419,19 @@ module map1_drawer (
       pickUpTimer <= 0;
       pacSpeedChange <= NORMAL;
       pacLifeChange <= NORMAL;
+      raddrX <= 0;
+      raddrY <= 0;
 
     end else if(gameState == RESET_ST) begin
 		RGBout <= 8'b0;
-      mapDR <= 1'b0;
-      pickUpDR <= 1'b0;
+    mapDR <= 1'b0;
+    pickUpDR <= 1'b0;
 		
-		if(newMapAvailable) pacmanMap <= currentMap;
+		if(newMapAvailable) begin
+            raddrX <= 5'd0;
+            raddrY <= 5'd0;
+            finishedLoading <= 1'b0;
+    end
 
       coinsCollected <= 0;
       powerCollected <= 0;
@@ -457,6 +465,7 @@ module map1_drawer (
       isWin <= (coinsCollected + powerCollected == coinsPowTot);
       tile = pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1];
 
+      
 
       // ---------------------------------------------------------------------------
       // pick Ups - counters & palcement
@@ -486,10 +495,6 @@ module map1_drawer (
       end
 
       
-//		if (newMapAvailable) begin
-//			pacmanMap <= currentMap;
-//		end
-		
       // ---------------------------------------------------------------------------
       // Place breakable walls
       // ---------------------------------------------------------------------------
@@ -725,6 +730,27 @@ module map1_drawer (
         endcase
 
       end
+      // map loading control
+      if(newMapAvailable) begin
+            raddrX <= 5'd0;
+            raddrY <= 5'd0;
+            finishedLoading <= 1'b0;
+      end
+      if (!finishedLoading) begin
+            pacmanMap[raddrX][raddrY] <= newMapData;
+            if (raddrX == MAP_WIDTH_X - 1) begin
+                raddrX <= 5'd0;
+                if (raddrY == MAP_HEIGHT_Y - 1) begin
+                    raddrY <= 5'd0;
+                    finishedLoading <= 1'b1;
+                end else begin
+                    raddrY <= raddrY + 1'b1;
+                end
+            end else begin
+                raddrX <= raddrX + 1'b1;
+            end
+      end
+
     end
   end
 
