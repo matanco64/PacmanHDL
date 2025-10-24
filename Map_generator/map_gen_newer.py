@@ -1,3 +1,5 @@
+import os
+
 original_map_str = """
 2222222222222222222222222222
 2511111111115225111111111152
@@ -171,41 +173,38 @@ map4_str = """
 2222222222222222222222222222
 """
 
-VERILOG_FILE = "map.sv"
+hex_file = "map.sv"
 BITS_PER_SYMBOL = 3
-
-# def symbol(ch: str):
-#     if ch == '#':
-#         return f"{BITS_PER_SYMBOL}'d2"
-#     elif ch == ".":
-#         return f"{BITS_PER_SYMBOL}'d1"
-#     elif ch == " ":
-#         return f"{BITS_PER_SYMBOL}'d0"
-#     elif ch == "+":
-#         return f"{BITS_PER_SYMBOL}'d3"
-#     raise Exception("Unknown symbol " + ch)
-
-with open(VERILOG_FILE, "w") as f:
-    print(len(pacman_map))
-    f.write(f"logic [0:{len(pacman_map) - 1}][0:{len(pacman_map[0]) - 1}][{BITS_PER_SYMBOL - 1}:0] pacmanMap = {{\n")
-    for row in pacman_map:
-        bits = ", ".join([symbol(ch) for ch in row])
-        f.write(f"  {{ {bits} }},\n")
-    f.write("};\n")
+OUTPUT_DIR = r"RTL\Pacman\maps"
 
 
-all_maps = [map1_str, map2_str, map3_str, map4_str, original_map_str]
+def map_to_hex(map_str, output_file):
+    # Convert string to list of lines, remove empty lines
+    lines = [line for line in map_str.split('\n') if line.strip()]
+    
+    # Open file for writing
+    with open(output_file, 'w') as f:
+        # Process each character
+        for line in lines:
+            for char in line:
+                if char in '012345':  # Valid map symbols
+                    # Convert character to binary string padded to BITS_PER_SYMBOL
+                    bin_str = format(int(char), f'0{BITS_PER_SYMBOL}b')
+                    # Convert binary to hex and write without '0x' prefix
+                    f.write(f"{int(bin_str, 2):x}\n")
 
-## put all the maps in a single verilog file as a 3D arrays that will be 
-## saved in ram (* ramstyle = "M10K" *) 
+# Create a dictionary of maps
+maps = {
+    'map1': map1_str,
+    'map2': map2_str,
+    'map3': map3_str,
+    'map4': map4_str,
+    'original': original_map_str
+}
 
-with open(VERILOG_FILE, "w") as f:
-    f.write(f"logic [0:{len(all_maps)-1}][0:{len(original_map_str.strip().splitlines()) - 1}][0:{len(original_map_str.strip().splitlines()[0]) - 1}][{BITS_PER_SYMBOL - 1}:0] pacmanMaps = '{{\n")
-    for map_str in all_maps:
-        pacman_map = map_str.strip().splitlines()
-        f.write("  '{\n")
-        for row in pacman_map:
-            bits = ", ".join([f"{BITS_PER_SYMBOL}'d{ch}" for ch in row])
-            f.write(f"    {{ {bits} }},\n")
-        f.write("  },\n")
-    f.write("};\n")
+# Generate hex file for each map
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+for map_name, map_data in maps.items():
+    output_file = os.path.join(OUTPUT_DIR, f"{map_name}.hex")
+    map_to_hex(map_data, output_file)
+    print(f"Generated {output_file}")

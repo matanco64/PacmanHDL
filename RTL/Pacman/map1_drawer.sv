@@ -54,7 +54,7 @@ module map1_drawer (
     output logic powFlag,
     output logic picUpFlag,
     output logic fruitSpawnFlag,
-    output logic [2:0] picUpTypeFlag, // 0=no, 1=banana, 2=cherry 3=str 4=strawberry 5=posion 6=fee - for jukebox
+    output logic [2:0] picUpTypeFlag, // 0=no, 1=banana, 2=cherry 3=str 4=strawberry 5=posion - for jukebox
     output logic breakFlag,
     output logic placeBreakFlag 
 
@@ -80,7 +80,8 @@ module map1_drawer (
 
   localparam logic [7:0] TRANSPARENT_ENCODING = 8'he3;
   // tiles
-  localparam TILE_SIZE = 16;  // IMPORTANT TO KEEP 2^n
+  localparam TILE_SIZE_BITS = 4;  // IMPORTANT TO KEEP 2^n
+  localparam TILE_SIZE = 1 << TILE_SIZE_BITS;  // IMPORTANT TO KEEP 2^n
   localparam TILE_BITS = 4; // 16 types of tiles, 4 bits each - if changed, change the map encoding too
   localparam TILE_SAVED = 16;  // IMPORTANT TO KEEP 2^n 
   // speed & life
@@ -98,13 +99,12 @@ module map1_drawer (
   localparam logic [TILE_BITS-1:0] BANANA = 7;
   localparam logic [TILE_BITS-1:0] STRAWBERRY = 8;
   localparam logic [TILE_BITS-1:0] POISION = 9;
-  localparam logic [TILE_BITS-1:0] FEE = 10;
   localparam logic [TILE_BITS-1:0] BREAK1 = 13;
   localparam logic [TILE_BITS-1:0] BREAK2 = 14;
   localparam logic [TILE_BITS-1:0] BREAK3 = 15;
   // Pickups
   localparam PICKUPS_TO_PLACE = 9;
-  localparam PICKUPS_TYPES = 5;
+  localparam PICKUPS_TYPES = 4;  // cherry, banana, strawberry, poision
   localparam int FRUIT_THRESH[0:PICKUPS_TO_PLACE-1] = '{
       15,
       21,
@@ -127,25 +127,12 @@ module map1_drawer (
   localparam LOSE_ST = 3'b110;
   localparam POWER_UP_ST = 3'b111;
 
-  localparam BASE_BREAKABLES = 15; // walls at level 1
-  
-  typedef enum logic [1:0] {
-    PRE_PLACE,
-    PLACING,
-    POST_PLACE
-  } wall_placement_st;
+  localparam MAP_WIDTH_BITS = $clog2(MAP_WIDTH_X);
+  localparam MAP_HEIGHT_BITS = $clog2(MAP_HEIGHT_Y);
 
-  logic [7:0] wallsToGenerate;
   logic pickUpCollision;  // 1= collision
   logic fruitSpawnPending;
 
-  // breakable walls placement
-  wall_placement_st addBreak_st;  // 0 = pre-placement 1=placing 2=post-placement
-  logic [7:0] amountOfBreakableWallsPlaced;
-  logic [$clog2(MAP_WIDTH_X)-1:0] randTileX;
-  logic [$clog2(MAP_HEIGHT_Y)-1:0] randTileY;
-
-  logic [3:0] randTileType;
 
 
   logic [3:0] offsetX;
@@ -169,7 +156,37 @@ module map1_drawer (
   logic [$clog2(MAP_WIDTH_X)-1:0] raddrX;
   logic [$clog2(MAP_HEIGHT_Y)-1:0] raddrY;
   logic [2:0] newMapData;
+
+
+  // map updater data
+  logic [3:0] currentTileValue;
+  logic [3:0] nextTileValue;
+  logic [4:0] currentTileX;
+  logic [4:0] currentTileY;
+
+  always_comb begin
+    currentTileX = pixelX >> TILE_SIZE_BITS;
+    currentTileY = (pixelY >> TILE_SIZE_BITS) - 1;  // in y axis there is a gap row
+    currentTileValue = currentTileY < MAP_HEIGHT_Y ? pacmanMap[currentTileX][currentTileY] : 4'b0;
+  end
   
+  map_updater updater_inst (
+    .clk(clk),
+    .resetN(resetN),
+    .rnd(rnd),
+    .level(level),
+    .currentTileX(currentTileX),
+    .currentTileY(currentTileY),
+    .pactopLeftX(pactopLeftX),
+    .pactopLeftY(pactopLeftY),
+    .currentTileValue(currentTileValue),
+    .coinsCollected(coinsCollected),
+    .powerCollected(powerCollected),
+    .coinsPowTot(coinsPowTot),
+    .newTileValue(nextTileValue),
+    .placeBreakFlag(placeBreakFlag)
+  );
+
   map_manager manager_inst (
 		 .clk(clk),
 		 .resetN(resetN),
@@ -300,50 +317,8 @@ module map1_drawer (
         {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
         {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
         {8'h00,8'h00,8'h00,8'h00,8'h00,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'h00,8'h00,8'h00,8'h00,8'h00}
-      },
-
-      // fee
-      {
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'he0,8'he0,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00}
       }
   };
-
-
-  // ---------------------------------------------------------------------------
-  // Around me 
-  // ---------------------------------------------------------------------------
-
-  function automatic [4*TILE_BITS-1:0] aroundGhost(input [10:0] ghostTopLeftX,
-                                                   input [10:0] ghostTopLeftY);
-    logic [10:0] gx, gy;
-    begin
-      gx = ghostTopLeftX / TILE_SIZE;
-      gy = ghostTopLeftY / TILE_SIZE - 1;  // in y axis there is a gap row
-
-      aroundGhost = {  // bitmap is rotated!
-        (gy >= 0) ? pacmanMap[gx][gy-1] : WALL,  // Up
-        (gy < MAP_HEIGHT_Y - 1) ? pacmanMap[gx][gy+1] : WALL,  // Down
-        (gx >= 0) ? pacmanMap[gx-1][gy] : WALL,  // Left
-        (gx < MAP_WIDTH_X - 1) ? pacmanMap[gx+1][gy] : WALL  // Right
-      };
-    end
-  endfunction
-
 
   //------------------------------------------------------
   // Random appearance & pulsing animation
@@ -405,8 +380,6 @@ module map1_drawer (
       pickUpCollected <= '{default: 0};  // all elements reset to 0
       fruitSpawnPending <= 1'b0;
 
-      addBreak_st <= PRE_PLACE;
-
       coinFlag <= 0;
       powFlag <= 0;
       picUpFlag <= 0;
@@ -424,8 +397,8 @@ module map1_drawer (
 
     end else if(gameState == RESET_ST) begin
 		RGBout <= 8'b0;
-    mapDR <= 1'b0;
-    pickUpDR <= 1'b0;
+		mapDR <= 1'b0;
+		pickUpDR <= 1'b0;
 		
 		if(newMapAvailable) begin
             raddrX <= 5'd0;
@@ -438,7 +411,6 @@ module map1_drawer (
       pickUpCollected <= '{default: 0};  // all elements reset to 0
       fruitSpawnPending <= 1'b0;
 
-      addBreak_st <= PRE_PLACE;
 
       coinFlag <= 0;
       powFlag <= 0;
@@ -465,7 +437,10 @@ module map1_drawer (
       isWin <= (coinsCollected + powerCollected == coinsPowTot);
       tile = pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1];
 
-      
+      // We should try to update the map only here to avoid complicated logic
+      if (nextTileValue != currentTileValue) begin
+        pacmanMap[currentTileX][currentTileY] <= nextTileValue;
+      end
 
       // ---------------------------------------------------------------------------
       // pick Ups - counters & palcement
@@ -494,43 +469,6 @@ module map1_drawer (
         end
       end
 
-      
-      // ---------------------------------------------------------------------------
-      // Place breakable walls
-      // ---------------------------------------------------------------------------
-
-      if (addBreak_st == PRE_PLACE && ((coinsCollected * 100) > (5  * coinsPowTot))) begin  // just for now 5 is the tresh
-        addBreak_st <= PLACING;  // one time trigger - 0 on reset and 1 forever
-        amountOfBreakableWallsPlaced <= 0;
-      end
-
-      // Randomize breakable walls placement (BREAK1 / BREAK2 / BREAK3)	
-      if (addBreak_st == PLACING) begin
-		
-		
-		  logic [$clog2(MAP_WIDTH_X)-1:0] pacX;
-        logic [$clog2(MAP_HEIGHT_Y)-1:0] pacY;
-
-        pacX = pactopLeftX / TILE_SIZE;
-        pacY = (pactopLeftY / TILE_SIZE) - 1;  // Account for offset
-		  
-        if (pacmanMap[randTileX][randTileY] == COIN &&
-            ($unsigned(randTileX - pacX) > 1 ) &&
-            ($unsigned(randTileY - pacY) > 1) && 
-            randTileX < MAP_WIDTH_X && randTileY < MAP_HEIGHT_Y) begin  // avoid placing near pacman
-
-					amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
-					pacmanMap[randTileX][randTileY] <= randTileType;
-        end
-
-       
-        if (amountOfBreakableWallsPlaced >= wallsToGenerate) begin
-          addBreak_st <= POST_PLACE;
-        end
-		  
-		  
-		  
-      end
 	
       // ---------------------------------------------------------------------------
       // colisions
@@ -688,7 +626,7 @@ module map1_drawer (
 
           end
 
-          CHERRY, BANANA, STRAWBERRY, POISION, FEE: begin
+          CHERRY, BANANA, STRAWBERRY, POISION: begin
             logic [$clog2(PICKUPS_TYPES)-1:0] fruitIdx;
             fruitIdx = tile - CHERRY;
             offsetX  = pixelX % TILE_SIZE;
@@ -758,33 +696,78 @@ module map1_drawer (
   // ---------------------------------------------------------------------------
   //  outputs
   // ---------------------------------------------------------------------------
+  // around_character module
 
-  assign aroundBlinky = aroundGhost(BlinkytopLeftX, BlinkytopLeftY);
-  assign aroundPinky = aroundGhost(PinkytopLeftX, PinkytopLeftY);
-  assign aroundInky = aroundGhost(InkytopLeftX, InkytopLeftY);
-  assign aroundClyde = aroundGhost(ClydetopLeftX, ClydetopLeftY);
-  assign aroundPac = aroundGhost(pactopLeftX, pactopLeftY);
+  around_character around_blinky_inst (
+    .clk(clk),
+    .resetN(resetN),
+    .startOfFrame(startOfFrame),
+    .charTileX(BlinkytopLeftX >> TILE_SIZE_BITS),
+    .charTileY((BlinkytopLeftY >> TILE_SIZE_BITS) - 5'd1),
+    .currTileX(currentTileX),
+    .currTileY(currentTileY),
+    .currTileData(currentTileValue),
+    .tiles_around(aroundBlinky)
+  );
+
+  around_character around_pinky_inst (
+    .clk(clk),
+    .resetN(resetN),
+    .startOfFrame(startOfFrame),
+    .charTileX(PinkytopLeftX >> TILE_SIZE_BITS),
+    .charTileY((PinkytopLeftY >> TILE_SIZE_BITS) - 5'd1),
+    .currTileX(currentTileX),
+    .currTileY(currentTileY),
+    .currTileData(currentTileValue),
+    .tiles_around(aroundPinky)
+  );
+
+  around_character around_inky_inst (
+    .clk(clk),
+    .resetN(resetN),
+    .startOfFrame(startOfFrame),
+    .charTileX(InkytopLeftX >> TILE_SIZE_BITS),
+    .charTileY((InkytopLeftY >> TILE_SIZE_BITS) - 5'd1),
+    .currTileX(currentTileX),
+    .currTileY(currentTileY),
+    .currTileData(currentTileValue),
+    .tiles_around(aroundInky)
+  );
+  
+  around_character around_clyde_inst (
+    .clk(clk),
+    .resetN(resetN),
+    .startOfFrame(startOfFrame),
+    .charTileX(ClydetopLeftX >> TILE_SIZE_BITS),
+    .charTileY((ClydetopLeftY >> TILE_SIZE_BITS) - 5'd1),
+    .currTileX(currentTileX),
+    .currTileY(currentTileY),
+    .currTileData(currentTileValue),
+    .tiles_around(aroundClyde)
+  );
+
+  around_character around_pacman_inst (
+    .clk(clk),
+    .resetN(resetN),
+    .startOfFrame(startOfFrame),
+    .charTileX(pactopLeftX >> TILE_SIZE_BITS),
+    .charTileY((pactopLeftY >> TILE_SIZE_BITS) - 5'd1),
+    .currTileX(currentTileX),
+    .currTileY(currentTileY),
+    .currTileData(currentTileValue),
+    .tiles_around(aroundPac)
+  );
+
+
+
+ 
+
 
   assign pickUpCollision = (pickUpDR && pacmanDR) ? 1 : 0;
   assign partialScore = coinsCollected + powerCollected * 10 + pickUpCollected[0] * 4  // cherry
       + pickUpCollected[1] * 10  // banana
       + pickUpCollected[2] * 2  // strawberry
-      - pickUpCollected[3] * 20  // poision
-      - pickUpCollected[4] * 50;  //  fee
-
-  assign placeBreakFlag = (addBreak_st == PLACING); 
-  assign wallsToGenerate = BASE_BREAKABLES + (level * 6);
-  always_comb begin
-
-      randTileX = rnd ^ 8'hA5 ^ InkytopLeftY ^ pactopLeftX; // 0-31 - as map width size
-		randTileY = ( rnd ^ 8'hCB ^ BlinkytopLeftY ^ pactopLeftX); // 0-31
-		randTileY = (randTileY >= MAP_HEIGHT_Y) ? randTileY - MAP_HEIGHT_Y : randTileY;  // cut top 0-3
-
-		case(randTileX[1:0])
-			2'b00: randTileType = BREAK3;
-			2'b01: randTileType = BREAK2;
-			default: randTileType = BREAK1;
-		endcase
-  end
+      - pickUpCollected[3] * 20;  // poision
 
 endmodule
+
