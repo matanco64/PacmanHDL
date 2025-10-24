@@ -206,7 +206,7 @@ def count_coins_and_power(grid):
     return total
 
 
-def format_sv_block(values, width=8, digits=8, fill=0, prefix="8'd"):
+def format_sv_block(values, width=8, digits=8, fill=0, prefix="5'd"):
     padded = values + [fill] * (MAX_CHANGES - len(values))
     lines = []
     for i in range(0, MAX_CHANGES, width):
@@ -221,7 +221,7 @@ def format_sv_changeVal(values):
     lines = []
     for i in range(0, MAX_CHANGES, 8):
         chunk = padded[i:i + 8]
-        line = ", ".join(f"4'd{v}" for v in chunk)
+        line = ", ".join(f"3'd{v}" for v in chunk)
         lines.append(f"       {line},")
     return "\n".join(lines).rstrip(",")
 
@@ -257,7 +257,7 @@ def main():
 
 
     # ---------------- changeY ----------------
-    print("localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][7:0] changeX = '{")
+    print("localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][4:0] changeX = '{")
     for i, vals in enumerate(changeYs):
         print(
             f"    // Map {i} ({len(vals)} real changes + {MAX_CHANGES - len(vals)} zeros)")
@@ -267,7 +267,7 @@ def main():
     print("};\n")
 
     # ---------------- changeX ----------------
-    print("localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][7:0] changeY = '{")
+    print("localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][4:0] changeY = '{")
     for i, vals in enumerate(changeXs):
         print(f"    // Map {i}")
         print("    '{")
