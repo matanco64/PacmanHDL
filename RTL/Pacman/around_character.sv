@@ -31,7 +31,7 @@ module around_character #(
   end
   
   function logic is_in_range_up();
-    return (charTileY_q == 0);
+    return (charTileY_q >= 0);
   endfunction
   function logic is_in_range_down();
     return (charTileY_q + 1 < MAP_HEIGHT_Y);
@@ -48,7 +48,7 @@ module around_character #(
       tiles_around <= '0;
     end else begin
       if (startOfFrame) begin
-        tiles_around <= '0;
+        // tiles_around <= '0;
         // Initial placement - walls
         if (is_in_range_up())    tiles_around[4*TILE_BITS-1 -: TILE_BITS] <= WALL;
         if (is_in_range_down())  tiles_around[3*TILE_BITS-1 -: TILE_BITS] <= WALL;

@@ -13,6 +13,7 @@ module map_updater # (
     input  logic [4:0]   currentTileY,
     input logic [10:0] pactopLeftX,
     input logic [10:0] pactopLeftY,
+    input logic        startOfFrame,
 
     // coins
     input  logic [8:0] coinsCollected,
@@ -61,10 +62,10 @@ module map_updater # (
   logic [4:0] prevTileY;
   logic canPlaceWall;
   logic isInBounds;
+  logic hasPlacedInThisFrame; // this flag creates cool wall apperance effect and ensures random is better
 
-  
 
-
+  // Breakable walls placement state machine
   always_ff @(posedge clk or negedge resetN)
   begin
     if (!resetN) begin
@@ -72,14 +73,17 @@ module map_updater # (
       prevTileX <= 5'd0;
       prevTileY <= 5'd0;
       amountOfBreakableWallsPlaced <= 8'd0;
-      // coinsCollected <= 0;
-      // powerCollected <= 0;
       newTileValue <= currentTileValue;
       updateValueForTile <= 1'b0;
+      hasPlacedInThisFrame <= 1'b0;
     end
     else begin
       newTileValue <= currentTileValue;
       updateValueForTile <= 1'b0;
+      if (startOfFrame) begin
+          hasPlacedInThisFrame <= 1'b0;
+      end
+
       if ((currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
         prevTileX <= currentTileX;
         prevTileY <= currentTileY;
@@ -94,9 +98,10 @@ module map_updater # (
           end
           PLACING: begin
             if ((amountOfBreakableWallsPlaced < wallsToGenerate)) begin
-              if ((betterRand >= 250) && canPlaceWall) begin// 1 in 32 chance to place a breakable wall (248-255 out of 0-255)
+              if ((betterRand >= 250) && canPlaceWall && !hasPlacedInThisFrame) begin// 1 in 32 chance to place a breakable wall (248-255 out of 0-255)
                 newTileValue <= randTileType;
                 updateValueForTile <= 1'b1;
+                hasPlacedInThisFrame <= 1'b1;
                 amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
               end
             end else begin
