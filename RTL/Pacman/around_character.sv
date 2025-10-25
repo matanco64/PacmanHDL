@@ -11,6 +11,7 @@ module around_character #(
   input  logic [TILE_BITS-1:0]            currTileData,
   input  logic [$clog2(MAP_WIDTH_X)-1:0]  charTileX,
   input  logic [$clog2(MAP_HEIGHT_Y)-1:0] charTileY,
+  input  logic                            isScanInsideMap,
   output logic [4*TILE_BITS-1:0]          tiles_around  // {up,down,left,right}
 );
 
@@ -54,26 +55,28 @@ module around_character #(
         if (is_in_range_left())  tiles_around[2*TILE_BITS-1 -: TILE_BITS] <= WALL;
         if (is_in_range_right()) tiles_around[1*TILE_BITS-1 -: TILE_BITS] <= WALL;
       end
-      // Update during scan (only when in range)
-      if (is_in_range_up()   &&
-          currTileX == charTileX_q &&
-          currTileY == charTileY_q-1)
-        tiles_around[4*TILE_BITS-1 -: TILE_BITS] <= currTileData;
+      if (isScanInsideMap) begin
+        // Update during scan (only when in range)
+        if (is_in_range_up()   &&
+            currTileX == charTileX_q &&
+            currTileY == charTileY_q-1)
+          tiles_around[4*TILE_BITS-1 -: TILE_BITS] <= currTileData;
 
-      if (is_in_range_down() &&
-          currTileX == charTileX_q &&
-          currTileY == charTileY_q+1)
-        tiles_around[3*TILE_BITS-1 -: TILE_BITS] <= currTileData;
+        if (is_in_range_down() &&
+            currTileX == charTileX_q &&
+            currTileY == charTileY_q+1)
+          tiles_around[3*TILE_BITS-1 -: TILE_BITS] <= currTileData;
 
-      if (is_in_range_left() &&
-          currTileX == charTileX_q-1 &&
-          currTileY == charTileY_q)
-        tiles_around[2*TILE_BITS-1 -: TILE_BITS] <= currTileData;
+        if (is_in_range_left() &&
+            currTileX == charTileX_q-1 &&
+            currTileY == charTileY_q)
+          tiles_around[2*TILE_BITS-1 -: TILE_BITS] <= currTileData;
 
-      if (is_in_range_right() &&
-          currTileX == charTileX_q+1 &&
-          currTileY == charTileY_q)
-        tiles_around[1*TILE_BITS-1 -: TILE_BITS] <= currTileData;
+        if (is_in_range_right() &&
+            currTileX == charTileX_q+1 &&
+            currTileY == charTileY_q)
+          tiles_around[1*TILE_BITS-1 -: TILE_BITS] <= currTileData;
+        end
     end
   end
 endmodule
