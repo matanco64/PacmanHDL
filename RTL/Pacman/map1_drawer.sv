@@ -182,6 +182,7 @@ module map1_drawer (
     .currentTileY(currentTileY),
     .pactopLeftX(pactopLeftX),
     .pactopLeftY(pactopLeftY),
+    .startOfFrame(startOfFrame),
     .currentTileValue(currentTileValue),
     .isScanInsideMap(isScanInsideMap),
     .coinsCollected(coinsCollected),
@@ -712,6 +713,7 @@ module map1_drawer (
     .currTileX(currentTileX),
     .currTileY(currentTileY),
     .currTileData(currentTileValue),
+    .isScanInsideMap(isScanInsideMap),
     .tiles_around(aroundBlinky)
   );
 
@@ -724,6 +726,7 @@ module map1_drawer (
     .currTileX(currentTileX),
     .currTileY(currentTileY),
     .currTileData(currentTileValue),
+    .isScanInsideMap(isScanInsideMap),
     .tiles_around(aroundPinky)
   );
 
@@ -736,6 +739,7 @@ module map1_drawer (
     .currTileX(currentTileX),
     .currTileY(currentTileY),
     .currTileData(currentTileValue),
+    .isScanInsideMap(isScanInsideMap),
     .tiles_around(aroundInky)
   );
   
@@ -748,6 +752,7 @@ module map1_drawer (
     .currTileX(currentTileX),
     .currTileY(currentTileY),
     .currTileData(currentTileValue),
+    .isScanInsideMap(isScanInsideMap),
     .tiles_around(aroundClyde)
   );
 
@@ -760,6 +765,7 @@ module map1_drawer (
     .currTileX(currentTileX),
     .currTileY(currentTileY),
     .currTileData(currentTileValue),
+    .isScanInsideMap(isScanInsideMap),
     .tiles_around(aroundPac)
   );
 
