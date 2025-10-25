@@ -161,12 +161,15 @@ module map1_drawer (
   // map updater data
   logic [3:0] currentTileValue;
   logic [3:0] nextTileValue;
+  logic updateValueForTile;
   logic [4:0] currentTileX;
   logic [4:0] currentTileY;
+  logic isScanInsideMap;
 
   always_comb begin
     currentTileX = pixelX >> TILE_SIZE_BITS;
     currentTileY = (pixelY >> TILE_SIZE_BITS) - 1;  // in y axis there is a gap row
+    isScanInsideMap = (currentTileX < MAP_WIDTH_X) && (currentTileY < MAP_HEIGHT_Y);
     currentTileValue = currentTileY < MAP_HEIGHT_Y ? pacmanMap[currentTileX][currentTileY] : 4'b0;
   end
   
@@ -180,10 +183,12 @@ module map1_drawer (
     .pactopLeftX(pactopLeftX),
     .pactopLeftY(pactopLeftY),
     .currentTileValue(currentTileValue),
+    .isScanInsideMap(isScanInsideMap),
     .coinsCollected(coinsCollected),
     .powerCollected(powerCollected),
     .coinsPowTot(coinsPowTot),
     .newTileValue(nextTileValue),
+    .updateValueForTile(updateValueForTile),
     .placeBreakFlag(placeBreakFlag)
   );
 
@@ -438,7 +443,7 @@ module map1_drawer (
       tile = pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1];
 
       // We should try to update the map only here to avoid complicated logic
-      if (nextTileValue != currentTileValue) begin
+      if (updateValueForTile) begin
         pacmanMap[currentTileX][currentTileY] <= nextTileValue;
       end
 

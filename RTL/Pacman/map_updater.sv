@@ -21,8 +21,10 @@ module map_updater # (
 
 
     input logic [TILE_BITS -1:0]   currentTileValue,
-    output  logic [TILE_BITS -1:0]   newTileValue,
-    output logic        placeBreakFlag
+    input logic                    isScanInsideMap,
+    output logic [TILE_BITS -1:0]   newTileValue,
+    output logic updateValueForTile,
+    output logic [TILE_BITS -1:0]   placeBreakFlag
 
   );
 
@@ -42,6 +44,8 @@ module map_updater # (
 
   assign wallsToGenerate = BASE_BREAKABLES + (level * 6);
 
+  logic [7:0]   betterRand;
+
   typedef enum logic [1:0] {
             PRE_PLACE,
             PLACING,
@@ -56,6 +60,7 @@ module map_updater # (
   logic [4:0] prevTileX;
   logic [4:0] prevTileY;
   logic canPlaceWall;
+  logic isInBounds;
 
   
 
@@ -69,10 +74,13 @@ module map_updater # (
       amountOfBreakableWallsPlaced <= 8'd0;
       // coinsCollected <= 0;
       // powerCollected <= 0;
+      newTileValue <= currentTileValue;
+      updateValueForTile <= 1'b0;
     end
     else begin
-      newTileValue = currentTileValue;
-      if (currentTileX != prevTileX || currentTileY != prevTileY) begin
+      newTileValue <= currentTileValue;
+      updateValueForTile <= 1'b0;
+      if ((currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
         prevTileX <= currentTileX;
         prevTileY <= currentTileY;
 
@@ -86,8 +94,9 @@ module map_updater # (
           end
           PLACING: begin
             if ((amountOfBreakableWallsPlaced < wallsToGenerate)) begin
-              if ((rnd >= 224) && canPlaceWall) begin// 1 in 8 chance to place a breakable wall (224-255 out of 0-255)
-                newTileValue = randTileType;
+              if ((betterRand >= 250) && canPlaceWall) begin// 1 in 32 chance to place a breakable wall (248-255 out of 0-255)
+                newTileValue <= randTileType;
+                updateValueForTile <= 1'b1;
                 amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
               end
             end else begin
@@ -105,9 +114,12 @@ module map_updater # (
   always_comb begin
     pacX = pactopLeftX >> TILE_BITS;
     pacY = (pactopLeftY >> TILE_BITS) - 1;
-    canPlaceWall = ($unsigned(currentTileX - pacX) > 1) && ($unsigned(currentTileY - pacY) > 1)
+    isInBounds = currentTileX < MAP_WIDTH_X - 1 && currentTileY < MAP_HEIGHT_Y - 1 && currentTileX > 0 && currentTileY > 0;
+    canPlaceWall = isInBounds && ($unsigned(currentTileX - pacX) > 1) && ($unsigned(currentTileY - pacY) > 1)
     && currentTileValue == COIN;
-    
+    betterRand = rnd ^ currentTileX ^ currentTileY  ^ pactopLeftX[7:0] ^ pactopLeftY[7:0];
+
+
     case(rnd[1:0])
       2'b00: randTileType = BREAK3; 
       2'b01: randTileType = BREAK2;
