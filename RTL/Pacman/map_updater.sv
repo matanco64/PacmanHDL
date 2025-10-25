@@ -85,8 +85,8 @@ module map_updater # (
             end
           end
           PLACING: begin
-            if ((amountOfBreakableWallsPlaced < wallsToGenerate) && canPlaceWall) begin
-              if ((rnd % 8) == 0) begin// 1 in 8 chance to place a breakable wall
+            if ((amountOfBreakableWallsPlaced < wallsToGenerate)) begin
+              if ((rnd >= 224) && canPlaceWall) begin// 1 in 8 chance to place a breakable wall (224-255 out of 0-255)
                 newTileValue = randTileType;
                 amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
               end
