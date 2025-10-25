@@ -25,8 +25,8 @@ module map1_drawer (
     input logic [10:0] pactopLeftY,
     input logic [1:0] pacDir,
     input logic pacmanDR,
-	 input logic starKey,
-	 input logic slashKey,
+	  input logic starKey,
+	  input logic slashKey,
     input logic numLockKey,
 	 input logic [3:0] level,
 
@@ -105,17 +105,6 @@ module map1_drawer (
   // Pickups
   localparam PICKUPS_TO_PLACE = 9;
   localparam PICKUPS_TYPES = 4;  // cherry, banana, strawberry, poision
-  localparam int FRUIT_THRESH[0:PICKUPS_TO_PLACE-1] = '{
-      15,
-      21,
-      32,
-      47,
-      58,
-      65,
-      83,
-      90,
-      110  // never reached
-  };  // increasing order
 
   // game states
   localparam RESET_ST = 3'b000;
@@ -131,7 +120,6 @@ module map1_drawer (
   localparam MAP_HEIGHT_BITS = $clog2(MAP_HEIGHT_Y);
 
   logic pickUpCollision;  // 1= collision
-  logic fruitSpawnPending;
 
 
 
@@ -143,8 +131,6 @@ module map1_drawer (
   logic [8:0] coinsPowTot;  // pow and coins!
   
 
-  logic [$clog2(MAP_HEIGHT_Y)-1:0] emptyTilesX[0:TILE_SAVED-1];
-  logic [$clog2(MAP_WIDTH_X)-1:0] emptyTilesY[0:TILE_SAVED-1];
   logic [$clog2(PICKUPS_TO_PLACE)-1:0] currPicUp;
   logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] pacmanMap;
   logic [TILE_BITS-1:0] tile;
@@ -185,12 +171,19 @@ module map1_drawer (
     .startOfFrame(startOfFrame),
     .currentTileValue(currentTileValue),
     .isScanInsideMap(isScanInsideMap),
+    .coinCollision(coinCollision),
+    .powerCollision(powerCollision),
     .coinsCollected(coinsCollected),
     .powerCollected(powerCollected),
     .coinsPowTot(coinsPowTot),
+    .pickUpCollision(pickUpCollision),
     .newTileValue(nextTileValue),
     .updateValueForTile(updateValueForTile),
-    .placeBreakFlag(placeBreakFlag)
+    .placeBreakFlag(placeBreakFlag),
+    .currPicUp(currPicUp),
+    .coinFlag(coinFlag),
+    .powFlag(powFlag),
+    .fruitSpawnFlag(fruitSpawnFlag)
   );
 
   map_manager manager_inst (
@@ -354,7 +347,7 @@ module map1_drawer (
           togglePow <= ~togglePow;
           secCnt    <= 0;
           // re-randomize interval (between 2–8 sec)
-          frameRnd  <= (rnd[2:0] + 3) + (pixelX % 5);
+          frameRnd  <= (rnd[2:0] + 3) + (pixelX % 8);
         end
       end
 
@@ -381,18 +374,11 @@ module map1_drawer (
       pickUpDR <= 1'b0;
       finishedLoading <= 1'b0;
 
-      coinsCollected <= 0;
-      powerCollected <= 0;
+      
       pickUpCollected <= '{default: 0};  // all elements reset to 0
-      fruitSpawnPending <= 1'b0;
 
-      coinFlag <= 0;
-      powFlag <= 0;
-      picUpFlag <= 0;
       picUpTypeFlag <= 0;
-      fruitSpawnFlag <= 0;
       breakFlag <= 0;
-      currPicUp <= 0;
       isWin <= 0;
 
       pickUpTimer <= 0;
@@ -412,19 +398,11 @@ module map1_drawer (
             finishedLoading <= 1'b0;
     end
 
-      coinsCollected <= 0;
-      powerCollected <= 0;
       pickUpCollected <= '{default: 0};  // all elements reset to 0
-      fruitSpawnPending <= 1'b0;
 
 
-      coinFlag <= 0;
-      powFlag <= 0;
-      picUpFlag <= 0;
       picUpTypeFlag <= 0;
-      fruitSpawnFlag <= 0;
       breakFlag <= 0;
-      currPicUp <= 0;
       isWin <= 0;
 
       pickUpTimer <= 0;
@@ -438,7 +416,6 @@ module map1_drawer (
       coinsDR <= 1'b0;
       powerDR <= 1'b0;
       pickUpDR <= 1'b0;
-      fruitSpawnFlag <= 1'b0;
       pacLifeChange <= NORMAL;
       isWin <= (coinsCollected + powerCollected == coinsPowTot);
       tile = pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1];
@@ -456,59 +433,11 @@ module map1_drawer (
       if (pickUpTimer > 0 && oneSec) pickUpTimer <= pickUpTimer - 1;
       else if (pickUpTimer == 0) pacSpeedChange <= NORMAL;
 
-      // flags
-      if (!fruitSpawnPending && currPicUp < PICKUPS_TO_PLACE && 
-			 (coinsCollected * 100) > (FRUIT_THRESH[currPicUp] * coinsPowTot)) begin
-        fruitSpawnPending <= 1'b1;
-      end
 
-      // place fruit
-      if (fruitSpawnPending) begin
-        logic [$clog2(TILE_SAVED)-1:0] idx;
-        idx = rnd[$clog2(TILE_SAVED)-1:0];
-        // place if empty or try again next clock
-        if (pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] == EMPTY) begin
-          pacmanMap[emptyTilesX[idx]][emptyTilesY[idx]] <= CHERRY + (rnd % PICKUPS_TYPES);
-          currPicUp <= currPicUp + 1'b1;  // Increment fruit counter
-          fruitSpawnPending <= 1'b0;  // Clear flag - ready for next
-          fruitSpawnFlag <= 1'b1;
-        end
-      end
 
-	
-      // ---------------------------------------------------------------------------
-      // colisions
-      // ---------------------------------------------------------------------------
-
-      // colision coins
-      if (coinCollision) begin
-        pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
-        if (!coinFlag) begin
-          coinFlag <= 1'b1;
-          coinsCollected <= coinsCollected + 1;
-          /// save empty space to place pickups
-          if (coinsCollected < TILE_SAVED) begin
-            emptyTilesX[coinsCollected] <= pixelX / TILE_SIZE;
-            emptyTilesY[coinsCollected] <= pixelY / TILE_SIZE - 1;
-          end else if (rnd[1:0] == 2'b10) begin  // 25% for a swap
-            emptyTilesX[rnd[3:0]] <= pixelX / TILE_SIZE;
-            emptyTilesY[rnd[3:0]] <= pixelY / TILE_SIZE - 1;
-          end
-        end
-      end else coinFlag <= 1'b0;
-
-      // colision power
-      if (powerCollision) begin
-        pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
-        if (!powFlag) begin
-          powFlag <= 1'b1;
-          powerCollected <= powerCollected + 1;
-        end
-      end else powFlag <= 1'b0;
 
       // colision pickUps
       if (pickUpCollision && !picUpFlag) begin
-        pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1] <= EMPTY;
         picUpFlag <= 1'b1;
         picUpTypeFlag <= tile - CHERRY + 1;
         pickUpCollected[tile-CHERRY] <= pickUpCollected[tile-CHERRY] + 1;  // count pickups
