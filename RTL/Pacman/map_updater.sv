@@ -3,7 +3,9 @@
 module map_updater # (
     TILE_BITS = 4,
     MAP_WIDTH_X = 31,
-    MAP_HEIGHT_Y = 28
+    MAP_HEIGHT_Y = 28,
+    PICKUPS_TO_PLACE = 9,
+    PICKUPS_TYPES = 4
   ) (
     input  logic         clk,
     input  logic         resetN,
@@ -15,24 +17,38 @@ module map_updater # (
     input logic [10:0] pactopLeftY,
     input logic        startOfFrame,
 
-    // coins
-    input  logic [8:0] coinsCollected,
-    input  logic [8:0] powerCollected,
+    // coins and power-ups
+    input logic coinCollision,
+    input logic powerCollision, 
+    output  logic [8:0] coinsCollected,
+    output  logic [8:0] powerCollected,
     input  logic [8:0] coinsPowTot,
 
+    // pickups
+    input logic pickUpCollision,
+    
 
     input logic [TILE_BITS -1:0]   currentTileValue,
     input logic                    isScanInsideMap,
     output logic [TILE_BITS -1:0]   newTileValue,
     output logic updateValueForTile,
-    output logic [TILE_BITS -1:0]   placeBreakFlag
+    output logic [TILE_BITS -1:0]   placeBreakFlag,
+
+    output logic [$clog2(PICKUPS_TO_PLACE)-1:0] currPicUp,
+
+    // melody selection outputs
+    output logic coinFlag,
+    output logic powFlag,
+    output logic fruitSpawnFlag
 
   );
 
+  parameter logic [TILE_BITS-1:0] EMPTY = 0;
+  parameter logic [TILE_BITS-1:0] COIN = 1;
+  parameter logic [TILE_BITS-1:0] CHERRY = 6;
   parameter logic [TILE_BITS-1:0] BREAK1 = 13;
   parameter logic [TILE_BITS-1:0] BREAK2 = 14;
   parameter logic [TILE_BITS-1:0] BREAK3 = 15;
-  parameter logic [TILE_BITS-1:0] COIN = 1;
 
   localparam MAP_WIDTH_X_BITS = $clog2(MAP_WIDTH_X);
   localparam MAP_HEIGHT_Y_BITS = $clog2(MAP_HEIGHT_Y);
@@ -56,6 +72,8 @@ module map_updater # (
   wall_placement_st addBreak_st;  // 0 = pre-placement 1=placing 2=post-placement
   logic [7:0] amountOfBreakableWallsPlaced;
   logic [TILE_BITS:0] randTileType;
+  logic [TILE_BITS:0] wallTypeToPlace;
+  logic [TILE_BITS:0] pickUpTypeToPlace;
 
   // previous tileX and tileY to detect when we move to a new tile
   logic [4:0] prevTileX;
@@ -63,32 +81,57 @@ module map_updater # (
   logic canPlaceWall;
   logic isInBounds;
   logic hasPlacedInThisFrame; // this flag creates cool wall apperance effect and ensures random is better
+  logic wallUpdate;
+  logic coinValueUpdate;
+  logic collisionFlag;
+  logic isFarFromPacman;
+  logic canPlacePickup;
+  
 
+  // pickups
+  localparam int FRUIT_THRESH[0:PICKUPS_TO_PLACE-1] = '{
+      15,
+      21,
+      32,
+      47,
+      58,
+      65,
+      83,
+      90,
+      110  // never reached
+  };  // increasing order
+  logic fruitSpawnPending;
+  logic picUpFlag;
+
+  
+
+  always_ff @(posedge clk or negedge resetN) begin
+    if (!resetN) begin
+      prevTileX <= 5'd0;
+      prevTileY <= 5'd0;
+    end
+    else if ((currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
+      prevTileX <= currentTileX;
+      prevTileY <= currentTileY;
+    end
+  end
 
   // Breakable walls placement state machine
   always_ff @(posedge clk or negedge resetN)
   begin
     if (!resetN) begin
       addBreak_st <= PRE_PLACE;
-      prevTileX <= 5'd0;
-      prevTileY <= 5'd0;
       amountOfBreakableWallsPlaced <= 8'd0;
-      newTileValue <= currentTileValue;
-      updateValueForTile <= 1'b0;
+      wallTypeToPlace <= BREAK1;
+      wallUpdate <= 1'b0;
       hasPlacedInThisFrame <= 1'b0;
     end
     else begin
-      newTileValue <= currentTileValue;
-      updateValueForTile <= 1'b0;
+      wallUpdate <= 1'b0;
       if (startOfFrame) begin
           hasPlacedInThisFrame <= 1'b0;
       end
-
       if ((currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
-        prevTileX <= currentTileX;
-        prevTileY <= currentTileY;
-
-
         case (addBreak_st)
           PRE_PLACE: begin
             if ((coinsCollected * 100) > (5  * coinsPowTot)) begin
@@ -99,8 +142,8 @@ module map_updater # (
           PLACING: begin
             if ((amountOfBreakableWallsPlaced < wallsToGenerate)) begin
               if ((betterRand >= 250) && canPlaceWall && !hasPlacedInThisFrame) begin// 1 in 32 chance to place a breakable wall (248-255 out of 0-255)
-                newTileValue <= randTileType;
-                updateValueForTile <= 1'b1;
+                wallTypeToPlace <= randTileType;
+                wallUpdate <= 1'b1;
                 hasPlacedInThisFrame <= 1'b1;
                 amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
               end
@@ -116,20 +159,94 @@ module map_updater # (
     end
   end
 
+  // collision detection
+always_ff @(posedge clk or negedge resetN) begin
+  if (!resetN) begin
+    coinsCollected      <= 0;
+    powerCollected      <= 0;
+    coinFlag          <= 1'b0;
+    powFlag           <= 1'b0;
+    picUpFlag        <= 1'b0;
+    collisionFlag       <= 1'b0;
+  end else begin
+    // default
+    coinFlag          <= 1'b0;
+    powFlag           <= 1'b0;
+    picUpFlag        <= 1'b0;
+
+    if (startOfFrame)
+      collisionFlag <= 1'b0;
+
+    if (!collisionFlag) begin
+      if (coinCollision) begin
+        coinsCollected      <= coinsCollected + 1;
+        coinFlag <= 1'b1;
+        collisionFlag       <= 1'b1;
+      end else if (powerCollision) begin
+        powerCollected      <= powerCollected + 1;
+        powFlag           <= 1'b1;
+        collisionFlag       <= 1'b1;
+      end else if (pickUpCollision) begin
+        picUpFlag        <= 1'b1;
+        collisionFlag       <= 1'b1;
+      end
+    end
+  end
+ end
+
+ // pickup placement logic
+ always_ff @(posedge clk or negedge resetN) begin
+   if (!resetN) begin
+     currPicUp <= 0;
+     fruitSpawnPending <= 1'b0;
+     fruitSpawnFlag   <= 1'b0;
+   end else begin
+     fruitSpawnFlag <= 1'b0;
+     if (startOfFrame) begin
+       if (!fruitSpawnPending && (coinsCollected * 100 >= FRUIT_THRESH[currPicUp] * coinsPowTot)) begin
+         fruitSpawnPending <= 1'b1;
+       end
+     end
+
+     if (fruitSpawnPending && (currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
+       if (canPlacePickup &&  betterRand >= 250) begin
+         fruitSpawnFlag <= 1'b1;
+         pickUpTypeToPlace <= CHERRY + (rnd % PICKUPS_TYPES); // random pickup type
+         fruitSpawnPending <= 1'b0;
+         currPicUp <= currPicUp + 1;
+       end
+     end
+   end
+ end
+
+  // wall placement logic
   always_comb begin
     pacX = pactopLeftX >> TILE_BITS;
     pacY = (pactopLeftY >> TILE_BITS) - 1;
     isInBounds = currentTileX < MAP_WIDTH_X - 1 && currentTileY < MAP_HEIGHT_Y - 1 && currentTileX > 0 && currentTileY > 0;
-    canPlaceWall = isInBounds && ($unsigned(currentTileX - pacX) > 1) && ($unsigned(currentTileY - pacY) > 1)
-    && currentTileValue == COIN;
+    isFarFromPacman = ($unsigned(currentTileX - pacX) > 1) && ($unsigned(currentTileY - pacY) > 1);
+    canPlaceWall = isInBounds && isFarFromPacman && currentTileValue == COIN;
+    canPlacePickup = isInBounds && isFarFromPacman && currentTileValue == EMPTY;
     betterRand = rnd ^ currentTileX ^ currentTileY  ^ pactopLeftX[7:0] ^ pactopLeftY[7:0];
-
-
     case(rnd[1:0])
       2'b00: randTileType = BREAK3; 
       2'b01: randTileType = BREAK2;
       default: randTileType = BREAK1; 
     endcase
+  end
+
+  // update Logic
+  always_comb begin
+    updateValueForTile = wallUpdate || coinFlag || powFlag || picUpFlag || fruitSpawnFlag;
+    if (wallUpdate) begin
+      newTileValue = wallTypeToPlace;
+    end else if (coinFlag || powFlag || picUpFlag) begin
+      newTileValue = EMPTY;
+    end else if (fruitSpawnFlag) begin
+      newTileValue = pickUpTypeToPlace;
+    end else begin
+      newTileValue = currentTileValue;
+    end
   end
 
   assign placeBreakFlag = (addBreak_st == PLACING); 
