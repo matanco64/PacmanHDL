@@ -153,8 +153,8 @@ module map1_drawer (
   always_comb begin
     currentTileX = pixelX / TILE_SIZE;
     currentTileY = (pixelY / TILE_SIZE) - 1;  // in y axis there is a gap row
-    isScanInsideMap = (pixelX < MAP_WIDTH_X * TILE_SIZE) && (pixelY < MAP_HEIGHT_Y * TILE_SIZE);
-    currentTileValue = isScanInsideMap ? pacmanMap[currentTileX][currentTileY] : WALL;
+    isScanInsideMap = (pixelX < MAP_WIDTH_X * TILE_SIZE) && (pixelY < (MAP_HEIGHT_Y  + 1) * TILE_SIZE);
+    currentTileValue = isScanInsideMap ? pacmanMap[currentTileX][currentTileY] : EMPTY;
 
     offsetX  = pixelX % TILE_SIZE;
     offsetY  = pixelY % TILE_SIZE;
@@ -359,12 +359,12 @@ module map1_drawer (
 		RGBout <= 8'b0;
 		mapDR <= 1'b0;
 		pickUpDR <= 1'b0;
-		
-		if(newMapAvailable) begin
-            finishedLoading <= 1'b0;
-    end
 
       pickUpCollected <= '{default: 0};  // all elements reset to 0
+		// map loading control
+      if(newMapAvailable) begin
+            finishedLoading <= 1'b0;
+      end
 
 
       picUpTypeFlag <= 0;
@@ -566,11 +566,7 @@ module map1_drawer (
         endcase
 
       end
-      // map loading control
-      if(newMapAvailable) begin
-            finishedLoading <= 1'b0;
-      end
-
+      
     end
   end
 
@@ -636,8 +632,8 @@ module map1_drawer (
     .clk(clk),
     .resetN(resetN),
     .startOfFrame(startOfFrame),
-    .charTileX(pacX),
-    .charTileY(pacY),
+    .charTileX(pactopLeftX / TILE_SIZE),
+    .charTileY((pactopLeftY / TILE_SIZE) -  5'd1),
     .currTileX(currentTileX),
     .currTileY(currentTileY),
     .currTileData(currentTileValue),
