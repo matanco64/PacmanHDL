@@ -149,7 +149,7 @@ module map_manager #(
          end else begin
             loadedFirstMap <= 1'b1;
          end
-            newMapAvailable <= 1'b1;
+         newMapAvailable <= 1'b1;
 			end
      end
    end

@@ -1,7 +1,7 @@
 module around_character #(
   parameter int TILE_BITS     = 4,
-  parameter int MAP_WIDTH_X   = 28,
-  parameter int MAP_HEIGHT_Y  = 31,
+  parameter int MAP_WIDTH_X   = 31,
+  parameter int MAP_HEIGHT_Y  = 28,
   parameter logic [TILE_BITS-1:0] WALL = 'h2
 ) (
   input  logic clk, resetN,
