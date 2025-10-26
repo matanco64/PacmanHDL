@@ -120,51 +120,49 @@ module map_updater # (
   end
 
   // Breakable walls placement state machine
-  always_ff @(posedge clk or negedge resetN)
-  begin
-    if (!resetN) begin
-      addBreak_st <= PRE_PLACE;
-      amountOfBreakableWallsPlaced <= 8'd0;
-      wallTypeToPlace <= BREAK1;
-      wallUpdate <= 1'b0;
-      hasPlacedInThisFrame <= 1'b0;
-      lastPlacedX <= 5'd0;
-      lastPlacedY <= 5'd0;
-    end
-    else begin
-      wallUpdate <= 1'b0;
-      if (startOfFrame) begin
-          hasPlacedInThisFrame <= 1'b0;
-      end
-      if ((currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
-        case (addBreak_st)
-          PRE_PLACE: begin
-            if ((coinsCollected * 100) > (5  * coinsPowTot)) begin
-                amountOfBreakableWallsPlaced <= 8'd0;
-                addBreak_st <= PLACING;
-            end
-          end
-          PLACING: begin
-            if ((amountOfBreakableWallsPlaced < wallsToGenerate)) begin
-              if ((betterRand == 137) && canPlaceWall && !hasPlacedInThisFrame) begin// 1 in 32 chance to place a breakable wall (248-255 out of 0-255)
-                wallTypeToPlace <= randTileType;
-                wallUpdate <= 1'b1;
-                hasPlacedInThisFrame <= 1'b1;
-                amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
-                lastPlacedX <= currentTileX;
-                lastPlacedY <= currentTileY;
-              end
-            end else begin
-              addBreak_st <= POST_PLACE;
-            end
-          end
-          POST_PLACE: begin
-            // Do nothing, placement complete
-          end
-        endcase
-      end
-    end
-  end
+always_ff @(posedge clk or negedge resetN)
+	begin
+	  if (!resetN) begin
+		 addBreak_st <= PRE_PLACE;
+		 amountOfBreakableWallsPlaced <= 8'd0;
+		 wallTypeToPlace <= BREAK1;
+		 wallUpdate <= 1'b0;
+		 lastPlacedX <= 5'd0;
+		 lastPlacedY <= 5'd0;
+	  end
+	  else begin
+		 wallUpdate <= 1'b0;
+		 
+		 if ((currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
+			case (addBreak_st)
+			  PRE_PLACE: begin
+				 if ((coinsCollected * 100) > (5 * coinsPowTot)) begin
+					amountOfBreakableWallsPlaced <= 8'd0;
+					addBreak_st <= PLACING;
+				 end
+			  end
+			  
+			  PLACING: begin
+				 if (amountOfBreakableWallsPlaced < wallsToGenerate) begin
+					if ((betterRand == 137) && canPlaceWall) begin
+					  wallTypeToPlace <= randTileType;
+					  wallUpdate <= 1'b1;
+					  amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
+					  lastPlacedX <= currentTileX;
+					  lastPlacedY <= currentTileY;
+					end
+				 end else begin
+					addBreak_st <= POST_PLACE;
+				 end
+			  end
+			  
+			  POST_PLACE: begin
+				 // Do nothing, placement complete
+			  end
+			endcase
+		 end
+	  end
+	end
 
   // collision detection
 always_ff @(posedge clk or negedge resetN) begin
@@ -216,7 +214,7 @@ always_ff @(posedge clk or negedge resetN) begin
      end
 
      if (fruitSpawnPending && (currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
-       if (canPlacePickup &&  betterRand >= 250) begin
+       if (canPlacePickup && betterRand == 8'd145) begin
          fruitSpawnFlag <= 1'b1;
          pickUpTypeToPlace <= CHERRY + (rnd % PICKUPS_TYPES); // random pickup type
          fruitSpawnPending <= 1'b0;
