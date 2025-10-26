@@ -202,6 +202,7 @@ def generate_sv_arrays(original: list[list[int]], new: list[list[int]]) -> tuple
 
 def count_coins_and_power(grid):
     COIN, POWER = 1, 5
+    print(sum([1 for row in grid for cell in row if cell in [COIN, POWER]]))
     total = sum(cell in [COIN, POWER] for row in grid for cell in row)
     return total
 
