@@ -43,7 +43,7 @@ module map_updater # (
 
   );
 
-  parameter logic [TILE_BITS-1:0] EMPTY = 0;
+  parameter logic [TILE_BITS-1:0] EMPTY_BUT_WASNT = 10;
   parameter logic [TILE_BITS-1:0] COIN = 1;
   parameter logic [TILE_BITS-1:0] CHERRY = 6;
   parameter logic [TILE_BITS-1:0] BREAK1 = 13;
@@ -78,6 +78,9 @@ module map_updater # (
   // previous tileX and tileY to detect when we move to a new tile
   logic [4:0] prevTileX;
   logic [4:0] prevTileY;
+  logic [4:0] lastPlacedX;
+  logic [4:0] lastPlacedY;
+  logic isFarFromLastPlacement;
   logic canPlaceWall;
   logic isInBounds;
   logic hasPlacedInThisFrame; // this flag creates cool wall apperance effect and ensures random is better
@@ -125,6 +128,8 @@ module map_updater # (
       wallTypeToPlace <= BREAK1;
       wallUpdate <= 1'b0;
       hasPlacedInThisFrame <= 1'b0;
+      lastPlacedX <= 5'd0;
+      lastPlacedY <= 5'd0;
     end
     else begin
       wallUpdate <= 1'b0;
@@ -141,11 +146,13 @@ module map_updater # (
           end
           PLACING: begin
             if ((amountOfBreakableWallsPlaced < wallsToGenerate)) begin
-              if ((betterRand >= 250) && canPlaceWall && !hasPlacedInThisFrame) begin// 1 in 32 chance to place a breakable wall (248-255 out of 0-255)
+              if ((betterRand == 137) && canPlaceWall && !hasPlacedInThisFrame) begin// 1 in 32 chance to place a breakable wall (248-255 out of 0-255)
                 wallTypeToPlace <= randTileType;
                 wallUpdate <= 1'b1;
                 hasPlacedInThisFrame <= 1'b1;
                 amountOfBreakableWallsPlaced <= amountOfBreakableWallsPlaced + 1;
+                lastPlacedX <= currentTileX;
+                lastPlacedY <= currentTileY;
               end
             end else begin
               addBreak_st <= POST_PLACE;
@@ -225,8 +232,10 @@ always_ff @(posedge clk or negedge resetN) begin
     pacY = (pactopLeftY >> TILE_BITS) - 1;
     isInBounds = currentTileX < MAP_WIDTH_X - 1 && currentTileY < MAP_HEIGHT_Y - 1 && currentTileX > 0 && currentTileY > 0;
     isFarFromPacman = ($unsigned(currentTileX - pacX) > 1) && ($unsigned(currentTileY - pacY) > 1);
-    canPlaceWall = isInBounds && isFarFromPacman && currentTileValue == COIN;
-    canPlacePickup = isInBounds && isFarFromPacman && currentTileValue == EMPTY;
+    isFarFromLastPlacement = ($unsigned(currentTileX - lastPlacedX) > 8) 
+                          && ($unsigned(currentTileY - lastPlacedY) > 8);
+    canPlaceWall = isInBounds && isFarFromPacman && currentTileValue == COIN && isFarFromLastPlacement;
+    canPlacePickup = isInBounds && isFarFromPacman && currentTileValue == EMPTY_BUT_WASNT;
     betterRand = rnd ^ currentTileX ^ currentTileY  ^ pactopLeftX[7:0] ^ pactopLeftY[7:0];
     case(rnd[1:0])
       2'b00: randTileType = BREAK3; 
@@ -241,7 +250,7 @@ always_ff @(posedge clk or negedge resetN) begin
     if (wallUpdate) begin
       newTileValue = wallTypeToPlace;
     end else if (coinFlag || powFlag || picUpFlag) begin
-      newTileValue = EMPTY;
+      newTileValue = EMPTY_BUT_WASNT;
     end else if (fruitSpawnFlag) begin
       newTileValue = pickUpTypeToPlace;
     end else begin

@@ -15,7 +15,7 @@ module map_manager #(
 	 output logic [TILE_BITS-1:0] rdata,
 	 
     output logic [8:0] coinsPowTot,
-	 output logic doneLoading
+	 output logic newMapAvailable
 );
 
   // map
@@ -42,289 +42,89 @@ module map_manager #(
 //# ====================================================
 
 
-  integer i;
   logic [2:0] currentMapIndex;  // 0=map1 ... 3=map4 4=original
-  logic [$clog2(MAX_CHANGES) - 1:0] currentIndex;
   logic inReset;
-  logic loadingMap;
+  logic loadedFirstMap;
 
   assign coinsPowTot = COINS_POW_TOT[currentMapIndex];  // 0=original, map 1 2 3 4
-  logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] currentMap;
 
+  localparam int DEPTH      = MAP_WIDTH_X * MAP_HEIGHT_Y; 
 
-  
-logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] OriginalPacmanMap = { // Since we are mutating the Original Map when coins are eaten, we want an ability to reset it
-    { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
-    { 3'd2, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd2, 3'd2, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
-    { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
-    { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
-    { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
-    { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
-    { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd3, 3'd0, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
-    { 3'd4, 3'd0, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd3, 3'd0, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd0, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd0, 3'd4 },
-    { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd3, 3'd0, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
-    { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
-    { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
-    { 3'd0, 3'd0, 3'd0, 3'd0, 3'd0, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd0, 3'd0, 3'd0, 3'd0, 3'd0 },
-    { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 },
-    { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd2 },
-    { 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2 },
-    { 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2 },
-    { 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd2 },
-    { 3'd2, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd2 },
-    { 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2 }
-  };
- 
-	 
-// ======================== Change Arrays ========================
-localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][4:0] changeX = '{
-    // Map 0 (62 real changes + 66 zeros)
-    '{
-       5'd2, 5'd2, 5'd3, 5'd3, 5'd3, 5'd3, 5'd3, 5'd3,
-       5'd3, 5'd3, 5'd3, 5'd3, 5'd4, 5'd4, 5'd8, 5'd8,
-       5'd8, 5'd8, 5'd9, 5'd9, 5'd9, 5'd9, 5'd9, 5'd9,
-       5'd9, 5'd9, 5'd10, 5'd10, 5'd10, 5'd10, 5'd10, 5'd10,
-       5'd10, 5'd10, 5'd10, 5'd10, 5'd10, 5'd10, 5'd18, 5'd18,
-       5'd18, 5'd18, 5'd18, 5'd18, 5'd18, 5'd18, 5'd18, 5'd18,
-       5'd19, 5'd19, 5'd19, 5'd19, 5'd19, 5'd19, 5'd20, 5'd20,
-       5'd25, 5'd25, 5'd25, 5'd25, 5'd29, 5'd29, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0
-    },
-    // Map 1 (110 real changes + 18 zeros)
-    '{
-       5'd1, 5'd1, 5'd1, 5'd1, 5'd1, 5'd1, 5'd1, 5'd1,
-       5'd1, 5'd1, 5'd1, 5'd1, 5'd1, 5'd1, 5'd2, 5'd2,
-       5'd2, 5'd2, 5'd2, 5'd2, 5'd3, 5'd3, 5'd3, 5'd3,
-       5'd4, 5'd4, 5'd4, 5'd4, 5'd9, 5'd9, 5'd10, 5'd10,
-       5'd10, 5'd10, 5'd11, 5'd11, 5'd11, 5'd11, 5'd12, 5'd12,
-       5'd12, 5'd12, 5'd13, 5'd13, 5'd15, 5'd15, 5'd16, 5'd16,
-       5'd16, 5'd16, 5'd17, 5'd17, 5'd17, 5'd17, 5'd18, 5'd18,
-       5'd18, 5'd18, 5'd19, 5'd19, 5'd19, 5'd19, 5'd19, 5'd19,
-       5'd21, 5'd21, 5'd21, 5'd21, 5'd22, 5'd22, 5'd22, 5'd22,
-       5'd23, 5'd23, 5'd23, 5'd23, 5'd24, 5'd24, 5'd24, 5'd24,
-       5'd25, 5'd25, 5'd25, 5'd25, 5'd26, 5'd26, 5'd26, 5'd26,
-       5'd26, 5'd26, 5'd26, 5'd26, 5'd26, 5'd26, 5'd26, 5'd26,
-       5'd26, 5'd26, 5'd27, 5'd27, 5'd27, 5'd27, 5'd27, 5'd27,
-       5'd27, 5'd27, 5'd28, 5'd28, 5'd29, 5'd29, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0
-    },
-    // Map 2 (122 real changes + 6 zeros)
-    '{
-       5'd1, 5'd1, 5'd2, 5'd2, 5'd2, 5'd2, 5'd3, 5'd3,
-       5'd3, 5'd3, 5'd3, 5'd3, 5'd3, 5'd3, 5'd3, 5'd3,
-       5'd3, 5'd3, 5'd4, 5'd4, 5'd4, 5'd4, 5'd5, 5'd5,
-       5'd5, 5'd5, 5'd5, 5'd5, 5'd5, 5'd5, 5'd6, 5'd6,
-       5'd6, 5'd6, 5'd6, 5'd6, 5'd6, 5'd6, 5'd9, 5'd9,
-       5'd9, 5'd9, 5'd10, 5'd10, 5'd10, 5'd10, 5'd10, 5'd10,
-       5'd10, 5'd10, 5'd10, 5'd10, 5'd10, 5'd10, 5'd11, 5'd11,
-       5'd11, 5'd11, 5'd11, 5'd11, 5'd11, 5'd11, 5'd11, 5'd11,
-       5'd12, 5'd12, 5'd12, 5'd12, 5'd12, 5'd12, 5'd12, 5'd12,
-       5'd12, 5'd12, 5'd13, 5'd13, 5'd15, 5'd15, 5'd16, 5'd16,
-       5'd16, 5'd16, 5'd16, 5'd16, 5'd16, 5'd16, 5'd16, 5'd16,
-       5'd17, 5'd17, 5'd17, 5'd17, 5'd17, 5'd17, 5'd17, 5'd17,
-       5'd17, 5'd17, 5'd18, 5'd18, 5'd18, 5'd18, 5'd18, 5'd18,
-       5'd18, 5'd18, 5'd18, 5'd18, 5'd19, 5'd19, 5'd20, 5'd20,
-       5'd21, 5'd21, 5'd21, 5'd21, 5'd22, 5'd22, 5'd22, 5'd22,
-       5'd23, 5'd23, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0
-    },
-    // Map 3 (66 real changes + 62 zeros)
-    '{
-       5'd1, 5'd1, 5'd3, 5'd3, 5'd3, 5'd3, 5'd3, 5'd3,
-       5'd3, 5'd3, 5'd3, 5'd3, 5'd5, 5'd5, 5'd7, 5'd7,
-       5'd8, 5'd8, 5'd9, 5'd9, 5'd10, 5'd10, 5'd12, 5'd12,
-       5'd13, 5'd13, 5'd13, 5'd13, 5'd14, 5'd14, 5'd14, 5'd14,
-       5'd15, 5'd15, 5'd15, 5'd15, 5'd16, 5'd16, 5'd18, 5'd18,
-       5'd19, 5'd19, 5'd21, 5'd21, 5'd24, 5'd25, 5'd27, 5'd27,
-       5'd27, 5'd27, 5'd27, 5'd27, 5'd28, 5'd28, 5'd28, 5'd28,
-       5'd29, 5'd29, 5'd29, 5'd29, 5'd29, 5'd29, 5'd29, 5'd29,
-       5'd29, 5'd29, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0
-    }
-};
+  logic [TILE_BITS-1:0] map_1_tile_value;
+  logic [TILE_BITS-1:0] map_2_tile_value;
+  logic [TILE_BITS-1:0] map_3_tile_value;
+  logic [TILE_BITS-1:0] map_4_tile_value;
+  logic [TILE_BITS-1:0] original_tile_value;
 
-localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][4:0] changeY = '{
-    // Map 0
-    '{
-       5'd9, 5'd18, 5'd2, 5'd3, 5'd7, 5'd8, 5'd9, 5'd18,
-       5'd19, 5'd20, 5'd24, 5'd25, 5'd3, 5'd24, 5'd2, 5'd13,
-       5'd14, 5'd25, 5'd1, 5'd2, 5'd3, 5'd12, 5'd15, 5'd24,
-       5'd25, 5'd26, 5'd0, 5'd1, 5'd2, 5'd3, 5'd4, 5'd12,
-       5'd15, 5'd23, 5'd24, 5'd25, 5'd26, 5'd27, 5'd0, 5'd1,
-       5'd2, 5'd3, 5'd4, 5'd23, 5'd24, 5'd25, 5'd26, 5'd27,
-       5'd1, 5'd2, 5'd3, 5'd24, 5'd25, 5'd26, 5'd2, 5'd25,
-       5'd7, 5'd8, 5'd19, 5'd20, 5'd13, 5'd14, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0
-    },
-    // Map 1
-    '{
-       5'd7, 5'd8, 5'd9, 5'd10, 5'd11, 5'd12, 5'd13, 5'd14,
-       5'd15, 5'd16, 5'd17, 5'd18, 5'd19, 5'd20, 5'd8, 5'd9,
-       5'd10, 5'd17, 5'd18, 5'd19, 5'd8, 5'd10, 5'd17, 5'd19,
-       5'd8, 5'd10, 5'd17, 5'd19, 5'd4, 5'd23, 5'd3, 5'd4,
-       5'd23, 5'd24, 5'd3, 5'd4, 5'd23, 5'd24, 5'd3, 5'd4,
-       5'd23, 5'd24, 5'd4, 5'd23, 5'd4, 5'd23, 5'd3, 5'd4,
-       5'd23, 5'd24, 5'd3, 5'd4, 5'd23, 5'd24, 5'd3, 5'd4,
-       5'd23, 5'd24, 5'd4, 5'd12, 5'd13, 5'd14, 5'd15, 5'd23,
-       5'd4, 5'd6, 5'd21, 5'd23, 5'd4, 5'd6, 5'd21, 5'd23,
-       5'd1, 5'd4, 5'd23, 5'd26, 5'd3, 5'd9, 5'd18, 5'd24,
-       5'd3, 5'd9, 5'd18, 5'd24, 5'd1, 5'd4, 5'd5, 5'd9,
-       5'd10, 5'd11, 5'd13, 5'd14, 5'd16, 5'd17, 5'd18, 5'd22,
-       5'd23, 5'd26, 5'd3, 5'd4, 5'd5, 5'd6, 5'd21, 5'd22,
-       5'd23, 5'd24, 5'd3, 5'd24, 5'd1, 5'd26, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0
-    },
-    // Map 2
-    '{
-       5'd1, 5'd26, 5'd3, 5'd6, 5'd21, 5'd24, 5'd3, 5'd7,
-       5'd8, 5'd9, 5'd10, 5'd11, 5'd16, 5'd17, 5'd18, 5'd19,
-       5'd20, 5'd24, 5'd2, 5'd3, 5'd24, 5'd25, 5'd2, 5'd3,
-       5'd4, 5'd5, 5'd22, 5'd23, 5'd24, 5'd25, 5'd2, 5'd3,
-       5'd4, 5'd5, 5'd22, 5'd23, 5'd24, 5'd25, 5'd1, 5'd12,
-       5'd15, 5'd26, 5'd0, 5'd1, 5'd2, 5'd3, 5'd4, 5'd12,
-       5'd15, 5'd23, 5'd24, 5'd25, 5'd26, 5'd27, 5'd0, 5'd1,
-       5'd2, 5'd3, 5'd4, 5'd23, 5'd24, 5'd25, 5'd26, 5'd27,
-       5'd0, 5'd1, 5'd2, 5'd3, 5'd4, 5'd23, 5'd24, 5'd25,
-       5'd26, 5'd27, 5'd4, 5'd23, 5'd2, 5'd25, 5'd0, 5'd1,
-       5'd2, 5'd3, 5'd4, 5'd23, 5'd24, 5'd25, 5'd26, 5'd27,
-       5'd0, 5'd1, 5'd2, 5'd3, 5'd4, 5'd23, 5'd24, 5'd25,
-       5'd26, 5'd27, 5'd0, 5'd1, 5'd2, 5'd3, 5'd4, 5'd23,
-       5'd24, 5'd25, 5'd26, 5'd27, 5'd4, 5'd23, 5'd13, 5'd14,
-       5'd6, 5'd12, 5'd15, 5'd21, 5'd6, 5'd12, 5'd15, 5'd21,
-       5'd13, 5'd14, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0
-    },
-    // Map 3
-    '{
-       5'd12, 5'd15, 5'd7, 5'd8, 5'd9, 5'd10, 5'd11, 5'd16,
-       5'd17, 5'd18, 5'd19, 5'd20, 5'd13, 5'd14, 5'd2, 5'd25,
-       5'd1, 5'd26, 5'd13, 5'd14, 5'd12, 5'd15, 5'd4, 5'd23,
-       5'd5, 5'd16, 5'd17, 5'd22, 5'd15, 5'd19, 5'd20, 5'd21,
-       5'd5, 5'd16, 5'd17, 5'd22, 5'd4, 5'd23, 5'd4, 5'd23,
-       5'd5, 5'd22, 5'd13, 5'd14, 5'd18, 5'd18, 5'd6, 5'd9,
-       5'd13, 5'd14, 5'd18, 5'd21, 5'd6, 5'd9, 5'd18, 5'd21,
-       5'd1, 5'd4, 5'd7, 5'd8, 5'd13, 5'd14, 5'd19, 5'd20,
-       5'd22, 5'd26, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0,
-       5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0, 5'd0
-    }
-};
+  altsyncram #(
+   .operation_mode("ROM"),
+   .width_a(TILE_BITS),
+   .widthad_a($clog2(DEPTH)),                     // ceil(log2(868)) = 10
+   .outdata_reg_a("UNREGISTERED"),
+   .init_file("RTL/Pacman/maps_mif/map1.mif")
+   ) map1_rom (
+   .address_a(raddrX * MAP_HEIGHT_Y + raddrY), // row-major addressing
+   .clock0(clk),
+   .q_a(map_1_tile_value),
+   .wren_a(1'b0),
+   .data_a('0)
+   );
 
-localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][TILE_BITS-1:0] changeVal = '{
-    // Map 0
-    '{
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd1,
-       3'd1, 3'd2, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1,
-       3'd1, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2
-    },
-    // Map 1
-    '{
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1,
-       3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd5, 3'd1,
-       3'd1, 3'd1, 3'd1, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd1,
-       3'd1, 3'd2, 3'd2, 3'd1, 3'd5, 3'd2, 3'd2, 3'd1,
-       3'd1, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd1,
-       3'd1, 3'd2, 3'd2, 3'd5, 3'd1, 3'd2, 3'd2, 3'd1,
-       3'd1, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1,
-       3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1,
-       3'd5, 3'd1, 3'd1, 3'd5, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd5, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd1, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd5, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2
-    },
-    // Map 2
-    '{
-       3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd5,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1,
-       3'd5, 3'd1, 3'd1, 3'd5, 3'd5, 3'd1, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd1, 3'd1,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2,
-       3'd2, 3'd1, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2,
-       3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1,
-       3'd2, 3'd2, 3'd1, 3'd5, 3'd2, 3'd2, 3'd1, 3'd2,
-       3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1,
-       3'd1, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd1,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd2,
-       3'd2, 3'd1, 3'd2, 3'd2, 3'd5, 3'd1, 3'd2, 3'd2,
-       3'd1, 3'd2, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1, 3'd1,
-       3'd1, 3'd1, 3'd1, 3'd2, 3'd1, 3'd1, 3'd1, 3'd1,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd5, 3'd5, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2
-    },
-    // Map 3
-    '{
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd1, 3'd1, 3'd1,
-       3'd1, 3'd5, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1,
-       3'd2, 3'd2, 3'd1, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd1, 3'd5, 3'd1, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd1, 3'd5, 3'd1, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd2, 3'd2, 3'd1, 3'd1,
-       3'd1, 3'd1, 3'd1, 3'd1, 3'd1, 3'd5, 3'd5, 3'd1,
-       3'd1, 3'd5, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd5, 3'd1, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2,
-       3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2, 3'd2
-    }
-};
+   altsyncram #(
+   .operation_mode("ROM"),
+   .width_a(TILE_BITS),
+   .widthad_a($clog2(DEPTH)),                     
+   .outdata_reg_a("UNREGISTERED"),
+   .init_file("RTL/Pacman/maps_mif/map2.mif")
+   ) map2_rom (
+   .address_a(raddrX * MAP_HEIGHT_Y + raddrY),
+   .clock0(clk),
+   .q_a(map_2_tile_value),
+   .wren_a(1'b0),
+   .data_a('0)
+   );
+
+   altsyncram #(
+   .operation_mode("ROM"),
+   .width_a(TILE_BITS),
+   .widthad_a($clog2(DEPTH)),
+   .outdata_reg_a("UNREGISTERED"),
+   .init_file("RTL/Pacman/maps_mif/map3.mif")
+   ) map3_rom (
+   .address_a(raddrX * MAP_HEIGHT_Y + raddrY),
+   .clock0(clk),
+   .q_a(map_3_tile_value),
+   .wren_a(1'b0),
+   .data_a('0)
+   );
+
+   altsyncram #(
+   .operation_mode("ROM"),
+   .width_a(TILE_BITS),
+   .widthad_a($clog2(DEPTH)),
+   .outdata_reg_a("UNREGISTERED"),
+   .init_file("RTL/Pacman/maps_mif/map4.mif")
+   ) map4_rom (
+   .address_a(raddrX * MAP_HEIGHT_Y + raddrY),
+   .clock0(clk),
+   .q_a(map_4_tile_value),
+   .wren_a(1'b0),
+   .data_a('0)
+   );
+
+   altsyncram #(
+   .operation_mode("ROM"),
+   .width_a(TILE_BITS),
+   .widthad_a($clog2(DEPTH)),
+   .outdata_reg_a("UNREGISTERED"),
+   .init_file("RTL/Pacman/maps_mif/original.mif")
+   ) original_map_rom (
+   .address_a(raddrX * MAP_HEIGHT_Y + raddrY),
+   .clock0(clk),
+   .q_a(original_tile_value),
+   .wren_a(1'b0),
+   .data_a('0)
+   );
 
 
 
@@ -333,52 +133,38 @@ localparam logic [N_NEW_MAPS-1:0][0:MAX_CHANGES-1][TILE_BITS-1:0] changeVal = '{
 	always_ff @(posedge clk or negedge resetN) begin
 	  if (!resetN) begin
 		 // Load the original map on reset
-		 currentMap <= OriginalPacmanMap;
 		 currentMapIndex <= N_NEW_MAPS;  // Start with original
-		 currentIndex <= 7'd0;
-		 loadingMap <= 1'b0;
-		 doneLoading <= 1'b0;
+		 loadedFirstMap <= 1'b0;
 		 inReset <= 1'b0;
+       newMapAvailable <= 1'b0;
 	  end else begin
-
+      newMapAvailable <= 1'b0;
 		if (startOfFrame) inReset <= 1'b0; // RESET_ST is up for 1 frame
 
 		// ---  first enter RESET_ST ---
 		 if (gameState == RESET_ST && !inReset) begin 
 			inReset <= 1'b1;
-			currentMap <= OriginalPacmanMap;  // load base map
-			currentIndex <= 7'd0;
-			if (currentMapIndex == N_NEW_MAPS) begin  // original map - dont load changes
-			 loadingMap <= 1'b0;
-			  doneLoading <= 1'b1;
-			end else begin
-			  loadingMap <= 1'b1;
-			doneLoading <= 1'b0;
+         if (loadedFirstMap) begin
+            currentMapIndex <= rnd[1:0];  // 0-3 just new maps
+         end else begin
+            loadedFirstMap <= 1'b1;
+         end
+            newMapAvailable <= 1'b1;
 			end
-
-		// ---  load  changes  ---
-		 end else if (loadingMap) begin
-			if (currentIndex < MAX_CHANGES - 1) begin
-			  currentMap[changeX[currentMapIndex][currentIndex]][changeY[currentMapIndex][currentIndex]] <= changeVal[currentMapIndex][currentIndex];
-			  currentIndex <= currentIndex + 7'd1;
-			end else begin
-			  loadingMap   <= 1'b0;  // Finished loading the map
-			  doneLoading  <= 1'b1;  // Will be up for 1 clock
-			  currentIndex <= 7'd0;
-			end
-
-		// ---  default - no changes ---  
-		 end else begin
-			currentMapIndex <= rnd[1:0];  // 0-3 just new maps
-			doneLoading <= 1'b0;
-			loadingMap <= 1'b0;
-		 end
-	  end
-	
-	end
+     end
+   end
 
    always_comb begin
-      rdata = currentMap[raddrX][raddrY];
+       // Default to original map
+       rdata = original_tile_value;
+   
+       case (currentMapIndex)
+          2'd0: rdata = map_1_tile_value;
+          2'd1: rdata = map_2_tile_value;
+          2'd2: rdata = map_3_tile_value;
+          2'd3: rdata = map_4_tile_value;
+          default: rdata = original_tile_value;
+       endcase
    end
 
 endmodule

@@ -54,7 +54,7 @@ module map1_drawer (
     output logic powFlag,
     output logic picUpFlag,
     output logic fruitSpawnFlag,
-    output logic [2:0] picUpTypeFlag, // 0=no, 1=banana, 2=cherry 3=str 4=strawberry 5=posion - for jukebox
+    output logic [2:0] picUpTypeFlag, // 0=no, 1=banana, 2=cherry 3=str 4=strawberry 5=poison - for jukebox
     output logic breakFlag,
     output logic placeBreakFlag 
 
@@ -98,13 +98,14 @@ module map1_drawer (
   localparam logic [TILE_BITS-1:0] CHERRY = 6;
   localparam logic [TILE_BITS-1:0] BANANA = 7;
   localparam logic [TILE_BITS-1:0] STRAWBERRY = 8;
-  localparam logic [TILE_BITS-1:0] POISION = 9;
+  localparam logic [TILE_BITS-1:0] POISON = 9;
+  localparam logic [TILE_BITS-1:0] EMPTY_BUT_WASNT = 10;
   localparam logic [TILE_BITS-1:0] BREAK1 = 13;
   localparam logic [TILE_BITS-1:0] BREAK2 = 14;
   localparam logic [TILE_BITS-1:0] BREAK3 = 15;
   // Pickups
   localparam PICKUPS_TO_PLACE = 9;
-  localparam PICKUPS_TYPES = 4;  // cherry, banana, strawberry, poision
+  localparam PICKUPS_TYPES = 4;  // cherry, banana, strawberry, poison
 
   // game states
   localparam RESET_ST = 3'b000;
@@ -133,14 +134,11 @@ module map1_drawer (
 
   logic [$clog2(PICKUPS_TO_PLACE)-1:0] currPicUp;
   logic [0:MAP_WIDTH_X-1][0:MAP_HEIGHT_Y-1][TILE_BITS-1:0] pacmanMap;
-  logic [TILE_BITS-1:0] tile;
   logic [PICKUPS_TO_PLACE-1:0][5:0] pickUpCollected;  //  how many of each pickup collected
     
   // map loading
   logic newMapAvailable;
   logic finishedLoading;
-  logic [$clog2(MAP_WIDTH_X)-1:0] raddrX;
-  logic [$clog2(MAP_HEIGHT_Y)-1:0] raddrY;
   logic [2:0] newMapData;
 
 
@@ -153,15 +151,19 @@ module map1_drawer (
   logic isScanInsideMap;
 
   always_comb begin
-    currentTileX = pixelX >> TILE_SIZE_BITS;
-    currentTileY = (pixelY >> TILE_SIZE_BITS) - 1;  // in y axis there is a gap row
-    isScanInsideMap = (currentTileX < MAP_WIDTH_X) && (currentTileY < MAP_HEIGHT_Y);
-    currentTileValue = currentTileY < MAP_HEIGHT_Y ? pacmanMap[currentTileX][currentTileY] : 4'b0;
+    currentTileX = pixelX / TILE_SIZE;
+    currentTileY = (pixelY / TILE_SIZE) - 1;  // in y axis there is a gap row
+    isScanInsideMap = (pixelX < MAP_WIDTH_X * TILE_SIZE) && (pixelY < MAP_HEIGHT_Y * TILE_SIZE);
+    currentTileValue = pacmanMap[currentTileX][currentTileY];
+
+    offsetX  = pixelX % TILE_SIZE;
+    offsetY  = pixelY % TILE_SIZE;
+
   end
   
   map_updater updater_inst (
     .clk(clk),
-    .resetN(resetN),
+    .resetN(resetN && (gameState != RESET_ST)),
     .rnd(rnd),
     .level(level),
     .currentTileX(currentTileX),
@@ -192,32 +194,15 @@ module map1_drawer (
 		 .gameState(gameState),
 		 .rnd(rnd),
 		 .startOfFrame(startOfFrame),
-		 .raddrX(raddrX),
-     .raddrY(raddrY),
+		 .raddrX(currentTileX),
+     .raddrY(currentTileY),
      .rdata(newMapData),
 		 .coinsPowTot(coinsPowTot),
-		 .doneLoading(newMapAvailable)
+		 .newMapAvailable(newMapAvailable)
 	);
 
 
 
-   logic [0:15] [0:15] [7:0] portal = {
-  {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h00,8'h00,8'h3B,8'h33,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'hfd,8'hfd,8'h3B,8'h33,8'h33,8'h33,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h3B,8'h3B,8'h00,8'h00,8'h00,8'h00,8'h00,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'h3B,8'h3B,8'h00,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00},
-  {8'hd2,8'h3B,8'h00,8'h3B,8'h33,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h33,8'h33,8'h00,8'hfd,8'h00},
-  {8'h3B,8'h00,8'h3B,8'h3B,8'h33,8'h00,8'h00,8'h00,8'h33,8'h33,8'h00,8'h33,8'h33,8'h00,8'h00,8'h00},
-  {8'h3B,8'h00,8'h3B,8'h3B,8'h00,8'h33,8'h00,8'h00,8'h33,8'h33,8'h00,8'h33,8'h33,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h3B,8'h3B,8'h00,8'h33,8'h00,8'h00,8'h33,8'h00,8'h00,8'h33,8'h33,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h3B,8'h3B,8'h00,8'h33,8'h00,8'h00,8'h00,8'h00,8'h33,8'h33,8'h00,8'h33,8'h00,8'h00},
-  {8'h00,8'h00,8'h3B,8'h3B,8'h00,8'h00,8'h33,8'h33,8'h33,8'h33,8'h33,8'h00,8'h00,8'h33,8'h00,8'h00},
-  {8'h00,8'h00,8'h3B,8'h3B,8'h3B,8'h00,8'h00,8'h33,8'h33,8'h33,8'h00,8'h00,8'h33,8'h33,8'h00,8'h00},
-  {8'h00,8'h00,8'h00,8'h3B,8'h3B,8'h3B,8'h00,8'h00,8'h00,8'h00,8'h33,8'h33,8'h33,8'h00,8'h00,8'h00},
-  {8'h00,8'hfd,8'h00,8'h00,8'h3B,8'h3B,8'h3B,8'h3B,8'h3B,8'h3B,8'h3B,8'hfd,8'hfd,8'h00,8'h00,8'h00},
-  {8'h00,8'hfd,8'h00,8'h00,8'h00,8'h3B,8'h3B,8'h3B,8'h3B,8'h3B,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-  {8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00}};
 
   logic [0:15] [0:15] break_shape = {
   {1'b1,1'b1,1'b1,1'b1,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b1,1'b1,1'b1,1'b1},
@@ -237,87 +222,72 @@ module map1_drawer (
   {1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1},
   {1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b0,1'b0,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1,1'b1}};
 
-  logic [0:4][0:15][0:15][7:0] pickUpsMaps = {  // 5 fruits, 16x16 pixels, 8-bit color
-      // cherry
-      {
-        {8'he3,8'he3,8'h10,8'h10,8'h10,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'h10,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he0,8'hff,8'he0,8'he0,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'hff,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}
-      },
+  // cherry ROM
+  logic [7:0] cherry_data_out;
 
-      // banana        
-      {
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h24,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'h24,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hd8,8'hb8,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hd8,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hb4,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'hb8,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'hb4,8'hb8,8'hfc,8'hfc,8'hd8,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'hb8,8'hb8,8'hb8,8'hb4,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'hf8,8'hfc,8'hfc,8'hfc,8'hd8,8'hfc,8'hfc,8'hd8,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'h24,8'hfc,8'hfc,8'hfc,8'hfc,8'hfc,8'hd8,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'hd8,8'hd8,8'hd8,8'hd8,8'hfc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'hdc,8'hfc,8'hfc,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}
-      },
+  altsyncram #(
+    .operation_mode("ROM"),
+    .width_a(8),
+    .widthad_a(10),           
+    .outdata_reg_a("UNREGISTERED"),
+    .init_file("RTL/Pacman/pickups/cherry.mif")
+  ) rom_inst (
+    .address_a(offsetY * TILE_SIZE + offsetX),
+    .clock0(clk),
+    .q_a(cherry_data_out),
+    .wren_a(1'b0),
+    .data_a(8'b0)
+  );
 
-      //strawberry
-      {
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'h04,8'h04,8'h04,8'hff,8'h78,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'h78,8'hbc,8'h9c,8'hbd,8'hbd,8'hbd,8'hbd,8'h64,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he0,8'he0,8'h78,8'h78,8'hbd,8'hbc,8'h78,8'he0,8'he4,8'he0,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'h78,8'he0,8'he0,8'he0,8'hff,8'he0,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he0,8'hff,8'he0,8'he0,8'he0,8'he0,8'he0,8'hff,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he0,8'he0,8'he0,8'hff,8'he0,8'hfa,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'hff,8'he0,8'he0,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he0,8'hff,8'he0,8'he0,8'hfa,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'hff,8'he0,8'he0,8'hfa,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he0,8'he0,8'he0,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he0,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3},
-        {8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3,8'he3}
-      },
+  //banana ROM
+  logic [7:0] banana_data_out;
 
-      // poision
-      {
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00},
-        {8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00},
-        {8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00},
-        {8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00},
-        {8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00},
-        {8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00},
-        {8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00},
-        {8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00},
-        {8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'hda,8'h00,8'h00,8'h00,8'h00},
-        {8'h00,8'h00,8'h00,8'h00,8'h00,8'hda,8'h00,8'hda,8'hda,8'h00,8'hda,8'h00,8'h00,8'h00,8'h00,8'h00}
-      }
-  };
+  altsyncram #(
+    .operation_mode("ROM"),
+    .width_a(8),
+    .widthad_a(10),           
+    .outdata_reg_a("UNREGISTERED"),
+    .init_file("RTL/Pacman/pickups/banana.mif")
+  ) rom_banana_inst (
+    .address_a(offsetY * TILE_SIZE + offsetX),
+    .clock0(clk),
+    .q_a(banana_data_out),
+    .wren_a(1'b0),
+    .data_a(8'b0)
+  );
+
+  // strawberry ROM
+  logic [7:0] strawberry_data_out;
+
+  altsyncram #(
+    .operation_mode("ROM"),
+    .width_a(8),
+    .widthad_a(10),           
+    .outdata_reg_a("UNREGISTERED"),
+    .init_file("RTL/Pacman/pickups/strawberry.mif")
+  ) rom_strawberry_inst (
+    .address_a(offsetY * TILE_SIZE + offsetX),
+    .clock0(clk),
+    .q_a(strawberry_data_out),
+    .wren_a(1'b0),
+    .data_a(8'b0)
+  );
+
+  // poison ROM
+  logic [7:0] poison_data_out;
+  altsyncram #(
+    .operation_mode("ROM"),
+    .width_a(8),
+    .widthad_a(10),           
+    .outdata_reg_a("UNREGISTERED"),
+    .init_file("RTL/Pacman/pickups/skull.mif")
+  ) rom_poison_inst (
+    .address_a(offsetY * TILE_SIZE + offsetX),
+    .clock0(clk),
+    .q_a(poison_data_out),
+    .wren_a(1'b0),
+    .data_a(8'b0)
+  );
 
   //------------------------------------------------------
   // Random appearance & pulsing animation
@@ -372,7 +342,7 @@ module map1_drawer (
       RGBout <= 8'b0;
       mapDR <= 1'b0;
       pickUpDR <= 1'b0;
-      finishedLoading <= 1'b0;
+      finishedLoading <= 1'b1;
 
       
       pickUpCollected <= '{default: 0};  // all elements reset to 0
@@ -384,8 +354,6 @@ module map1_drawer (
       pickUpTimer <= 0;
       pacSpeedChange <= NORMAL;
       pacLifeChange <= NORMAL;
-      raddrX <= 0;
-      raddrY <= 0;
 
     end else if(gameState == RESET_ST) begin
 		RGBout <= 8'b0;
@@ -393,8 +361,6 @@ module map1_drawer (
 		pickUpDR <= 1'b0;
 		
 		if(newMapAvailable) begin
-            raddrX <= 5'd0;
-            raddrY <= 5'd0;
             finishedLoading <= 1'b0;
     end
 
@@ -418,10 +384,14 @@ module map1_drawer (
       pickUpDR <= 1'b0;
       pacLifeChange <= NORMAL;
       isWin <= (coinsCollected + powerCollected == coinsPowTot);
-      tile = pacmanMap[pixelX/TILE_SIZE][pixelY/TILE_SIZE-1];
 
       // We should try to update the map only here to avoid complicated logic
-      if (updateValueForTile) begin
+      if (!finishedLoading && isScanInsideMap) begin
+        pacmanMap[currentTileX][currentTileY] <= newMapData;
+        if (currentTileX == MAP_WIDTH_X - 1 && currentTileY == MAP_HEIGHT_Y - 1) begin
+          finishedLoading <= 1'b1;
+        end
+      end else if (updateValueForTile) begin
         pacmanMap[currentTileX][currentTileY] <= nextTileValue;
       end
 
@@ -439,9 +409,9 @@ module map1_drawer (
       // colision pickUps
       if (pickUpCollision && !picUpFlag) begin
         picUpFlag <= 1'b1;
-        picUpTypeFlag <= tile - CHERRY + 1;
-        pickUpCollected[tile-CHERRY] <= pickUpCollected[tile-CHERRY] + 1;  // count pickups
-        case (tile)
+        picUpTypeFlag <= currentTileValue - CHERRY + 1;
+        pickUpCollected[currentTileValue - CHERRY] <= pickUpCollected[currentTileValue - CHERRY] + 1;  // count pickups
+        case (currentTileValue)
           CHERRY: begin
             pickUpTimer <= 6;  //  6 sec
             pacSpeedChange <= INCREASE;
@@ -451,7 +421,7 @@ module map1_drawer (
             pacSpeedChange <= DECREASE;
           end
           STRAWBERRY: pacLifeChange <= INCREASE;
-          POISION: pacLifeChange <= DECREASE;
+          POISON: pacLifeChange <= DECREASE;
         endcase
       end else begin
         picUpFlag <= 1'b0;
@@ -512,7 +482,7 @@ module map1_drawer (
       // ---------------------------------------------------------------------------
 
       if (pixelY / TILE_SIZE >= 1) begin
-        case (tile)
+        case (currentTileValue)
           GHOST_WALL: begin
             RGBout <= GHOST_WALL_COLOR;
             mapDR  <= 1'b1;
@@ -523,26 +493,20 @@ module map1_drawer (
             mapDR  <= 1'b1;
           end
 
-          PORTAL: begin
-            offsetX = pixelX % TILE_SIZE;
-            offsetY = pixelY % TILE_SIZE;
-            RGBout <= portal[offsetY][offsetX];
-            mapDR  <= 1'b1;
-          end
-
           COIN: begin
-            offsetX = pixelX % TILE_SIZE;
-            offsetY = pixelY % TILE_SIZE;
             if (offsetX >= 6 && offsetX < 10 && offsetY >= 6 && offsetY < 10) begin
               RGBout  <= COIN_COLOR;
               coinsDR <= 1'b1;
             end
           end
 
+          PORTAL: begin
+            RGBout <= PORTAL_COLOR;
+            mapDR  <= 1'b1;
+          end
+
           POWER: begin
             int dx, dy;
-            offsetX = pixelX % TILE_SIZE;
-            offsetY = pixelY % TILE_SIZE;
             dx = offsetX - 8;
             dy = offsetY - 8;
 
@@ -560,36 +524,35 @@ module map1_drawer (
             end
 
           end
-
-          CHERRY, BANANA, STRAWBERRY, POISION: begin
-            logic [$clog2(PICKUPS_TYPES)-1:0] fruitIdx;
-            fruitIdx = tile - CHERRY;
-            offsetX  = pixelX % TILE_SIZE;
-            offsetY  = pixelY % TILE_SIZE;
-
-            if (pickUpsMaps[fruitIdx][offsetY][offsetX] != TRANSPARENT_ENCODING) begin
-              RGBout   <= pickUpsMaps[fruitIdx][offsetY][offsetX];
-              pickUpDR <= 1'b1;
-            end
+          
+          CHERRY: begin
+            RGBout <= cherry_data_out;
+            pickUpDR <= 1'b1;
+          end
+          BANANA: begin
+            RGBout <= banana_data_out;
+            pickUpDR <= 1'b1;
+          end
+          STRAWBERRY: begin
+            RGBout <= strawberry_data_out;
+            pickUpDR <= 1'b1;
+          end
+          POISON: begin
+            RGBout <= poison_data_out;
+            pickUpDR <= 1'b1;
           end
 
           BREAK1: begin
-            offsetX = pixelX % TILE_SIZE;
-            offsetY = pixelY % TILE_SIZE;
             RGBout <= break_shape[offsetY][offsetX] == 1 ? BREAK1_COLOR : BREAK_BKG_COLOR;
             mapDR  <= 1'b1;
           end
 
           BREAK2: begin
-            offsetX = pixelX % TILE_SIZE;
-            offsetY = pixelY % TILE_SIZE;
             RGBout <= break_shape[offsetY][offsetX] == 1 ? BREAK2_COLOR : BREAK_BKG_COLOR;
             mapDR  <= 1'b1;
           end
 
           BREAK3: begin
-            offsetX = pixelX % TILE_SIZE;
-            offsetY = pixelY % TILE_SIZE;
             RGBout <= break_shape[offsetY][offsetX] == 1 ? BREAK3_COLOR : BREAK_BKG_COLOR;
             mapDR  <= 1'b1;
           end
@@ -605,23 +568,7 @@ module map1_drawer (
       end
       // map loading control
       if(newMapAvailable) begin
-            raddrX <= 5'd0;
-            raddrY <= 5'd0;
             finishedLoading <= 1'b0;
-      end
-      if (!finishedLoading) begin
-            pacmanMap[raddrX][raddrY] <= newMapData;
-            if (raddrX == MAP_WIDTH_X - 1) begin
-                raddrX <= 5'd0;
-                if (raddrY == MAP_HEIGHT_Y - 1) begin
-                    raddrY <= 5'd0;
-                    finishedLoading <= 1'b1;
-                end else begin
-                    raddrY <= raddrY + 1'b1;
-                end
-            end else begin
-                raddrX <= raddrX + 1'b1;
-            end
       end
 
     end
@@ -689,8 +636,8 @@ module map1_drawer (
     .clk(clk),
     .resetN(resetN),
     .startOfFrame(startOfFrame),
-    .charTileX(pactopLeftX >> TILE_SIZE_BITS),
-    .charTileY((pactopLeftY >> TILE_SIZE_BITS) - 5'd1),
+    .charTileX(pacX),
+    .charTileY(pacY),
     .currTileX(currentTileX),
     .currTileY(currentTileY),
     .currTileData(currentTileValue),
@@ -707,7 +654,7 @@ module map1_drawer (
   assign partialScore = coinsCollected + powerCollected * 10 + pickUpCollected[0] * 4  // cherry
       + pickUpCollected[1] * 10  // banana
       + pickUpCollected[2] * 2  // strawberry
-      - pickUpCollected[3] * 20;  // poision
+      - pickUpCollected[3] * 20;  // poison
 
 endmodule
 
