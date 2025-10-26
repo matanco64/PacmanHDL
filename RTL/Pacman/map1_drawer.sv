@@ -154,7 +154,7 @@ module map1_drawer (
     currentTileX = pixelX / TILE_SIZE;
     currentTileY = (pixelY / TILE_SIZE) - 1;  // in y axis there is a gap row
     isScanInsideMap = (pixelX < MAP_WIDTH_X * TILE_SIZE) && (pixelY < MAP_HEIGHT_Y * TILE_SIZE);
-    currentTileValue = pacmanMap[currentTileX][currentTileY];
+    currentTileValue = isScanInsideMap ? pacmanMap[currentTileX][currentTileY] : WALL;
 
     offsetX  = pixelX % TILE_SIZE;
     offsetY  = pixelY % TILE_SIZE;
