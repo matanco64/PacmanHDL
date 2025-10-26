@@ -106,7 +106,6 @@ module ghost_move (
     SCATTER_M,
     CHASE_M,
     FRIGHTENED_M,
-    EATEN_M
   } currMode;
 
   // ---------------------------------------------------------------------------
@@ -218,11 +217,6 @@ module ghost_move (
         // Random wandering - target doesn't matter
         targetX = Xposition / FIXED_POINT_MULTIPLIER;
         targetY = Yposition / FIXED_POINT_MULTIPLIER;
-      end
-
-      EATEN_M: begin
-        targetX = INITIAL_X;
-        targetY = INITIAL_Y;
       end
     endcase
   end
@@ -484,18 +478,6 @@ module ghost_move (
             if (gameState != POWER_UP_ST) begin
               currMode  <= CHASE_M;
               modeTimer <= CHASE_DURATION;
-            end
-          end
-
-          EATEN_M: begin
-            // Return to nest, then leave
-            if (absDiff(
-                    Xposition / FIXED_POINT_MULTIPLIER, INITIAL_X
-                ) < TILE_PIXELS && absDiff(
-                    Yposition / FIXED_POINT_MULTIPLIER, INITIAL_Y
-                ) < TILE_PIXELS) begin
-              currMode  <= LEAVE_NEST_M;
-              modeTimer <= rnd;
             end
           end
         endcase
