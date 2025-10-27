@@ -20,13 +20,15 @@ module around_character #(
 
   // Snapshot character tile at SOF
   always_ff @(posedge clk or negedge resetN) begin
-    if (!resetN) begin
-      charTileX_q <= '0;
-      charTileY_q <= '0;
-    end else if (startOfFrame) begin
-      charTileX_q <= charTileX;
-      charTileY_q <= charTileY;
-    end
+    // if (!resetN) begin
+    //   charTileX_q <= '0;
+    //   charTileY_q <= '0;
+    // end else if (startOfFrame) begin
+    //   charTileX_q <= charTileX;
+    //   charTileY_q <= charTileY;
+    // end
+    charTileX_q <= charTileX;
+    charTileY_q <= charTileY;
   end
 
   // Valid neighbor flags (unsigned-safe)

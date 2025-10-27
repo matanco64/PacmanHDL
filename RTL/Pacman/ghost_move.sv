@@ -542,15 +542,13 @@ module ghost_move (
           end
 
           MOVE_ST: begin
-            if (startOfFrame) begin
-              case (ghostDir)
+            case (ghostDir)
                 DIR_UP:    if (canMoveUp) Yposition <= Yposition - MOVEMENT_SPEED;
                 DIR_DOWN:  if (canMoveDown) Yposition <= Yposition + MOVEMENT_SPEED;
                 DIR_LEFT:  if (canMoveLeft) Xposition <= Xposition - MOVEMENT_SPEED;
                 DIR_RIGHT: if (canMoveRight) Xposition <= Xposition + MOVEMENT_SPEED;
-              endcase
-              SM_Motion <= CHANGE_ST;
-            end
+            endcase
+            SM_Motion <= CHANGE_ST;
           end
         endcase
       end
