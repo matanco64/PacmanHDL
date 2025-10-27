@@ -628,6 +628,32 @@ module map1_drawer (
     .tiles_around(aroundClyde)
   );
 
+  // ---------------------------------------------------------------------------
+  // Around me 
+  // ---------------------------------------------------------------------------
+
+  // function automatic [4*TILE_BITS-1:0] aroundGhost(input [10:0] ghostTopLeftX,
+  //                                                  input [10:0] ghostTopLeftY);
+  //   logic [10:0] gx, gy;
+  //   begin
+  //     gx = ghostTopLeftX / TILE_SIZE;
+  //     gy = ghostTopLeftY / TILE_SIZE - 1;  // in y axis there is a gap row
+
+  //     aroundGhost = {  // bitmap is rotated!
+  //       (gy >= 0) ? pacmanMap[gx][gy-1] : WALL,  // Up
+  //       (gy < MAP_HEIGHT_Y - 1) ? pacmanMap[gx][gy+1] : WALL,  // Down
+  //       (gx >= 0) ? pacmanMap[gx-1][gy] : WALL,  // Left
+  //       (gx < MAP_WIDTH_X - 1) ? pacmanMap[gx+1][gy] : WALL  // Right
+  //     };
+  //   end
+  // endfunction
+
+  // assign aroundBlinky = aroundGhost(BlinkytopLeftX, BlinkytopLeftY);
+  // assign aroundPinky = aroundGhost(PinkytopLeftX, PinkytopLeftY);
+  // assign aroundInky = aroundGhost(InkytopLeftX, InkytopLeftY);
+  // assign aroundClyde = aroundGhost(ClydetopLeftX, ClydetopLeftY);
+  // assign aroundPac = aroundGhost(pactopLeftX, pactopLeftY);
+
   around_character around_pacman_inst (
     .clk(clk),
     .resetN(resetN),
