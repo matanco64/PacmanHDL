@@ -105,7 +105,7 @@ module ghost_move (
     LEAVE_NEST_M,
     SCATTER_M,
     CHASE_M,
-    FRIGHTENED_M,
+    FRIGHTENED_M
   } currMode;
 
   // ---------------------------------------------------------------------------

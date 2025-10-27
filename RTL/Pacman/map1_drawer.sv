@@ -383,7 +383,7 @@ module map1_drawer (
       powerDR <= 1'b0;
       pickUpDR <= 1'b0;
       pacLifeChange <= NORMAL;
-      isWin <= (coinsCollected + powerCollected == coinsPowTot);
+      isWin <= ((coinsCollected + powerCollected) == coinsPowTot);
 
       // We should try to update the map only here to avoid complicated logic
       if (!finishedLoading && isScanInsideMap) begin
