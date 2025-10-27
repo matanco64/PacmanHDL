@@ -19,7 +19,7 @@ module ghost_move (
   // Parameters
   parameter FIXED_POINT_MULTIPLIER = 16;
   parameter TILE_BITS = 4;
-  parameter MOVEMENT_SPEED = 32;
+  parameter MOVEMENT_SPEED = 24;
   parameter TILE_PIXELS = 16;
   parameter SCREEN_HEIGHT = 480;
   parameter SCREEN_WIDTH = 640;
