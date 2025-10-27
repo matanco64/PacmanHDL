@@ -80,6 +80,7 @@ module map_updater # (
   logic [4:0] prevTileY;
   logic [4:0] lastPlacedX;
   logic [4:0] lastPlacedY;
+  logic [4:0] lastPlacedYForPickUp;
   logic isFarFromLastPlacement;
   logic canPlaceWall;
   logic isInBounds;
@@ -89,6 +90,7 @@ module map_updater # (
   logic collisionFlag;
   logic isFarFromPacman;
   logic canPlacePickup;
+  logic isFarFromLastPickUp;
   
 
   // pickups
@@ -205,6 +207,7 @@ always_ff @(posedge clk or negedge resetN) begin
      currPicUp <= 0;
      fruitSpawnPending <= 1'b0;
      fruitSpawnFlag   <= 1'b0;
+	  lastPlacedYForPickUp <= 1'b0;
    end else begin
      fruitSpawnFlag <= 1'b0;
      if (startOfFrame) begin
@@ -233,8 +236,9 @@ always_ff @(posedge clk or negedge resetN) begin
     isFarFromLastPlacement = ($unsigned(currentTileX - lastPlacedX) > 8) 
                           && ($unsigned(currentTileY - lastPlacedY) > 8);
     canPlaceWall = isInBounds && isFarFromPacman && currentTileValue == COIN && isFarFromLastPlacement;
-    canPlacePickup = isInBounds && isFarFromPacman && currentTileValue == EMPTY_BUT_WASNT;
     betterRand = rnd ^ currentTileX ^ currentTileY  ^ pactopLeftX[7:0] ^ pactopLeftY[7:0];
+	 isFarFromLastPickUp = $unsigned(currentTileY - lastPlacedYForPickUp) > 10;
+	 canPlacePickup = isInBounds && isFarFromPacman && currentTileValue == EMPTY_BUT_WASNT && isFarFromLastPickUp;
     case(rnd[1:0])
       2'b00: randTileType = BREAK3; 
       2'b01: randTileType = BREAK2;

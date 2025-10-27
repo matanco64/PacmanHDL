@@ -26,7 +26,7 @@ module map_manager #(
   localparam MAX_CHANGES = 128;
   // game state
   localparam RESET_ST = 3'b000;
-   localparam logic [N_NEW_MAPS:0][8:0] COINS_POW_TOT = '{
+   localparam logic [0:N_NEW_MAPS][8:0] COINS_POW_TOT = '{
       322,  // Map 0 (62 changes)
       326,  // Map 1 (110 changes)  
       354,  // Map 2 (122 changes)
