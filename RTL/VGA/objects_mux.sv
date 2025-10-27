@@ -71,14 +71,7 @@ begin
 		// fog	
 		if (fogDR)
 			RGBOut <= fogRGB;	
-		// map	
-		else if (MapDR || CoinDR || powerDR || pickUpDR) // since ghosts and pacman have black background we don't want it to overlay the map
-			RGBOut <= MapRGB;
-		
-		// pacman
-		else if (PacmanDR) 
-			RGBOut <= PacmanRGB;
-			
+
 		// ghosts	
 		else if (pinkyDR)
 			RGBOut <= pinkyRGB;
@@ -87,7 +80,15 @@ begin
 		else if (clydeDR)
 			RGBOut <= clydeRGB;
 		else if (blinkyDR)
-			RGBOut <= blinkyRGB;	
+			RGBOut <= blinkyRGB;
+		
+		// map	
+		else if (MapDR || CoinDR || powerDR || pickUpDR) // since pacman have black background we don't want it to overlay the map
+			RGBOut <= MapRGB;
+		
+		// pacman
+		else if (PacmanDR) 
+			RGBOut <= PacmanRGB;	
 			
 		// text	
 		else if (Score0DR)
