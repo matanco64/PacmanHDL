@@ -18,15 +18,7 @@ module around_character #(
   logic [$clog2(MAP_WIDTH_X)-1:0]  charTileX_q;
   logic [$clog2(MAP_HEIGHT_Y)-1:0] charTileY_q;
 
-  // Snapshot character tile at SOF
   always_ff @(posedge clk or negedge resetN) begin
-    // if (!resetN) begin
-    //   charTileX_q <= '0;
-    //   charTileY_q <= '0;
-    // end else if (startOfFrame) begin
-    //   charTileX_q <= charTileX;
-    //   charTileY_q <= charTileY;
-    // end
     charTileX_q <= charTileX;
     charTileY_q <= charTileY;
   end
@@ -50,10 +42,6 @@ module around_character #(
     if (!resetN) begin
       tiles_around <= {4{WALL}};
     end else begin
-      // if (startOfFrame) begin
-      //   // Seed ALL directions to WALL; scan will overwrite valid ones
-      //   tiles_around <= {4{WALL}};
-      // end
 
       if (isScanInsideMap) begin
         if (has_up    && (currTileX == charTileX_q)     && (currTileY == charTileY_q-1))

@@ -422,8 +422,8 @@ agreement for further details.
 )
 (symbol
 	(rect 752 400 952 544)
-	(text "bomb" (rect 5 0 32 12)(font "Arial" ))
-	(text "inst2" (rect 8 128 31 140)(font "Arial" ))
+	(text "counter_initializer" (rect 5 0 88 12)(font "Arial" ))
+	(text "inst2" (rect 8 128 30 145)(font "Intel Clear" ))
 	(port
 		(pt 0 32)
 		(input)
