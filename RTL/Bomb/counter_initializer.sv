@@ -17,7 +17,15 @@ module counter_initializer (
   end
 
   // --- state machine ---
-  enum logic [1:0] {s_idle, s_load, s_run, s_pause} SMcounter;
+  typedef enum logic [1:0] {
+            s_idle,
+            s_load,
+            s_run,
+            s_pause
+  } SMcounter_t;
+
+  SMcounter_t SMcounter;
+  SMcounter_t prev_SMcounter;
 
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
@@ -27,6 +35,7 @@ module counter_initializer (
       lampEnable  <= 1'b0;
       show88      <= 1'b0;
       timerEnd    <= 1'b0;
+      prev_SMcounter <= s_idle;
     end else begin
       // defaults
       countLoadN  <= 1'b1;
@@ -34,6 +43,7 @@ module counter_initializer (
       lampEnable  <= 1'b1;
       show88      <= 1'b0;
       timerEnd    <= 1'b0;
+      prev_SMcounter <= SMcounter;
 
       unique case (SMcounter)
         s_idle:  begin
@@ -53,7 +63,7 @@ module counter_initializer (
         s_pause: begin
           if (pauseN_sync) SMcounter <= s_run;
         end
-        default: SMcounter <= s_idle; // recovery
+        default: SMcounter <= prev_SMcounter; // recovery
       endcase
     end
   end

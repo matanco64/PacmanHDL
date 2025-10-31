@@ -291,7 +291,7 @@ module ghost_move (
         end
       endcase
     end else begin
-      // Chase/Scatter/Eaten - best direction toward target
+      // Chase/Scatter - best direction toward target
       minDist = 32'h7FFFFFFF;
       bestDir = lastDir;
 
