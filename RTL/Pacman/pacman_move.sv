@@ -290,6 +290,7 @@ module pacman_move (
           Yspeed <= 0;
           if (startOfFrame && (gameState == PLAYING_ST || gameState == POWER_UP_ST))
             SM_Motion <= MOVE_ST;
+            speedChangeRequested <= 1'b1;
         end
 
       endcase  // case 
