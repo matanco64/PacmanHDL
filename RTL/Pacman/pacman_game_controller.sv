@@ -172,7 +172,7 @@ module pacman_game_controller (
 
           START_WAIT_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-            else if (lastState != START_WAIT_ST) begin  // 1st enter
+            else if (lastState != START_WAIT_ST && lastState != PAUSED_ST) begin  // 1st enter
               startCountN <= 1'b0;
               datainL     <= TIME_START_L;
               datainH     <= TIME_START_H;
@@ -189,7 +189,7 @@ module pacman_game_controller (
 
           GHOST_HIT_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-            else if (lastState != GHOST_HIT_ST) begin  // 1st enter
+            else if (lastState != GHOST_HIT_ST && lastState != PAUSED_ST) begin  // 1st enter
               startCountN <= 1'b0;
               datainL     <= TIME_START_L;
               datainH     <= TIME_START_H;
@@ -199,7 +199,7 @@ module pacman_game_controller (
           POWER_UP_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
             else if (isWin) currentState <= WIN_ST;
-            else if (lastState != POWER_UP_ST || collision_pac_power_reg) begin  // 1st enter or re-enter
+            else if ((lastState != POWER_UP_ST && lastState != PAUSED_ST) || collision_pac_power_reg) begin  // 1st enter or re-enter
               startCountN <= 1'b0;
               datainL     <= TIME_POWER_L;
               datainH     <= TIME_POWER_H;
@@ -209,7 +209,7 @@ module pacman_game_controller (
 
           WIN_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-            else if (lastState != WIN_ST) begin  // 1st enter
+            else if (lastState != WIN_ST && lastState != PAUSED_ST) begin  // 1st enter
               startCountN <= 1'b0;
               datainL     <= 10;
               datainH     <= 0;
@@ -218,7 +218,7 @@ module pacman_game_controller (
 
           LOSE_ST: begin
             if (!pauseN) currentState <= PAUSED_ST;
-            else if (lastState != LOSE_ST) begin  // 1st enter
+            else if (lastState != LOSE_ST && lastState != PAUSED_ST) begin  // 1st enter
               startCountN <= 1'b0;
               datainL     <= 10;
               datainH     <= 0;
@@ -227,7 +227,7 @@ module pacman_game_controller (
 
           PAUSED_ST: begin
             currentState <= pauseN ? prePausedState : PAUSED_ST;
-            if (lastState != PAUSED_ST) prePausedState <= lastState;
+            if (lastState != PAUSED_ST && lastState != PAUSED_ST) prePausedState <= lastState;
           end
 
         endcase
