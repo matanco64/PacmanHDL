@@ -63,24 +63,29 @@ module ghost_move (
   parameter int SCATTER_DURATION = 7;
   parameter int CHASE_DURATION = 20;
 
-  // Internal signals
-  reg signed [31:0] Xposition, Yposition;
-  reg [1:0] lastDir;
-  reg [7:0] modeTimer;
-  reg [2:0] lastGameState;
-  reg wasInFrightened;  // Track if we just entered frightened mode
+  parameter int INTERNAL_DATA_BITS = 10 + 4; // position bits + fixed point bits
 
-  reg signed [31:0] targetX, targetY;
-  reg signed [31:0] distUp, distDown, distLeft, distRight;
-  reg  [1:0] nextDir;
-  reg  [7:0] lfsr;
-  wire [1:0] rnd;
+  // Internal signals
+  logic signed [INTERNAL_DATA_BITS - 1:0] Xposition, Yposition;
+  logic [1:0] lastDir;
+  logic [7:0] modeTimer;
+  logic [2:0] lastGameState;
+  logic wasInFrightened;  // Track if we just entered frightened mode
+
+  logic signed [INTERNAL_DATA_BITS - 1:0] targetX, targetY;
+  logic signed [INTERNAL_DATA_BITS - 1:0] distUp, distDown, distLeft, distRight;
+  logic [1:0] nextDir;
+  logic [7:0] lfsr;
+  logic [1:0] rnd;
   assign rnd = lfsr[1:0];
 
   // Junction and alignment detection
-  wire isJunction = ((canMoveUp || canMoveDown) && (canMoveLeft || canMoveRight));
-  wire aligned_to_grid = (Xposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0) &&
-                         (Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0);
+  logic isJunction;
+  logic aligned_to_grid;
+
+  logic signed [10:0] baseX, baseY, tileX, tileY;
+  logic signed [10:0] newX_up, newY_up, newX_down, newY_down;
+  logic signed [10:0] newX_left, newY_left, newX_right, newY_right;
 
   // Collision detection
   logic collidedAny, collidedThisGhost;
@@ -120,14 +125,22 @@ module ghost_move (
     endcase
   endfunction
 
-  function automatic signed [31:0] absDiff(input signed [31:0] a, input signed [31:0] b);
+  function automatic signed [10:0] absDiff(input signed [10:0] a, input signed [10:0] b);
     absDiff = (a > b) ? (a - b) : (b - a);
   endfunction
+
+
+  // Junction detection and Grid alignment
+  always_comb begin
+    isJunction = ((canMoveUp || canMoveDown) && (canMoveLeft || canMoveRight));
+    aligned_to_grid = (Xposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0) &&
+                      (Yposition % (TILE_PIXELS * FIXED_POINT_MULTIPLIER) == 0);
+  end
 
   // ---------------------------------------------------------------------------
   // Home coordinates per ghost
   // ---------------------------------------------------------------------------
-  reg signed [31:0] homeX, homeY;
+  logic signed [10:0] homeX, homeY;
   always_comb begin
     case (ghostSelect)
       2'd0: begin
@@ -198,7 +211,7 @@ module ghost_move (
             targetY = pacmanY + (rnd[1] ? 2 * TILE_PIXELS : -2 * TILE_PIXELS);
           end
           2'd3: begin  // Clyde - distance dependent
-            reg signed [31:0] distSq, dx, dy;
+            logic signed [10:0] distSq, dx, dy;
             dx = (Xposition / FIXED_POINT_MULTIPLIER) - pacmanX;
             dy = (Yposition / FIXED_POINT_MULTIPLIER) - pacmanY;
             distSq = (dx * dx) + (dy * dy);
@@ -225,10 +238,6 @@ module ghost_move (
   // Distance calculation (Manhattan distance)
   // ---------------------------------------------------------------------------
   always_comb begin
-    logic signed [31:0] baseX, baseY, tileX, tileY;
-    logic signed [31:0] newX_up, newY_up, newX_down, newY_down;
-    logic signed [31:0] newX_left, newY_left, newX_right, newY_right;
-
     baseX = Xposition / FIXED_POINT_MULTIPLIER;
     baseY = Yposition / FIXED_POINT_MULTIPLIER;
     tileX = baseX / TILE_PIXELS;
