@@ -50,10 +50,12 @@ module pacman_move (
   localparam DOWN_KEY = 4'd2;
   localparam RECOVER_TIME = 4'd3;
 
-  const int FIXED_POINT_MULTIPLIER = 64;
+  localparam FIXED_POINT_MULTIPLIER = 16; // 4 bits for sub-pixel precision
   const int OBJECT_WIDTH_X = 32;
   const int OBJECT_HIGHT_Y = 32;
-  const int NORMAL_SPEED = 64;
+  localparam NORMAL_SPEED = 16;
+  localparam tileMultiplier = (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
+  
 
   int speed;
   int prevSpeed;
@@ -61,6 +63,11 @@ module pacman_move (
   int Yposition;
   int Xspeed;
   int Yspeed;
+
+  int curTileX;
+  int curTileY;
+  int nextX, nextY;
+
   logic speedChangeRequested;
   logic keyPadValidAction;
 
@@ -221,10 +228,7 @@ module pacman_move (
           //------------
 			 
 			 if (hit_reg) begin
-				 int curTileX;
-				 int curTileY;
-				 int nextX, nextY;
-				 int tileMultiplier = (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
+				 
 				
 
 				 curTileX = Xposition / tileMultiplier;
