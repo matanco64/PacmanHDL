@@ -1,5 +1,5 @@
 /*<simulation_settings>
-<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=verilog --write_settings_files=off Lab1Demo -c Lab1Demo --vector_source="C:/projects/PacmanHDL/waves/ghosts.vwf" --testbench_file="C:/projects/PacmanHDL/simulation/qsim/ghosts.vwf.vt"</ftestbench_cmd>
+<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=verilog --write_settings_files=off Lab1Demo -c Lab1Demo --vector_source="C:/projects/PacmanHDL/waves/ghosts.vwf" --testbench_file="C:/projects/PacmanHDL/simulation/qsim/waves/ghosts.vwf.vt"</ftestbench_cmd>
 <ttestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=verilog --write_settings_files=off Lab1Demo -c Lab1Demo --vector_source="C:/projects/PacmanHDL/waves/ghosts.vwf" --testbench_file="C:/projects/PacmanHDL/simulation/qsim/waves/ghosts.vwf.vt"</ttestbench_cmd>
 <fnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=on --flatten_buses=off --tool=modelsim_oem --format=verilog --output_directory="C:/projects/PacmanHDL/simulation/qsim/" Lab1Demo -c Lab1Demo</fnetlist_cmd>
 <tnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=off --flatten_buses=off --timescale=1ps --tool=modelsim_oem --format=verilog --output_directory="C:/projects/PacmanHDL/simulation/qsim/" Lab1Demo -c Lab1Demo</tnetlist_cmd>
@@ -943,9 +943,9 @@ TRANSITION_LIST("clk")
 		REPEAT = 1;
 		NODE
 		{
-			REPEAT = 100;
-			LEVEL 0 FOR 5.0;
-			LEVEL 1 FOR 5.0;
+			REPEAT = 200;
+			LEVEL 0 FOR 2.5;
+			LEVEL 1 FOR 2.5;
 		}
 	}
 }
@@ -973,9 +973,7 @@ TRANSITION_LIST("collisionPacGhost[0]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 510.0;
-		LEVEL 1 FOR 10.0;
-		LEVEL 0 FOR 480.0;
+		LEVEL 0 FOR 1000.0;
 	}
 }
 
@@ -984,9 +982,7 @@ TRANSITION_LIST("gameState[2]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 30.0;
-		LEVEL 1 FOR 770.0;
-		LEVEL 0 FOR 200.0;
+		LEVEL 0 FOR 1000.0;
 	}
 }
 
@@ -995,9 +991,8 @@ TRANSITION_LIST("gameState[1]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 30.0;
-		LEVEL 1 FOR 770.0;
-		LEVEL 0 FOR 200.0;
+		LEVEL 0 FOR 50.0;
+		LEVEL 1 FOR 950.0;
 	}
 }
 
@@ -1007,8 +1002,8 @@ TRANSITION_LIST("gameState[0]")
 	{
 		REPEAT = 1;
 		LEVEL 0 FOR 30.0;
-		LEVEL 1 FOR 770.0;
-		LEVEL 0 FOR 200.0;
+		LEVEL 1 FOR 20.0;
+		LEVEL 0 FOR 950.0;
 	}
 }
 
@@ -1116,7 +1111,7 @@ TRANSITION_LIST("pacmanX[4]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 1 FOR 1000.0;
 	}
 }
 
@@ -1134,7 +1129,7 @@ TRANSITION_LIST("pacmanX[2]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 1 FOR 1000.0;
 	}
 }
 
@@ -1215,7 +1210,7 @@ TRANSITION_LIST("pacmanY[4]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 1 FOR 1000.0;
 	}
 }
 
@@ -1233,7 +1228,7 @@ TRANSITION_LIST("pacmanY[2]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 1 FOR 1000.0;
 	}
 }
 
@@ -1504,7 +1499,8 @@ TRANSITION_LIST("aroundGhost[13]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 1 FOR 440.0;
+		LEVEL 0 FOR 560.0;
 	}
 }
 
@@ -1531,7 +1527,9 @@ TRANSITION_LIST("aroundGhost[10]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 0 FOR 830.0;
+		LEVEL 1 FOR 110.0;
+		LEVEL 0 FOR 60.0;
 	}
 }
 
@@ -1540,7 +1538,8 @@ TRANSITION_LIST("aroundGhost[9]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 1 FOR 440.0;
+		LEVEL 0 FOR 560.0;
 	}
 }
 
@@ -1549,7 +1548,8 @@ TRANSITION_LIST("aroundGhost[8]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 1 FOR 440.0;
+		LEVEL 0 FOR 560.0;
 	}
 }
 
@@ -1576,7 +1576,10 @@ TRANSITION_LIST("aroundGhost[5]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 0 FOR 440.0;
+		LEVEL 1 FOR 390.0;
+		LEVEL 0 FOR 110.0;
+		LEVEL 1 FOR 60.0;
 	}
 }
 
@@ -1612,7 +1615,8 @@ TRANSITION_LIST("aroundGhost[1]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 1000.0;
+		LEVEL 0 FOR 440.0;
+		LEVEL 1 FOR 560.0;
 	}
 }
 
@@ -1632,10 +1636,11 @@ TRANSITION_LIST("startOfFrame")
 		REPEAT = 1;
 		NODE
 		{
-			REPEAT = 10;
-			LEVEL 0 FOR 90.0;
-			LEVEL 1 FOR 10.0;
+			REPEAT = 12;
+			LEVEL 0 FOR 76.0;
+			LEVEL 1 FOR 4.0;
 		}
+		LEVEL 0 FOR 40.0;
 	}
 }
 
@@ -1650,12 +1655,21 @@ DISPLAY_LINE
 
 DISPLAY_LINE
 {
-	CHANNEL = "collisionPacGhost";
+	CHANNEL = "startOfFrame";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 1;
 	TREE_LEVEL = 0;
-	CHILDREN = 2, 3, 4;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "collisionPacGhost";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Binary;
+	TREE_INDEX = 2;
+	TREE_LEVEL = 0;
+	CHILDREN = 3, 4, 5;
 }
 
 DISPLAY_LINE
@@ -1663,9 +1677,9 @@ DISPLAY_LINE
 	CHANNEL = "collisionPacGhost[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 2;
+	TREE_INDEX = 3;
 	TREE_LEVEL = 1;
-	PARENT = 1;
+	PARENT = 2;
 }
 
 DISPLAY_LINE
@@ -1673,9 +1687,9 @@ DISPLAY_LINE
 	CHANNEL = "collisionPacGhost[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 3;
+	TREE_INDEX = 4;
 	TREE_LEVEL = 1;
-	PARENT = 1;
+	PARENT = 2;
 }
 
 DISPLAY_LINE
@@ -1683,9 +1697,179 @@ DISPLAY_LINE
 	CHANNEL = "collisionPacGhost[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 4;
+	TREE_INDEX = 5;
 	TREE_LEVEL = 1;
-	PARENT = 1;
+	PARENT = 2;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 6;
+	TREE_LEVEL = 0;
+	CHILDREN = 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[15]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 7;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[14]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 8;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[13]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 9;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[12]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 10;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[11]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 11;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[10]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 12;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[9]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 13;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[8]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 14;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[7]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 15;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[6]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 16;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[5]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 17;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[4]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 18;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[3]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 19;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[2]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 20;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[1]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 21;
+	TREE_LEVEL = 1;
+	PARENT = 6;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "aroundGhost[0]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Hexadecimal;
+	TREE_INDEX = 22;
+	TREE_LEVEL = 1;
+	PARENT = 6;
 }
 
 DISPLAY_LINE
@@ -1693,9 +1877,9 @@ DISPLAY_LINE
 	CHANNEL = "gameState";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 5;
+	TREE_INDEX = 23;
 	TREE_LEVEL = 0;
-	CHILDREN = 6, 7, 8;
+	CHILDREN = 24, 25, 26;
 }
 
 DISPLAY_LINE
@@ -1703,9 +1887,9 @@ DISPLAY_LINE
 	CHANNEL = "gameState[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 6;
+	TREE_INDEX = 24;
 	TREE_LEVEL = 1;
-	PARENT = 5;
+	PARENT = 23;
 }
 
 DISPLAY_LINE
@@ -1713,9 +1897,9 @@ DISPLAY_LINE
 	CHANNEL = "gameState[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 7;
+	TREE_INDEX = 25;
 	TREE_LEVEL = 1;
-	PARENT = 5;
+	PARENT = 23;
 }
 
 DISPLAY_LINE
@@ -1723,9 +1907,9 @@ DISPLAY_LINE
 	CHANNEL = "gameState[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 8;
+	TREE_INDEX = 26;
 	TREE_LEVEL = 1;
-	PARENT = 5;
+	PARENT = 23;
 }
 
 DISPLAY_LINE
@@ -1733,9 +1917,9 @@ DISPLAY_LINE
 	CHANNEL = "ghostDir";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 9;
+	TREE_INDEX = 27;
 	TREE_LEVEL = 0;
-	CHILDREN = 10, 11;
+	CHILDREN = 28, 29;
 }
 
 DISPLAY_LINE
@@ -1743,9 +1927,9 @@ DISPLAY_LINE
 	CHANNEL = "ghostDir[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 10;
+	TREE_INDEX = 28;
 	TREE_LEVEL = 1;
-	PARENT = 9;
+	PARENT = 27;
 }
 
 DISPLAY_LINE
@@ -1753,9 +1937,9 @@ DISPLAY_LINE
 	CHANNEL = "ghostDir[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 11;
+	TREE_INDEX = 29;
 	TREE_LEVEL = 1;
-	PARENT = 9;
+	PARENT = 27;
 }
 
 DISPLAY_LINE
@@ -1763,9 +1947,9 @@ DISPLAY_LINE
 	CHANNEL = "ghostSelect";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 12;
+	TREE_INDEX = 30;
 	TREE_LEVEL = 0;
-	CHILDREN = 13, 14;
+	CHILDREN = 31, 32;
 }
 
 DISPLAY_LINE
@@ -1773,9 +1957,9 @@ DISPLAY_LINE
 	CHANNEL = "ghostSelect[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 13;
+	TREE_INDEX = 31;
 	TREE_LEVEL = 1;
-	PARENT = 12;
+	PARENT = 30;
 }
 
 DISPLAY_LINE
@@ -1783,9 +1967,9 @@ DISPLAY_LINE
 	CHANNEL = "ghostSelect[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 14;
+	TREE_INDEX = 32;
 	TREE_LEVEL = 1;
-	PARENT = 12;
+	PARENT = 30;
 }
 
 DISPLAY_LINE
@@ -1793,7 +1977,7 @@ DISPLAY_LINE
 	CHANNEL = "oneSec";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 15;
+	TREE_INDEX = 33;
 	TREE_LEVEL = 0;
 }
 
@@ -1802,9 +1986,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 16;
+	TREE_INDEX = 34;
 	TREE_LEVEL = 0;
-	CHILDREN = 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27;
+	CHILDREN = 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45;
 }
 
 DISPLAY_LINE
@@ -1812,9 +1996,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[10]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 17;
+	TREE_INDEX = 35;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1822,9 +2006,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[9]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 18;
+	TREE_INDEX = 36;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1832,9 +2016,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[8]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 19;
+	TREE_INDEX = 37;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1842,9 +2026,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[7]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 20;
+	TREE_INDEX = 38;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1852,9 +2036,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[6]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 21;
+	TREE_INDEX = 39;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1862,9 +2046,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[5]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 22;
+	TREE_INDEX = 40;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1872,9 +2056,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[4]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 23;
+	TREE_INDEX = 41;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1882,9 +2066,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[3]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 24;
+	TREE_INDEX = 42;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1892,9 +2076,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 25;
+	TREE_INDEX = 43;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1902,9 +2086,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 26;
+	TREE_INDEX = 44;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1912,9 +2096,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanX[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 27;
+	TREE_INDEX = 45;
 	TREE_LEVEL = 1;
-	PARENT = 16;
+	PARENT = 34;
 }
 
 DISPLAY_LINE
@@ -1922,9 +2106,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 28;
+	TREE_INDEX = 46;
 	TREE_LEVEL = 0;
-	CHILDREN = 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39;
+	CHILDREN = 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57;
 }
 
 DISPLAY_LINE
@@ -1932,9 +2116,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[10]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 29;
+	TREE_INDEX = 47;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -1942,9 +2126,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[9]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 30;
+	TREE_INDEX = 48;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -1952,9 +2136,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[8]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 31;
+	TREE_INDEX = 49;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -1962,9 +2146,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[7]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 32;
+	TREE_INDEX = 50;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -1972,9 +2156,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[6]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 33;
+	TREE_INDEX = 51;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -1982,9 +2166,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[5]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 34;
+	TREE_INDEX = 52;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -1992,9 +2176,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[4]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 35;
+	TREE_INDEX = 53;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -2002,9 +2186,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[3]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 36;
+	TREE_INDEX = 54;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -2012,9 +2196,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 37;
+	TREE_INDEX = 55;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -2022,9 +2206,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 38;
+	TREE_INDEX = 56;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -2032,9 +2216,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanY[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 39;
+	TREE_INDEX = 57;
 	TREE_LEVEL = 1;
-	PARENT = 28;
+	PARENT = 46;
 }
 
 DISPLAY_LINE
@@ -2042,7 +2226,7 @@ DISPLAY_LINE
 	CHANNEL = "resetN";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 40;
+	TREE_INDEX = 58;
 	TREE_LEVEL = 0;
 }
 
@@ -2051,9 +2235,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 41;
+	TREE_INDEX = 59;
 	TREE_LEVEL = 0;
-	CHILDREN = 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52;
+	CHILDREN = 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70;
 }
 
 DISPLAY_LINE
@@ -2061,9 +2245,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[10]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 42;
+	TREE_INDEX = 60;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2071,9 +2255,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[9]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 43;
+	TREE_INDEX = 61;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2081,9 +2265,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[8]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 44;
+	TREE_INDEX = 62;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2091,9 +2275,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[7]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 45;
+	TREE_INDEX = 63;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2101,9 +2285,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[6]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 46;
+	TREE_INDEX = 64;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2111,9 +2295,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[5]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 47;
+	TREE_INDEX = 65;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2121,9 +2305,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[4]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 48;
+	TREE_INDEX = 66;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2131,9 +2315,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[3]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 49;
+	TREE_INDEX = 67;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2141,9 +2325,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 50;
+	TREE_INDEX = 68;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2151,9 +2335,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 51;
+	TREE_INDEX = 69;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2161,9 +2345,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftX[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 52;
+	TREE_INDEX = 70;
 	TREE_LEVEL = 1;
-	PARENT = 41;
+	PARENT = 59;
 }
 
 DISPLAY_LINE
@@ -2171,9 +2355,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 53;
+	TREE_INDEX = 71;
 	TREE_LEVEL = 0;
-	CHILDREN = 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64;
+	CHILDREN = 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82;
 }
 
 DISPLAY_LINE
@@ -2181,9 +2365,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[10]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 54;
+	TREE_INDEX = 72;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2191,9 +2375,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[9]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 55;
+	TREE_INDEX = 73;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2201,9 +2385,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[8]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 56;
+	TREE_INDEX = 74;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2211,9 +2395,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[7]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 57;
+	TREE_INDEX = 75;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2221,9 +2405,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[6]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 58;
+	TREE_INDEX = 76;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2231,9 +2415,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[5]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 59;
+	TREE_INDEX = 77;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2241,9 +2425,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[4]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 60;
+	TREE_INDEX = 78;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2251,9 +2435,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[3]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 61;
+	TREE_INDEX = 79;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2261,9 +2445,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[2]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 62;
+	TREE_INDEX = 80;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2271,9 +2455,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 63;
+	TREE_INDEX = 81;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2281,9 +2465,9 @@ DISPLAY_LINE
 	CHANNEL = "topLeftY[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Unsigned;
-	TREE_INDEX = 64;
+	TREE_INDEX = 82;
 	TREE_LEVEL = 1;
-	PARENT = 53;
+	PARENT = 71;
 }
 
 DISPLAY_LINE
@@ -2291,9 +2475,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanDir";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 65;
+	TREE_INDEX = 83;
 	TREE_LEVEL = 0;
-	CHILDREN = 66, 67;
+	CHILDREN = 84, 85;
 }
 
 DISPLAY_LINE
@@ -2301,9 +2485,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanDir[1]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 66;
+	TREE_INDEX = 84;
 	TREE_LEVEL = 1;
-	PARENT = 65;
+	PARENT = 83;
 }
 
 DISPLAY_LINE
@@ -2311,188 +2495,9 @@ DISPLAY_LINE
 	CHANNEL = "pacmanDir[0]";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
-	TREE_INDEX = 67;
-	TREE_LEVEL = 1;
-	PARENT = 65;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 68;
-	TREE_LEVEL = 0;
-	CHILDREN = 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[15]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 69;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[14]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 70;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[13]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 71;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[12]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 72;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[11]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 73;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[10]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 74;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[9]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 75;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[8]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 76;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[7]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 77;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[6]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 78;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[5]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 79;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[4]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 80;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[3]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 81;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[2]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 82;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[1]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 83;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "aroundGhost[0]";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
-	TREE_INDEX = 84;
-	TREE_LEVEL = 1;
-	PARENT = 68;
-}
-
-DISPLAY_LINE
-{
-	CHANNEL = "startOfFrame";
-	EXPAND_STATUS = COLLAPSED;
-	RADIX = Binary;
 	TREE_INDEX = 85;
-	TREE_LEVEL = 0;
+	TREE_LEVEL = 1;
+	PARENT = 83;
 }
 
 TIME_BAR

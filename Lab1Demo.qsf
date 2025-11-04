@@ -281,6 +281,13 @@ set_global_assignment -name SIGNALTAP_FILE stp1.stp
 set_global_assignment -name VECTOR_WAVEFORM_FILE waves/ghosts.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE waves/corner.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE corner.vwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE updater1.vwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE updater2.vwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE waves/ghost_direction.vwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE ghost_direction.vwf
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_ADCDAT
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUDOUT[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUDOUT[1]
@@ -403,7 +410,4 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to level_key2
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
