@@ -1,18 +1,18 @@
 # -------------------------------------------------------------------------- #
 #
 # Copyright (C) 2017  Intel Corporation. All rights reserved.
-# Your use of Intel Corporation's design tools, logic functions 
-# and other software and tools, and its AMPP partner logic 
-# functions, and any output files from any of the foregoing 
-# (including device programming or simulation files), and any 
-# associated documentation or information are expressly subject 
-# to the terms and conditions of the Intel Program License 
+# Your use of Intel Corporation's design tools, logic functions
+# and other software and tools, and its AMPP partner logic
+# functions, and any output files from any of the foregoing
+# (including device programming or simulation files), and any
+# associated documentation or information are expressly subject
+# to the terms and conditions of the Intel Program License
 # Subscription Agreement, the Intel Quartus Prime License Agreement,
-# the Intel MegaCore Function License Agreement, or other 
-# applicable license agreement, including, without limitation, 
-# that your use is for the sole purpose of programming logic 
-# devices manufactured by Intel and sold by Intel or its 
-# authorized distributors.  Please refer to the applicable 
+# the Intel MegaCore Function License Agreement, or other
+# applicable license agreement, including, without limitation,
+# that your use is for the sole purpose of programming logic
+# devices manufactured by Intel and sold by Intel or its
+# authorized distributors.  Please refer to the applicable
 # agreement for further details.
 #
 # -------------------------------------------------------------------------- #
@@ -26,7 +26,7 @@
 # Notes:
 #
 # 1) The default values for assignments are stored in the file:
-#		Lab1Demo_assignment_defaults.qdf
+#		ProjectMNM_assignment_defaults.qdf
 #    If this file doesn't exist, see file:
 #		assignment_defaults.qdf
 #
@@ -41,7 +41,7 @@ set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSXFC6D6F31C6
 set_global_assignment -name TOP_LEVEL_ENTITY Pacman
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.0.0
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:51:54  JULY 08, 2018"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "23:16:56  NOVEMBER 04, 2025"
 set_global_assignment -name LAST_QUARTUS_VERSION "17.0.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name SMART_RECOMPILE ON
@@ -190,22 +190,13 @@ set_location_assignment PIN_AA15 -to waitN_key3
 set_location_assignment PIN_Y27 -to turbo_SW1
 set_location_assignment PIN_AK4 -to startN_key1
 set_location_assignment PIN_AA15 -to volume_key3
-set_global_assignment -name OPTIMIZATION_MODE BALANCED
 set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 0.3
 set_global_assignment -name ALLOW_REGISTER_DUPLICATION OFF
 set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MINIMUM
 set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
-set_global_assignment -name FINAL_PLACEMENT_OPTIMIZATION AUTOMATICALLY
-set_global_assignment -name FITTER_AGGRESSIVE_ROUTABILITY_OPTIMIZATION AUTOMATICALLY
-set_global_assignment -name ENABLE_BENEFICIAL_SKEW_OPTIMIZATION ON
 set_global_assignment -name ALM_REGISTER_PACKING_EFFORT HIGH
 set_global_assignment -name ADVANCED_PHYSICAL_OPTIMIZATION ON
-set_global_assignment -name ALLOW_REGISTER_MERGING ON
-set_global_assignment -name BLOCK_RAM_TO_MLAB_CELL_CONVERSION ON
 set_global_assignment -name AUTO_DELAY_CHAINS ON
-set_global_assignment -name IO_PLACEMENT_OPTIMIZATION ON
-set_global_assignment -name AUTO_GLOBAL_CLOCK ON
-set_global_assignment -name AUTO_GLOBAL_REGISTER_CONTROLS ON
 set_global_assignment -name OPTIMIZE_FOR_METASTABILITY OFF
 set_location_assignment PIN_AA14 -to level_key2
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/Bomb/counter_initializer.sv
