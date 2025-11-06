@@ -129,7 +129,7 @@ module map1_drawer (
   logic [2:0] pickUpTimer;  // 8 sec max
   logic [8:0] coinsCollected;
   logic [8:0] powerCollected;
-  logic [8:0] coinsPowTot;  // pow and coins!
+  logic [8:0] coinsTot;  // pow and coins!
   
 
   logic [$clog2(PICKUPS_TO_PLACE)-1:0] currPicUp;
@@ -177,7 +177,7 @@ module map1_drawer (
     .powerCollision(powerCollision),
     .coinsCollected(coinsCollected),
     .powerCollected(powerCollected),
-    .coinsPowTot(coinsPowTot),
+    .coinsTot(coinsTot),
     .pickUpCollision(pickUpCollision),
     .newTileValue(nextTileValue),
     .updateValueForTile(updateValueForTile),
@@ -195,9 +195,9 @@ module map1_drawer (
 		 .rnd(rnd),
 		 .startOfFrame(startOfFrame),
 		 .raddrX(currentTileX),
-     .raddrY(currentTileY),
-     .rdata(newMapData),
-		 .coinsPowTot(coinsPowTot),
+		 .raddrY(currentTileY),
+       .rdata(newMapData),
+		 .coinsTot(coinsTot),
 		 .newMapAvailable(newMapAvailable)
 	);
 
@@ -383,7 +383,7 @@ module map1_drawer (
       powerDR <= 1'b0;
       pickUpDR <= 1'b0;
       pacLifeChange <= NORMAL;
-      isWin <= ((coinsCollected + powerCollected) == coinsPowTot);
+      isWin <= (coinsCollected == coinsTot);
 
       // We should try to update the map only here to avoid complicated logic
       if (!finishedLoading && isScanInsideMap) begin

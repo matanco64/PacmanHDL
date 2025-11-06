@@ -14,7 +14,7 @@ module map_manager #(
 	 input  logic [AW-1:0] raddrY,
 	 output logic [TILE_BITS-1:0] rdata,
 	 
-    output logic [8:0] coinsPowTot,
+    output logic [8:0] coinsTot,
 	 output logic newMapAvailable
 );
 
@@ -27,26 +27,26 @@ module map_manager #(
   // game state
   localparam RESET_ST = 3'b000;
    localparam logic [0:N_NEW_MAPS][8:0] COINS_POW_TOT = '{
-      322,  // Map 0 (62 changes)
-      326,  // Map 1 (110 changes)  
-      354,  // Map 2 (122 changes)
-      318,  // Map 3 (66 changes)
-      300   // Map 4 (original, 0 changes)
+      315,  // Map 0 (62 changes)
+      315,  // Map 1 (110 changes)  
+      341,  // Map 2 (122 changes)
+      307,  // Map 3 (66 changes)
+      293   // Map 4 (original, 0 changes)
   };
   
-//# ===================== Summary =====================
-//# Map 0: 62 changes | Total coins & power: 322
-//# Map 1: 110 changes | Total coins & power: 326
-//# Map 2: 122 changes | Total coins & power: 354
-//# Map 3: 66 changes | Total coins & power: 318
-//# ====================================================
+//# ===================== Summary =================================
+//# Map 0: 62 changes | Total coins & power: 322  | Total coins 315
+//# Map 1: 110 changes | Total coins & power: 326 | Total coins 315
+//# Map 2: 122 changes | Total coins & power: 354 | Total coins 341
+//# Map 3: 66 changes | Total coins & power: 318  | Total coins 307
+//# ===============================================================
 
 
   logic [2:0] currentMapIndex;  // 0=map1 ... 3=map4 4=original
   logic inReset;
   logic loadedFirstMap;
 
-  assign coinsPowTot = COINS_POW_TOT[currentMapIndex];  // 0=original, map 1 2 3 4
+  assign coinsTot = COINS_POW_TOT[currentMapIndex];  // 0=original, map 1 2 3 4
 
   localparam int DEPTH      = MAP_WIDTH_X * MAP_HEIGHT_Y; 
 
