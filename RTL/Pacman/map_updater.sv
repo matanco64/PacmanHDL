@@ -22,7 +22,7 @@ module map_updater # (
     input logic powerCollision, 
     output  logic [8:0] coinsCollected,
     output  logic [8:0] powerCollected,
-    input  logic [8:0] coinsPowTot,
+    input  logic [8:0] coinsTot,
 
     // pickups
     input logic pickUpCollision,
@@ -138,7 +138,7 @@ always_ff @(posedge clk or negedge resetN)
 		 if ((currentTileX != prevTileX || currentTileY != prevTileY) && isScanInsideMap) begin
 			case (addBreak_st)
 			  PRE_PLACE: begin
-				 if ((coinsCollected * 100) > (5 * coinsPowTot)) begin
+				 if ((coinsCollected * 100) > (5 * coinsTot)) begin
 					amountOfBreakableWallsPlaced <= 8'd0;
 					addBreak_st <= PLACING;
 				 end
@@ -211,7 +211,7 @@ always_ff @(posedge clk or negedge resetN) begin
    end else begin
      fruitSpawnFlag <= 1'b0;
      if (startOfFrame) begin
-       if (!fruitSpawnPending && (coinsCollected * 100 >= FRUIT_THRESH[currPicUp] * coinsPowTot)) begin
+       if (!fruitSpawnPending && (coinsCollected * 100 >= FRUIT_THRESH[currPicUp] * coinsTot)) begin
          fruitSpawnPending <= 1'b1;
        end
      end
