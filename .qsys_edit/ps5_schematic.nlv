@@ -1,0 +1,100 @@
+# # File gsaved with Nlview version 6.3.8  2013-12-19 bk=1.2992 VDI=34 GEI=35
+# 
+preplace inst ps5.hps_0.spim0 -pg 1 -lvl 4 -y 2880
+preplace inst ps5.hps_0.timer0 -pg 1 -lvl 4 -y 3430
+preplace inst ps5 -pg 1 -lvl 1 -y 40 -regy -20
+preplace inst ps5.hps_0.sdrctl -pg 1 -lvl 4 -y 4230
+preplace inst ps5.hps_0.spim1 -pg 1 -lvl 4 -y 2990
+preplace inst ps5.hps_0.gpio0 -pg 1 -lvl 4 -y 800
+preplace inst ps5.hps_0.timer1 -pg 1 -lvl 4 -y 3540
+preplace inst ps5.hps_0.dma -pg 1 -lvl 4 -y 2290
+preplace inst ps5.hps_0.clk_0 -pg 1 -lvl 1 -y 2200
+preplace inst ps5.hps_0.axi_ocram -pg 1 -lvl 4 -y 3780
+preplace inst ps5.hps_0.gpio1 -pg 1 -lvl 4 -y 910
+preplace inst ps5.hps_0.timer2 -pg 1 -lvl 4 -y 360
+preplace inst ps5.hps_0.rstmgr -pg 1 -lvl 4 -y 4050
+preplace inst ps5.hps_0.bridges -pg 1 -lvl 4 -y 4410
+preplace inst ps5.hps_0.scu -pg 1 -lvl 4 -y 4140
+preplace inst ps5.hps_0.gpio2 -pg 1 -lvl 4 -y 690
+preplace inst ps5.hps_0.timer3 -pg 1 -lvl 4 -y 470
+preplace inst ps5.hps_0.fpga_interfaces -pg 1 -lvl 2 -y 4530
+preplace inst ps5.hps_0.axi_sdram -pg 1 -lvl 4 -y 3870
+preplace inst ps5.hps_0.sdmmc -pg 1 -lvl 4 -y 2050
+preplace inst ps5.hps_0.i2c0 -pg 1 -lvl 4 -y 1020
+preplace inst ps5.hps_0.wd_timer0 -pg 1 -lvl 4 -y 580
+preplace inst ps5.hps_0.uart0 -pg 1 -lvl 4 -y 3210
+preplace inst ps5.hps_0.L2 -pg 1 -lvl 4 -y 2400
+preplace inst ps5.hps_0.dcan0 -pg 1 -lvl 4 -y 1790
+preplace inst ps5.hps_0.i2c1 -pg 1 -lvl 4 -y 1130
+preplace inst ps5.hps_0.wd_timer1 -pg 1 -lvl 4 -y 2640
+preplace inst ps5.hps_0.uart1 -pg 1 -lvl 4 -y 3320
+preplace inst ps5.hps_0.f2s_periph_ref_clk -pg 1 -lvl 2 -y 2060
+preplace inst ps5.hps_0.dcan1 -pg 1 -lvl 4 -y 1920
+preplace inst ps5.hps_0.nand0 -pg 1 -lvl 4 -y 2510
+preplace inst ps5.hps_0.i2c2 -pg 1 -lvl 4 -y 1240
+preplace inst ps5.hps_0.fpgamgr -pg 1 -lvl 4 -y 3650
+preplace inst ps5.hps_0.arm_a9_0 -pg 1 -lvl 2 -y 2200
+preplace inst ps5.hps_0 -pg 1 -lvl 2 -y 360 -regy -20
+preplace inst ps5.pio_0 -pg 1 -lvl 1 -y 40
+preplace inst ps5.hps_0.gmac0 -pg 1 -lvl 4 -y 1570
+preplace inst ps5.hps_0.i2c3 -pg 1 -lvl 4 -y 3100
+preplace inst ps5.hps_0.arm_a9_1 -pg 1 -lvl 2 -y 2270
+preplace inst ps5.hps_0.timer -pg 1 -lvl 4 -y 2180
+preplace inst ps5.hps_0.gmac1 -pg 1 -lvl 4 -y 1680
+preplace inst ps5.hps_0.qspi -pg 1 -lvl 4 -y 2750
+preplace inst ps5.hps_0.eosc1 -pg 1 -lvl 2 -y 600
+preplace inst ps5.clk_0 -pg 1 -lvl 1 -y 270
+preplace inst ps5.hps_0.l3regs -pg 1 -lvl 4 -y 3960
+preplace inst ps5.hps_0.arm_gic_0 -pg 1 -lvl 3 -y 2230
+preplace inst ps5.hps_0.eosc2 -pg 1 -lvl 2 -y 1990
+preplace inst ps5.hps_0.usb0 -pg 1 -lvl 4 -y 1350
+preplace inst ps5.hps_0.sysmgr -pg 1 -lvl 4 -y 4320
+preplace inst ps5.hps_0.f2s_sdram_ref_clk -pg 1 -lvl 2 -y 2130
+preplace inst ps5.hps_0.usb1 -pg 1 -lvl 4 -y 1460
+preplace inst ps5.hps_0.clkmgr -pg 1 -lvl 3 -y 1920
+preplace inst ps5.hps_0.hps_io.border -pg 1
+preplace inst ps5.hps_0.hps_io -pg 1 -lvl 2 -y 4410
+preplace netloc FAN_IN<net_container>ps5</net_container>(MASTER)hps_0.h2f_reset,(SLAVE)pio_0.reset,(MASTER)clk_0.clk_reset) 1 0 3 90 150 300 300 650
+preplace netloc EXPORT<net_container>ps5.hps_0</net_container>(MASTER)hps_0.h2f_lw_axi_master,(MASTER)bridges.h2f_lw) 1 4 1 NJ
+preplace netloc EXPORT<net_container>ps5.hps_0</net_container>(MASTER)hps_0.h2f_reset,(MASTER)bridges.h2f_reset) 1 4 1 NJ
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(MASTER)clkmgr.emac0_clk,(SLAVE)gmac0.clock_sink) 1 3 1 1470
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(SLAVE)timer2.reset_sink,(SLAVE)wd_timer0.reset_sink,(MASTER)eosc1.clk_reset,(SLAVE)timer3.reset_sink) 1 2 2 NJ 630 1470
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(SLAVE)axi_sdram.reset_sink,(SLAVE)spim1.reset_sink,(SLAVE)arm_a9_0.reset_sink,(SLAVE)gpio1.reset_sink,(SLAVE)dcan1.reset_sink,(SLAVE)arm_a9_1.reset_sink,(SLAVE)i2c0.reset_sink,(SLAVE)usb1.reset_sink,(SLAVE)uart1.reset_sink,(SLAVE)spim0.reset_sink,(SLAVE)dma.reset_sink,(SLAVE)arm_gic_0.reset_sink,(SLAVE)i2c1.reset_sink,(SLAVE)rstmgr.reset_sink,(SLAVE)wd_timer1.reset_sink,(SLAVE)timer.reset_sink,(SLAVE)qspi.reset_sink,(SLAVE)uart0.reset_sink,(SLAVE)dcan0.reset_sink,(SLAVE)timer0.reset_sink,(SLAVE)fpgamgr.reset_sink,(SLAVE)sdmmc.reset_sink,(SLAVE)i2c2.reset_sink,(SLAVE)nand0.reset_sink,(SLAVE)bridges.reset_sink,(SLAVE)i2c3.reset_sink,(SLAVE)gpio0.reset_sink,(SLAVE)sysmgr.reset_sink,(SLAVE)timer1.reset_sink,(SLAVE)sdrctl.reset_sink,(MASTER)clk_0.clk_reset,(SLAVE)clkmgr.reset_sink,(SLAVE)scu.reset_sink,(SLAVE)gmac1.reset_sink,(SLAVE)L2.reset_sink,(SLAVE)axi_ocram.reset_sink,(SLAVE)l3regs.reset_sink,(SLAVE)gpio2.reset_sink,(SLAVE)usb0.reset_sink,(SLAVE)gmac0.reset_sink) 1 1 3 620 2340 970 2420 1390
+preplace netloc POINT_TO_POINT<net_container>ps5</net_container>(SLAVE)pio_0.s1,(MASTER)hps_0.h2f_lw_axi_master) 1 0 3 110 170 NJ 170 670
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(MASTER)clkmgr.mpu_periph_clk,(SLAVE)timer.clock_sink) 1 3 1 1410
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(SLAVE)dcan0.clock_sink,(MASTER)clkmgr.can0_clk) 1 3 1 1410
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(MASTER)clkmgr.nand_clk,(SLAVE)nand0.clock_sink) 1 3 1 1270
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(MASTER)clkmgr.l4_main_clk,(SLAVE)dma.apb_pclk) 1 3 1 1250
+preplace netloc INTERCONNECT<net_container>ps5.hps_0</net_container>(SLAVE)L2.axi_slave0,(MASTER)arm_a9_0.altera_axi_master,(SLAVE)bridges.axi_h2f_lw,(SLAVE)fpgamgr.axi_slave1,(SLAVE)usb0.axi_slave0,(SLAVE)arm_gic_0.axi_slave1,(SLAVE)qspi.axi_slave0,(SLAVE)timer.axi_slave0,(SLAVE)timer2.axi_slave0,(SLAVE)l3regs.axi_slave0,(SLAVE)i2c1.axi_slave0,(SLAVE)axi_sdram.axi_slave0,(SLAVE)clkmgr.axi_slave0,(SLAVE)gpio1.axi_slave0,(SLAVE)scu.axi_slave0,(SLAVE)uart0.axi_slave0,(SLAVE)timer1.axi_slave0,(SLAVE)wd_timer1.axi_slave0,(SLAVE)gpio0.axi_slave0,(SLAVE)dcan1.axi_slave0,(SLAVE)nand0.axi_slave1,(SLAVE)gmac0.axi_slave0,(SLAVE)sysmgr.axi_slave0,(SLAVE)sdrctl.axi_slave0,(SLAVE)i2c3.axi_slave0,(MASTER)arm_a9_1.altera_axi_master,(SLAVE)uart1.axi_slave0,(SLAVE)fpgamgr.axi_slave0,(SLAVE)spim0.axi_slave0,(SLAVE)axi_ocram.axi_slave0,(SLAVE)rstmgr.axi_slave0,(SLAVE)i2c2.axi_slave0,(SLAVE)gpio2.axi_slave0,(SLAVE)i2c0.axi_slave0,(SLAVE)wd_timer0.axi_slave0,(SLAVE)nand0.axi_slave0,(SLAVE)sdmmc.axi_slave0,(SLAVE)usb1.axi_slave0,(SLAVE)timer3.axi_slave0,(SLAVE)gmac1.axi_slave0,(SLAVE)dcan0.axi_slave0,(SLAVE)dma.axi_slave0,(SLAVE)timer0.axi_slave0,(SLAVE)arm_gic_0.axi_slave0,(SLAVE)spim1.axi_slave0,(SLAVE)qspi.axi_slave1) 1 2 2 930 2440 1450
+preplace netloc EXPORT<net_container>ps5.hps_0</net_container>(SLAVE)bridges.h2f_lw_axi_clock,(SLAVE)hps_0.h2f_lw_axi_clock) 1 0 4 NJ 4520 NJ 4520 NJ 4520 NJ
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(SLAVE)timer0.clock_sink,(SLAVE)timer1.clock_sink,(MASTER)clkmgr.l4_sp_clk,(SLAVE)i2c0.clock_sink,(SLAVE)i2c2.clock_sink,(SLAVE)i2c1.clock_sink,(SLAVE)uart0.clock_sink,(SLAVE)i2c3.clock_sink,(SLAVE)uart1.clock_sink) 1 3 1 1430
+preplace netloc EXPORT<net_container>ps5.hps_0</net_container>(SLAVE)bridges.f2h_sdram0_clock,(SLAVE)hps_0.f2h_sdram0_clock) 1 0 4 NJ 4480 NJ 4480 NJ 4480 NJ
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(MASTER)clkmgr.can1_clk,(SLAVE)dcan1.clock_sink) 1 3 1 N
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(SLAVE)clkmgr.f2s_sdram_ref_clk,(MASTER)f2s_sdram_ref_clk.clk) 1 2 1 NJ
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(MASTER)eosc1.clk,(SLAVE)wd_timer0.clock_sink,(SLAVE)timer3.clock_sink,(SLAVE)clkmgr.eosc1,(SLAVE)timer2.clock_sink) 1 2 2 970 610 1370
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(SLAVE)clkmgr.f2s_periph_ref_clk,(MASTER)f2s_periph_ref_clk.clk) 1 2 1 NJ
+preplace netloc EXPORT<net_container>ps5</net_container>(SLAVE)pio_0.external_connection,(SLAVE)ps5.pad_ps5) 1 0 1 NJ
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(SLAVE)timer.interrupt_sender,(MASTER)arm_gic_0.arm_gic_ppi) 1 3 1 1310
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(SLAVE)clkmgr.eosc2,(MASTER)eosc2.clk) 1 2 1 NJ
+preplace netloc EXPORT<net_container>ps5.hps_0</net_container>(SLAVE)bridges.f2h_sdram0_data,(SLAVE)hps_0.f2h_sdram0_data) 1 0 4 NJ 4500 NJ 4500 NJ 4500 NJ
+preplace netloc EXPORT<net_container>ps5.hps_0</net_container>(SLAVE)hps_0.h2f_mpu_events,(SLAVE)fpga_interfaces.h2f_mpu_events) 1 0 2 NJ 4540 NJ
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(SLAVE)qspi.clock_sink,(MASTER)clkmgr.qspi_clk) 1 3 1 1350
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(SLAVE)timer1.interrupt_sender,(SLAVE)wd_timer1.interrupt_sender,(SLAVE)gpio2.interrupt_sender,(SLAVE)wd_timer0.interrupt_sender,(MASTER)arm_gic_0.irq_rx_offset_166,(SLAVE)timer2.interrupt_sender,(SLAVE)fpgamgr.interrupt_sender,(SLAVE)timer0.interrupt_sender,(SLAVE)timer3.interrupt_sender) 1 3 1 1490
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(MASTER)arm_gic_0.irq_rx_offset_32,(SLAVE)L2.interrupt_sender) 1 3 1 1250
+preplace netloc EXPORT<net_container>ps5</net_container>(SLAVE)ps5.clk,(SLAVE)clk_0.clk_in) 1 0 1 NJ
+preplace netloc FAN_OUT<net_container>ps5</net_container>(SLAVE)pio_0.clk,(SLAVE)hps_0.h2f_lw_axi_clock,(SLAVE)hps_0.f2h_sdram0_clock,(MASTER)clk_0.clk) 1 0 2 90 30 340
+preplace netloc EXPORT<net_container>ps5.hps_0</net_container>(SLAVE)hps_io.memory,(SLAVE)hps_0.memory) 1 0 2 NJ 4420 NJ
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(SLAVE)sdmmc.ciu,(MASTER)clkmgr.sdmmc_clk) 1 3 1 1330
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(MASTER)clkmgr.spi_m_clk,(SLAVE)spim1.clock_sink,(SLAVE)spim0.clock_sink) 1 3 1 1330
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(SLAVE)l3regs.clock_sink,(SLAVE)arm_a9_1.clock_sink,(MASTER)clk_0.clk,(SLAVE)arm_a9_0.clock_sink,(SLAVE)sdrctl.clock_sink,(SLAVE)scu.clock_sink,(SLAVE)L2.clock_sink,(SLAVE)axi_ocram.clock_sink,(SLAVE)rstmgr.clock_sink,(SLAVE)bridges.clock_sink,(SLAVE)fpgamgr.clock_sink,(SLAVE)axi_sdram.clock_sink,(SLAVE)arm_gic_0.clock_sink,(SLAVE)sysmgr.clock_sink) 1 1 3 640 2360 950 2460 1530
+preplace netloc EXPORT<net_container>ps5</net_container>(SLAVE)ps5.memory,(SLAVE)hps_0.memory) 1 0 2 NJ 260 NJ
+preplace netloc EXPORT<net_container>ps5</net_container>(SLAVE)ps5.reset,(SLAVE)clk_0.clk_in_reset) 1 0 1 NJ
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(MASTER)clkmgr.emac1_clk,(SLAVE)gmac1.clock_sink) 1 3 1 1250
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(SLAVE)usb0.clock_sink,(MASTER)clkmgr.usb_mp_clk,(SLAVE)usb1.clock_sink) 1 3 1 1310
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(SLAVE)i2c2.interrupt_sender,(SLAVE)dcan1.interrupt_sender1,(SLAVE)i2c3.interrupt_sender,(SLAVE)i2c1.interrupt_sender,(SLAVE)nand0.interrupt_sender,(SLAVE)spim1.interrupt_sender,(SLAVE)uart0.interrupt_sender,(SLAVE)gpio1.interrupt_sender,(SLAVE)spim0.interrupt_sender,(SLAVE)sdmmc.interrupt_sender,(MASTER)arm_gic_0.irq_rx_offset_136,(SLAVE)qspi.interrupt_sender,(SLAVE)uart1.interrupt_sender,(SLAVE)i2c0.interrupt_sender,(SLAVE)gpio0.interrupt_sender) 1 3 1 1370
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(SLAVE)usb0.interrupt_sender,(SLAVE)dcan1.interrupt_sender0,(SLAVE)usb1.interrupt_sender,(SLAVE)gmac0.interrupt_sender,(SLAVE)gmac1.interrupt_sender,(SLAVE)dcan0.interrupt_sender1,(MASTER)arm_gic_0.irq_rx_offset_104,(SLAVE)dcan0.interrupt_sender0,(SLAVE)dma.interrupt_sender) 1 3 1 1510
+preplace netloc FAN_OUT<net_container>ps5.hps_0</net_container>(MASTER)clkmgr.l4_mp_clk,(SLAVE)gpio2.clock_sink,(SLAVE)gpio0.clock_sink,(SLAVE)gpio1.clock_sink,(SLAVE)sdmmc.biu) 1 3 1 1530
+preplace netloc POINT_TO_POINT<net_container>ps5.hps_0</net_container>(SLAVE)wd_timer1.clock_sink,(MASTER)clkmgr.per_base_clk) 1 3 1 1290
+levelinfo -pg 1 0 60 710
+levelinfo -hier ps5 70 140 460 690
+levelinfo -hier ps5.hps_0 470 510 710 1000 1590 1780
