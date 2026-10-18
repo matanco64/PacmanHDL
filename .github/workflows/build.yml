@@ -1,0 +1,37 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  bitstream:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        board: [tang_nano_20k, tang_nano_9k]
+    # the 9K fits but does not meet 33.75 MHz timing yet
+    continue-on-error: ${{ matrix.board == 'tang_nano_9k' }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          osscadsuite-version: '2026-10-18'
+      - run: make BOARD=${{ matrix.board }}
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: ${{ matrix.board }}
+          path: |
+            build/${{ matrix.board }}/pacman.fs
+            build/${{ matrix.board }}/*.log
+
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          osscadsuite-version: '2026-10-18'
+      - run: make regress

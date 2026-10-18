@@ -19,3 +19,4 @@ sim_out/
 # open-source build
 build/
 obj_dir/
+__pycache__/

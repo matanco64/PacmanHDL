@@ -1,12 +1,15 @@
-// Sipeed Tang Nano 9K (GW1NR-LV9QN88PC6/I5) + 5" 800x480 RGB LCD.
+// Sipeed Tang Nano 9K / 20K + 5" 800x480 RGB LCD (40-pin connector).
+// Pins are in boards/<board>.cst; the Makefile sets the parameters per board.
 //
 // Clocking: 27 MHz crystal -> rPLL -> 33.75 MHz, used as both the LCD pixel
 // clock and the game clock. 896 x 517 total raster = 72.9 Hz, matching the
 // DE-10's 72.8 Hz VGA mode, so the game runs at its original speed.
-module top (
+module top #(
+  parameter bit TANG_20K = 1'b0  // 0: Tang Nano 9K, 1: Tang Nano 20K
+) (
   input  logic       XTAL_IN,      // 27 MHz
-  input  logic       BTN_RESET_N,  // S1, active low
-  input  logic       BTN_USER_N,   // S2, active low: next level
+  input  logic       BTN_RESET,    // S1: reset
+  input  logic       BTN_USER,     // S2: next level
   input  logic       UART_RX,      // from the BL702 USB-serial bridge
   output logic       UART_TX,
   output logic       LCD_CLK,
@@ -18,14 +21,16 @@ module top (
   output logic [4:0] LCD_B,
   output logic [5:0] LED_N         // active low
 );
-  localparam int CLK_HZ = 33_750_000;
+  localparam int    CLK_HZ             = 33_750_000;
+  localparam string PLL_DEVICE         = TANG_20K ? "GW2AR-18C" : "GW1NR-9C";
+  localparam bit    BUTTONS_ACTIVE_LOW = !TANG_20K;  // 9K: pressed = 0, 20K: pressed = 1
 
   // ---------------------------------------------------------------- clock
   logic clk, pllLock;
 
   rPLL #(
     .FCLKIN("27"),
-    .DEVICE("GW1NR-9C"),
+    .DEVICE(PLL_DEVICE),
     .IDIV_SEL(3),        // 27 / 4  = 6.75 MHz PFD
     .FBDIV_SEL(4),       //   * 5   = 33.75 MHz
     .ODIV_SEL(16)        // VCO 540 MHz
@@ -41,9 +46,13 @@ module top (
 
   // ---------------------------------------------------------------- reset
   // asserted asynchronously, released synchronously
+  logic resetPressed, userPressed;
+  assign resetPressed = BUTTONS_ACTIVE_LOW ? !BTN_RESET : BTN_RESET;
+  assign userPressed  = BUTTONS_ACTIVE_LOW ? !BTN_USER  : BTN_USER;
+
   logic [1:0] rstSync;
   logic       resetN, rawResetN;
-  assign rawResetN = pllLock && BTN_RESET_N;
+  assign rawResetN = pllLock && !resetPressed;
   always_ff @(posedge clk or negedge rawResetN)
     if (!rawResetN) rstSync <= 2'b00;
     else            rstSync <= {rstSync[0], 1'b1};
@@ -82,8 +91,8 @@ module top (
     .clk, .resetN, .buttons, .keyPad, .keyPadValid, .star, .slash, .num, .pauseN
   );
 
-  logic [1:0] userSync;
-  always_ff @(posedge clk) userSync <= {userSync[0], BTN_USER_N};
+  logic [1:0] userSync;  // level_key is active low, like the DE-10 KEY[2]
+  always_ff @(posedge clk) userSync <= {userSync[0], !userPressed};
 
   // ---------------------------------------------------------------- video
   logic [10:0] pixelX, pixelY;

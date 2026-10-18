@@ -307,8 +307,17 @@ module pacman_move (
     end
   end
 
-  assign topLeftX = Xposition / FIXED_POINT_MULTIPLIER;  // note it must be 2^n 
-  assign topLeftY = Yposition / FIXED_POINT_MULTIPLIER;
+  // Registered: positions only change at startOfFrame (vertical blanking), so
+  // one clock of delay is invisible, and it keeps the signed divide off the
+  // long timing paths into the tile-neighbour and collision logic.
+  always_ff @(posedge clk or negedge resetN)
+    if (!resetN) begin
+      topLeftX <= INITIAL_X;
+      topLeftY <= INITIAL_Y;
+    end else begin
+      topLeftX <= Xposition / FIXED_POINT_MULTIPLIER;  // note it must be 2^n
+      topLeftY <= Yposition / FIXED_POINT_MULTIPLIER;
+    end
 
   always_comb begin
     case (curDirKey)
