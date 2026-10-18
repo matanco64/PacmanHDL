@@ -16,3 +16,6 @@ sim_out/
 *.sof
 *.pof
 *.jic
+# open-source build
+build/
+obj_dir/
