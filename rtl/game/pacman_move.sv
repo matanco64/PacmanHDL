@@ -57,16 +57,20 @@ module pacman_move (
   localparam tileMultiplier = (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
   
 
-  logic signed [31:0] speed;  // not `int`: 2-state power-up 0 conflicts with the async reset value on Gowin FFs
-  int prevSpeed;
-  logic signed [31:0] Xposition;
-  logic signed [31:0] Yposition;
-  int Xspeed;
-  int Yspeed;
+  // 16-bit signed instead of `int`: positions are pixels * 16 (< 11k) and
+  // speeds are small, so values are unchanged while the adders and compares
+  // are half as wide. (Not `int` also because its 2-state power-up value of 0
+  // conflicts with a non-zero async reset value on Gowin flip-flops.)
+  logic signed [15:0] speed;
+  logic signed [15:0] prevSpeed;
+  logic signed [15:0] Xposition;
+  logic signed [15:0] Yposition;
+  logic signed [15:0] Xspeed;
+  logic signed [15:0] Yspeed;
 
-  int curTileX;
-  int curTileY;
-  int nextX, nextY;
+  logic signed [15:0] curTileX;
+  logic signed [15:0] curTileY;
+  logic signed [15:0] nextX, nextY;
 
   logic speedChangeRequested;
   logic keyPadValidAction;

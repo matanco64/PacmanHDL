@@ -150,7 +150,7 @@ end
 // The bitmap lookup is a reset-free registered read so it maps to block RAM;
 // the control bits are registered alongside it (with the async reset) and the
 // colour is picked from both, giving the same RGBout as the original register.
-logic [1:0] sprite [0:255];  // {open, closed} at {srcY, srcX}
+(* ram_style = "block" *) logic [1:0] sprite [0:255];  // {open, closed} at {srcY, srcX}
 initial
     for (int y = 0; y < OBJECT_HEIGHT_Y; y++)
         for (int x = 0; x < OBJECT_WIDTH_X; x++)

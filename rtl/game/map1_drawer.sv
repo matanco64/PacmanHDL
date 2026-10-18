@@ -335,7 +335,10 @@ module map1_drawer (
       pulseCnt  <= 0;
       shine     <= 0;
       togglePow <= 0;
-      frameRnd  <= rnd ^ (pixelX / TILE_SIZE) ^ (pixelY / TILE_SIZE);
+      // was rnd ^ (pixelX / TILE_SIZE) ^ (pixelY / TILE_SIZE): during reset the
+      // LFSR holds 1 and the scan is at (0,0), so that is always 1. A constant
+      // avoids an async-load flip-flop, which Gowin can only emulate with latches.
+      frameRnd  <= 8'd1;
     end else if (pauseN && gameState != WIN_ST && gameState != LOSE_ST) begin
 
       // 1 Hz counter (if oneSec = 1 once per second)

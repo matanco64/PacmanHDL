@@ -1,7 +1,16 @@
 // Simulation top: the same core, timing and controller mapping as the Tang
 // board, minus the PLL, UART and pin-level details.
 module sim_top #(
-  parameter int CLK_HZ = 33_750_000
+  parameter int CLK_HZ  = 33_750_000,
+  // defaults match the Tang Nano 9K board; the interactive simulator uses a
+  // compact raster (no side borders, short blanking) to run faster
+  parameter int H_ACT   = 800,
+  parameter int H_FRONT = 32,
+  parameter int H_SYNC  = 4,
+  parameter int H_BACK  = 60,
+  parameter int V_FRONT = 13,
+  parameter int V_SYNC  = 4,
+  parameter int V_BACK  = 20
 ) (
   input  logic       clk,
   input  logic       resetN,
@@ -15,8 +24,8 @@ module sim_top #(
   logic        startOfFrame, inGame, hsync;
 
   lcd_timing #(
-    .H_ACT(800), .H_FRONT(32), .H_SYNC(4), .H_BACK(60),
-    .V_ACT(480), .V_FRONT(13), .V_SYNC(4), .V_BACK(20)
+    .H_ACT(H_ACT), .H_FRONT(H_FRONT), .H_SYNC(H_SYNC), .H_BACK(H_BACK),
+    .V_ACT(480), .V_FRONT(V_FRONT), .V_SYNC(V_SYNC), .V_BACK(V_BACK)
   ) timing (
     .clk, .resetN, .pixelX, .pixelY, .startOfFrame, .inGame,
     .de, .hsync, .vsync

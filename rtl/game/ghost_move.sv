@@ -167,6 +167,14 @@ module ghost_move (
   // Target calculation
   // ---------------------------------------------------------------------------
   always_comb begin
+    // Clyde's scratch values, given a default so they don't infer latches
+    // NOTE: distSq is 11 bits, so "distSq > 128*128" below is never true and
+    // Clyde always targets his home corner (behaviour kept from the DE-10).
+    logic signed [10:0] distSq, dx, dy;
+    dx = '0;
+    dy = '0;
+    distSq = '0;
+
     targetX = Xposition / FIXED_POINT_MULTIPLIER;
     targetY = Yposition / FIXED_POINT_MULTIPLIER;
 
@@ -212,7 +220,6 @@ module ghost_move (
             targetY = pacmanY + (rnd[1] ? 2 * TILE_PIXELS : -2 * TILE_PIXELS);
           end
           2'd3: begin  // Clyde - distance dependent
-            logic signed [10:0] distSq, dx, dy;
             dx = (Xposition / FIXED_POINT_MULTIPLIER) - pacmanX;
             dy = (Yposition / FIXED_POINT_MULTIPLIER) - pacmanY;
             distSq = (dx * dx) + (dy * dy);
@@ -263,8 +270,12 @@ module ghost_move (
   // Direction selection
   // ---------------------------------------------------------------------------
   always_comb begin
-    int minDist;
-    int bestDir;
+    // scratch values with defaults so they don't infer latches; minDist only
+    // needs to exceed the largest Manhattan distance (2 * 2047), not 32 bits
+    logic signed [INTERNAL_DATA_BITS:0] minDist;
+    logic [1:0] bestDir;
+    minDist = {1'b0, {INTERNAL_DATA_BITS{1'b1}}};
+    bestDir = lastDir;
 
     nextDir = ghostDir;
 
@@ -302,7 +313,7 @@ module ghost_move (
       endcase
     end else begin
       // Chase/Scatter - best direction toward target
-      minDist = 32'h7FFFFFFF;
+      minDist = {1'b0, {INTERNAL_DATA_BITS{1'b1}}};
       bestDir = lastDir;
 
       // Check all possible directions and pick the closest one

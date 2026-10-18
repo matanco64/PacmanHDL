@@ -142,44 +142,53 @@ module characterBitMap (
   // ghost map with 2-bit encoding decoder
   // ---------------------------------------------------------------------------
 
+  // The shape lookup is a reset-free registered read so it maps to block RAM;
+  // everything else the colour depends on is registered alongside it (with
+  // the async reset), so RGBout is the same as the original output register.
+  (* ram_style = "block" *) logic [3:0] shapes [0:255];  // {power, ghostShape} at {srcY, srcX}
+  initial
+    for (int y = 0; y < OBJECT_HEIGHT_Y; y++)
+      for (int x = 0; x < OBJECT_WIDTH_X; x++)
+        shapes[{y[3:0], x[3:0]}] = {power[y][x], ghostShape[y][x]};
+
+  logic [3:0] shapePixel;
+  logic       drawQ, powerUpQ, blinkQ, pupilQ;
+
+  always_ff @(posedge clk)
+    shapePixel <= shapes[{srcY[3:0], srcX[3:0]}];
+
   always_ff @(posedge clk or negedge resetN) begin
     if (!resetN) begin
-      RGBout <= TRANSPARENT_ENCODING;
+      drawQ    <= 1'b0;
+      powerUpQ <= 1'b0;
+      blinkQ   <= 1'b0;
+      pupilQ   <= 1'b0;
     end else begin
-      RGBout <= TRANSPARENT_ENCODING;  // Default
-
-      if (localInside && (srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y)) begin
-        if (gameState == POWER_UP_ST) begin
-          // --- Power pellet mode ---
-          case (power[srcY][srcX])
-            ENC_BODY:        RGBout <= COLOR1;
-            ENC_DETAIL:      RGBout <= COLOR2;
-            default:         RGBout <= TRANSPARENT_ENCODING;
-          endcase
-
-          // --- flickering mode ---
-          if ((countH == 4'd0) && (countL <= 4'd4) && countL[0]) begin
-            case (power[srcY][srcX])
-              ENC_BODY:   RGBout <= COLOR2;
-              ENC_DETAIL: RGBout <= COLOR1;
-              default:    RGBout <= TRANSPARENT_ENCODING; 
-            endcase
-          end
-        end else begin
-          // --- Normal mode ---
-          case (ghostShape[srcY][srcX])
-            ENC_BODY:        RGBout <= ghostBodyColor;
-            ENC_DETAIL:      RGBout <= (isPupil(srcX, srcY, 0) || isPupil(srcX, srcY, 1)) ? 8'h00 : EYE;
-            default:         RGBout <= TRANSPARENT_ENCODING;
-          endcase
-        end
-      end
+      drawQ    <= localInside && (srcX < OBJECT_WIDTH_X) && (srcY < OBJECT_HEIGHT_Y);
+      powerUpQ <= gameState == POWER_UP_ST;
+      blinkQ   <= (countH == 4'd0) && (countL <= 4'd4) && countL[0];
+      pupilQ   <= isPupil(srcX, srcY, 0) || isPupil(srcX, srcY, 1);
     end
   end
 
-  // ---------------------------------------------------------------------------
-  // outputs
-  // ---------------------------------------------------------------------------
+  always_comb begin
+    RGBout = TRANSPARENT_ENCODING;  // Default
+    if (drawQ) begin
+      if (powerUpQ) begin
+        case (shapePixel[3:2])
+          ENC_BODY:        RGBout = blinkQ ? COLOR2 : COLOR1;
+          ENC_DETAIL:      RGBout = blinkQ ? COLOR1 : COLOR2;
+          default:         RGBout = TRANSPARENT_ENCODING;
+        endcase
+      end else begin
+        case (shapePixel[1:0])
+          ENC_BODY:        RGBout = ghostBodyColor;
+          ENC_DETAIL:      RGBout = pupilQ ? 8'h00 : EYE;
+          default:         RGBout = TRANSPARENT_ENCODING;
+        endcase
+      end
+    end
+  end
 
   assign drawingRequest = (RGBout != TRANSPARENT_ENCODING) ? 1'b1 : 1'b0;
 
