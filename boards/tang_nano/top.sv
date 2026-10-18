@@ -70,7 +70,7 @@ module top #(
   // (script closed, cable pulled) release everything instead of sticking.
   localparam int TIMEOUT = CLK_HZ / 2;
   logic [$clog2(TIMEOUT+1)-1:0] quiet;
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       buttons <= '0;
       quiet   <= '0;

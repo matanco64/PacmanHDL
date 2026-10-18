@@ -16,7 +16,7 @@ module uart_rx #(
   logic [3:0]  bitIdx;      // 0 = idle, 1..8 data bits, 9 = stop bit
   logic [7:0]  shift;
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       rxSync <= 2'b11;
       cnt    <= '0;

@@ -55,7 +55,7 @@ logic [0:15][0:63] level = '{
 
 // module (ff) to get the pixel color from the array 	 
 // The lookup is a reset-free registered read so it maps to block RAM; the
-// async reset only clears the "inside" flag, which gives the same output as
+// reset only clears the "inside" flag, which gives the same output as
 // resetting drawingRequest directly.
 
 logic glyph [0:2047];  // {text, y, x}
@@ -72,7 +72,7 @@ logic glyphPixel, insideQ;
 always_ff@(posedge clk)
 	glyphPixel <= glyph[{text, offsetY[3:0], offsetX[5:0]}];
 
-always_ff@(posedge clk or negedge resetN)
+always_ff@(posedge clk)
 begin
 	if(!resetN)
 		insideQ <= 1'b0;

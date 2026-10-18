@@ -60,7 +60,7 @@ module	objects_mux	(
 				   output	logic	[7:0] RGBOut
 );
 
-always_ff@(posedge clk or negedge resetN)
+always_ff@(posedge clk)
 begin
 	if(!resetN) begin
 			RGBOut	<= 8'b0;

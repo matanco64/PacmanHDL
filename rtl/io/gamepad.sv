@@ -41,7 +41,7 @@ module gamepad (
 
   // Start toggles pause (on the DE-10 this was a slide switch)
   logic startPrev;
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       startPrev <= 1'b0;
       pauseN    <= 1'b1;

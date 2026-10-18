@@ -110,7 +110,7 @@ module map_updater # (
 
   
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       prevTileX <= 5'd0;
       prevTileY <= 5'd0;
@@ -122,7 +122,7 @@ module map_updater # (
   end
 
   // Breakable walls placement state machine
-always_ff @(posedge clk or negedge resetN)
+always_ff @(posedge clk)
 	begin
 	  if (!resetN) begin
 		 addBreak_st <= PRE_PLACE;
@@ -167,7 +167,7 @@ always_ff @(posedge clk or negedge resetN)
 	end
 
   // collision detection
-always_ff @(posedge clk or negedge resetN) begin
+always_ff @(posedge clk) begin
   if (!resetN) begin
     coinsCollected      <= 0;
     powerCollected      <= 0;
@@ -202,7 +202,7 @@ always_ff @(posedge clk or negedge resetN) begin
  end
 
  // pickup placement logic
- always_ff @(posedge clk or negedge resetN) begin
+ always_ff @(posedge clk) begin
    if (!resetN) begin
      currPicUp <= 0;
      fruitSpawnPending <= 1'b0;

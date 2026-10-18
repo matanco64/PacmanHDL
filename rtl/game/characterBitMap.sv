@@ -144,7 +144,7 @@ module characterBitMap (
 
   // The shape lookup is a reset-free registered read so it maps to block RAM;
   // everything else the colour depends on is registered alongside it (with
-  // the async reset), so RGBout is the same as the original output register.
+  // the reset), so RGBout is the same as the original output register.
   (* ram_style = "block" *) logic [3:0] shapes [0:255];  // {power, ghostShape} at {srcY, srcX}
   initial
     for (int y = 0; y < OBJECT_HEIGHT_Y; y++)
@@ -157,7 +157,7 @@ module characterBitMap (
   always_ff @(posedge clk)
     shapePixel <= shapes[{srcY[3:0], srcX[3:0]}];
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       drawQ    <= 1'b0;
       powerUpQ <= 1'b0;

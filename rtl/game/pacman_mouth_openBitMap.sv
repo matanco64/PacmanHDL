@@ -123,7 +123,7 @@ end
 logic [3:0] frameCnt;
 logic       mouthOpen;
 
-always_ff @(posedge clk or negedge resetN) begin
+always_ff @(posedge clk) begin
     if (!resetN) begin
         frameCnt  <= 4'd0;
         mouthOpen <= 1'b0;
@@ -148,7 +148,7 @@ end
 
 // synchronous output generation (keeps your original reset behavior)
 // The bitmap lookup is a reset-free registered read so it maps to block RAM;
-// the control bits are registered alongside it (with the async reset) and the
+// the control bits are registered alongside it (with the reset) and the
 // colour is picked from both, giving the same RGBout as the original register.
 (* ram_style = "block" *) logic [1:0] sprite [0:255];  // {open, closed} at {srcY, srcX}
 initial
@@ -162,7 +162,7 @@ logic       drawQ, recoveringQ, recoverToggleQ, mouthOpenQ;
 always_ff @(posedge clk)
     spritePixel <= sprite[{srcY[3:0], srcX[3:0]}];
 
-always_ff @(posedge clk or negedge resetN) begin
+always_ff @(posedge clk) begin
     if (!resetN) begin
         drawQ          <= 1'b0;
         recoveringQ    <= 1'b0;

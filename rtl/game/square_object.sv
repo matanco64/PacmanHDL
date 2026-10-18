@@ -44,7 +44,7 @@ assign	insideBracket  = below(dX, OBJECT_WIDTH_X) && below(dY, OBJECT_HEIGHT_Y);
 
 
 //////////--------------------------------------------------------------------------------------------------------------=
-always_ff@(posedge clk or negedge resetN)
+always_ff@(posedge clk)
 begin
 	if(!resetN) begin
 		RGBout			<=	8'b0;

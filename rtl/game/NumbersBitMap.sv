@@ -199,7 +199,7 @@ bit [0:9][0:15][0:15] number_bitmap = '{
 
 // module (ff) to get the pixel color from the array 	 
 // The lookup is a reset-free registered read so it maps to block RAM; the
-// async reset only clears the "inside" flag, which gives the same output as
+// reset only clears the "inside" flag, which gives the same output as
 // resetting drawingRequest directly.
 
 logic glyph [0:2559];  // {digit, y, x}; digits 10..15 are blank (see insideQ)
@@ -215,7 +215,7 @@ logic glyphPixel, insideQ;
 always_ff@(posedge clk)
 	glyphPixel <= glyph[{digit, offsetY[3:0], offsetX[3:0]}];
 
-always_ff@(posedge clk or negedge resetN)
+always_ff@(posedge clk)
 begin
 	if(!resetN)
 		insideQ <= 1'b0;

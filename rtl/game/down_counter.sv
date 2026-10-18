@@ -19,10 +19,10 @@ module down_counter
    );
 
 // Down counter
-always_ff @(posedge clk or negedge resetN)
+always_ff @(posedge clk)
    begin
 	      
-      if ( !resetN )	begin// Asynchronic reset
+      if ( !resetN )	begin// synchronous reset
 			count <= 4'h0;
 		end
 				

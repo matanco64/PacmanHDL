@@ -54,7 +54,7 @@ module sideBitMapV1	(
   logic inside_d1;
   logic [2:0] state_d1;
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       inside_d1 <= 1'b0;
       state_d1  <= PLAYING_ST;
@@ -78,7 +78,7 @@ module sideBitMapV1	(
   end
 
   // Final registered output (optional; you can make it purely combinational if you like)
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       drawingRequest <= 1'b0;
     end else begin

@@ -14,7 +14,7 @@ module level (
     logic level_key_prev;
 	 logic winFlag;
 
-    always_ff @(posedge clk or negedge resetN) begin
+    always_ff @(posedge clk) begin
         if (!resetN) begin
             level <= 4'd1;           // Start at level 1
             level_key_prev <= 1'b1;  // Assume button is released (high)

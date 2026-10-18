@@ -8,7 +8,7 @@ module counter_initializer (
   // --- sync external signal driven by switch---
   logic pauseN_sync;
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       pauseN_sync <= 1'b1;
     end else begin
@@ -27,7 +27,7 @@ module counter_initializer (
   SMcounter_t SMcounter;
   SMcounter_t prev_SMcounter;
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       SMcounter   <= s_idle;
       countLoadN  <= 1'b1;

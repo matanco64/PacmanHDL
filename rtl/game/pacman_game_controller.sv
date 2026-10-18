@@ -87,7 +87,7 @@ module pacman_game_controller (
   end
 
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       ghostFlag  <= 1'b0;
       currLives  <= START_HEARTS;
@@ -128,7 +128,7 @@ module pacman_game_controller (
   // sticky logic - up for frame
   logic collision_pac_power_reg;
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       collision_pac_power_reg <= 1'b0;
     end else if (currentState == RESET_ST) begin
@@ -143,7 +143,7 @@ module pacman_game_controller (
   // ------------------------------------------------------------
   // Sequential FSM and counters
   // ------------------------------------------------------------
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       currentState   <= RESET_ST;
       lastState      <= RESET_ST;

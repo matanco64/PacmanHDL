@@ -329,15 +329,15 @@ module map1_drawer (
   logic       shine;
   logic       togglePow;
   
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       secCnt    <= 0;
       pulseCnt  <= 0;
       shine     <= 0;
       togglePow <= 0;
       // was rnd ^ (pixelX / TILE_SIZE) ^ (pixelY / TILE_SIZE): during reset the
-      // LFSR holds 1 and the scan is at (0,0), so that is always 1. A constant
-      // avoids an async-load flip-flop, which Gowin can only emulate with latches.
+      // LFSR holds 1 and the scan is at (0,0), so that is always 1, and a
+      // constant needs no logic.
       frameRnd  <= 8'd1;
     end else if (pauseN && gameState != WIN_ST && gameState != LOSE_ST) begin
 
@@ -369,7 +369,7 @@ module map1_drawer (
   // ---------------------------------------------------------------------------
   // rgb output logic + map update
   // ---------------------------------------------------------------------------
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
 
     if (!resetN) begin
       RGBout <= 8'b0;
@@ -580,7 +580,7 @@ module map1_drawer (
   // decide and write back one clock later.
   // ---------------------------------------------------------------------------
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       breakCheck <= 1'b0;
       breakAddr  <= '0;

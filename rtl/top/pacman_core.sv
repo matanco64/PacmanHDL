@@ -34,7 +34,7 @@ module pacman_core #(
   logic [3:0]  keyPadQ;
   logic        keyPadValidQ, starQ, slashQ, numQ, pauseNQ, turboQ, level_keyQ;
 
-  always_ff @(posedge clk or negedge resetN)
+  always_ff @(posedge clk)
     if (!resetN) coreResetN <= 1'b0;
     else         coreResetN <= 1'b1;
 

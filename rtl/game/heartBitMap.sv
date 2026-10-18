@@ -80,7 +80,7 @@ end
 
 // -----------------------------------------------------------------------------
 // Synchronous output
-always_ff @(posedge clk or negedge resetN) begin
+always_ff @(posedge clk) begin
     if (!resetN) begin
         RGBout 	<= TRANSPARENT_ENCODING;
     end else begin

@@ -34,7 +34,7 @@ module lcd_timing #(
   // h/v count from the first active pixel; blanking is at the end of the line
   logic [10:0] h, v;
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       h <= '0;
       v <= '0;

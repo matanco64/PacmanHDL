@@ -73,9 +73,8 @@ module ghost_move (
   logic wasInFrightened;  // Track if we just entered frightened mode
 
   logic signed [INTERNAL_DATA_BITS - 1:0] targetX, targetY;
-  logic signed [INTERNAL_DATA_BITS - 1:0] distUp, distDown, distLeft, distRight;
   logic [1:0] nextDir;
-  logic [7:0] lfsr;
+  logic [7:0] lfsr, lfsrAhead;
   logic [1:0] rnd;
   assign rnd = lfsr[1:0];
 
@@ -84,8 +83,6 @@ module ghost_move (
   logic aligned_to_grid;
 
   logic signed [10:0] baseX, baseY, tileX, tileY;
-  logic signed [10:0] newX_up, newY_up, newX_down, newY_down;
-  logic signed [10:0] newX_left, newY_left, newX_right, newY_right;
 
   // Collision detection
   logic collidedAny, collidedThisGhost;
@@ -216,8 +213,8 @@ module ghost_move (
             endcase
           end
           2'd2: begin  // Inky - random offset
-            targetX = pacmanX + (rnd[0] ? 2 * TILE_PIXELS : -2 * TILE_PIXELS);
-            targetY = pacmanY + (rnd[1] ? 2 * TILE_PIXELS : -2 * TILE_PIXELS);
+            targetX = pacmanX + (lfsrAhead[0] ? 2 * TILE_PIXELS : -2 * TILE_PIXELS);
+            targetY = pacmanY + (lfsrAhead[1] ? 2 * TILE_PIXELS : -2 * TILE_PIXELS);
           end
           2'd3: begin  // Clyde - distance dependent
             dx = (Xposition / FIXED_POINT_MULTIPLIER) - pacmanX;
@@ -243,38 +240,81 @@ module ghost_move (
   end
 
   // ---------------------------------------------------------------------------
-  // Distance calculation (Manhattan distance)
+  // Chase/scatter direction, pipelined
   // ---------------------------------------------------------------------------
+  // The choice is only used at startOfFrame, and positions, mode and Pac-Man
+  // hold still for the clocks before it, so it is computed over PIPE_STAGES
+  // registered steps instead of in one clock:
+  //   1. target and the four neighbour tiles   2. per-axis distances
+  //   3. Manhattan distance per direction      4. pairwise comparisons
+  // Inky's random offset uses the LFSR value it will have when the result is
+  // used (the LFSR steps every clock). Wall checks, lastDir and the tie-break
+  // bits are cheap and stay current.
+  localparam int PIPE_STAGES = 4;
+
+  logic signed [10:0] tgtXQ, tgtYQ;
+  logic signed [10:0] colXQ, leftXQ, rightXQ, rowYQ, upYQ, downYQ;
+  logic signed [10:0] adColX, adLeftX, adRightX, adRowY, adUpY, adDownY;
+  logic signed [INTERNAL_DATA_BITS - 1:0] manDist [4];  // indexed by direction
+  logic [3:0] lt [4], le [4];  // lt[d][j]: manDist[d] < manDist[j], for j < d
+
+  always_comb begin
+    lfsrAhead = lfsr;
+    for (int i = 0; i < PIPE_STAGES; i++)
+      lfsrAhead = {lfsrAhead[6:0], lfsrAhead[7] ^ lfsrAhead[5] ^ lfsrAhead[4] ^ lfsrAhead[3]};
+  end
+
   always_comb begin
     baseX = Xposition / FIXED_POINT_MULTIPLIER;
     baseY = Yposition / FIXED_POINT_MULTIPLIER;
     tileX = baseX / TILE_PIXELS;
     tileY = baseY / TILE_PIXELS;
+  end
 
-    newX_up = tileX * TILE_PIXELS;
-    newY_up = (tileY - 1) * TILE_PIXELS;
-    newX_down = tileX * TILE_PIXELS;
-    newY_down = (tileY + 1) * TILE_PIXELS;
-    newX_left = (tileX - 1) * TILE_PIXELS;
-    newY_left = tileY * TILE_PIXELS;
-    newX_right = (tileX + 1) * TILE_PIXELS;
-    newY_right = tileY * TILE_PIXELS;
+  always_ff @(posedge clk) begin
+    tgtXQ   <= targetX[10:0];
+    tgtYQ   <= targetY[10:0];
+    colXQ   <= tileX * TILE_PIXELS;
+    leftXQ  <= (tileX - 1) * TILE_PIXELS;
+    rightXQ <= (tileX + 1) * TILE_PIXELS;
+    rowYQ   <= tileY * TILE_PIXELS;
+    upYQ    <= (tileY - 1) * TILE_PIXELS;
+    downYQ  <= (tileY + 1) * TILE_PIXELS;
 
-    distUp = absDiff(newX_up, targetX) + absDiff(newY_up, targetY);
-    distDown = absDiff(newX_down, targetX) + absDiff(newY_down, targetY);
-    distLeft = absDiff(newX_left, targetX) + absDiff(newY_left, targetY);
-    distRight = absDiff(newX_right, targetX) + absDiff(newY_right, targetY);
+    adColX   <= absDiff(colXQ, tgtXQ);
+    adLeftX  <= absDiff(leftXQ, tgtXQ);
+    adRightX <= absDiff(rightXQ, tgtXQ);
+    adRowY   <= absDiff(rowYQ, tgtYQ);
+    adUpY    <= absDiff(upYQ, tgtYQ);
+    adDownY  <= absDiff(downYQ, tgtYQ);
+
+    manDist[DIR_UP]    <= adColX + adUpY;
+    manDist[DIR_DOWN]  <= adColX + adDownY;
+    manDist[DIR_LEFT]  <= adLeftX + adRowY;
+    manDist[DIR_RIGHT] <= adRightX + adRowY;
+
+    for (int d = 0; d < 4; d++)
+      for (int j = 0; j < 4; j++) begin
+        lt[d][j] <= (manDist[d] < manDist[j]);
+        le[d][j] <= (manDist[d] <= manDist[j]);
+      end
   end
 
   // ---------------------------------------------------------------------------
   // Direction selection
   // ---------------------------------------------------------------------------
   always_comb begin
-    // scratch values with defaults so they don't infer latches; minDist only
-    // needs to exceed the largest Manhattan distance (2 * 2047), not 32 bits
-    logic signed [INTERNAL_DATA_BITS:0] minDist;
+    // Chase/scatter: visit Up, Down, Left, Right in order; an allowed direction
+    // wins if it is strictly closer than every allowed one before it, or ties
+    // the closest so far and its LFSR bit is set. Same result as the original
+    // running-minimum loop, written so it only needs the registered compares.
+    logic [3:0] allowed;
     logic [1:0] bestDir;
-    minDist = {1'b0, {INTERNAL_DATA_BITS{1'b1}}};
+    logic       ltAll, leAll;
+    allowed = {canMoveRight && DIR_RIGHT != opposite(lastDir),
+               canMoveLeft  && DIR_LEFT  != opposite(lastDir),
+               canMoveDown  && DIR_DOWN  != opposite(lastDir),
+               canMoveUp    && DIR_UP    != opposite(lastDir)};
     bestDir = lastDir;
 
     nextDir = ghostDir;
@@ -312,59 +352,28 @@ module ghost_move (
         end
       endcase
     end else begin
-      // Chase/Scatter - best direction toward target
-      minDist = {1'b0, {INTERNAL_DATA_BITS{1'b1}}};
-      bestDir = lastDir;
-
-      // Check all possible directions and pick the closest one
-      if (canMoveUp && DIR_UP != opposite(lastDir)) begin
-        if (distUp < minDist) begin
-          minDist = distUp;
-          bestDir = DIR_UP;
-        end else if (distUp == minDist && lfsr[0]) begin
-          bestDir = DIR_UP;  // Random tie-break
-        end
-      end
-
-      if (canMoveDown && DIR_DOWN != opposite(lastDir)) begin
-        if (distDown < minDist) begin
-          minDist = distDown;
-          bestDir = DIR_DOWN;
-        end else if (distDown == minDist && lfsr[1]) begin
-          bestDir = DIR_DOWN;
-        end
-      end
-
-      if (canMoveLeft && DIR_LEFT != opposite(lastDir)) begin
-        if (distLeft < minDist) begin
-          minDist = distLeft;
-          bestDir = DIR_LEFT;
-        end else if (distLeft == minDist && lfsr[2]) begin
-          bestDir = DIR_LEFT;
-        end
-      end
-
-      if (canMoveRight && DIR_RIGHT != opposite(lastDir)) begin
-        if (distRight < minDist) begin
-          minDist = distRight;
-          bestDir = DIR_RIGHT;
-        end else if (distRight == minDist && lfsr[3]) begin
-          bestDir = DIR_RIGHT;
-        end
+      for (int d = 0; d < 4; d++) begin
+        ltAll = 1'b1;
+        leAll = 1'b1;
+        for (int j = 0; j < d; j++)
+          if (allowed[j]) begin
+            ltAll &= lt[d][j];
+            leAll &= le[d][j];
+          end
+        if (allowed[d] && (ltAll || (leAll && lfsr[d]))) bestDir = 2'(d);
       end
 
       // If no better direction found, turn back (dead end)
       if (bestDir == lastDir) bestDir = opposite(lastDir);
 
       nextDir = bestDir;
-
     end
   end
 
   // ---------------------------------------------------------------------------
   // LFSR for randomness
   // ---------------------------------------------------------------------------
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) lfsr <= 8'hB1;
     else lfsr <= {lfsr[6:0], lfsr[7] ^ lfsr[5] ^ lfsr[4] ^ lfsr[3]};
   end
@@ -372,7 +381,7 @@ module ghost_move (
   // ---------------------------------------------------------------------------
   // Main state machine
   // ---------------------------------------------------------------------------
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
       Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
@@ -580,7 +589,7 @@ module ghost_move (
   // Registered: positions only change at startOfFrame (vertical blanking), so
   // one clock of delay is invisible, and it keeps the signed divide off the
   // long timing paths into the tile-neighbour and collision logic.
-  always_ff @(posedge clk or negedge resetN)
+  always_ff @(posedge clk)
     if (!resetN) begin
       topLeftX <= INITIAL_X;
       topLeftY <= INITIAL_Y;

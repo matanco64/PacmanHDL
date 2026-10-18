@@ -13,7 +13,7 @@ module random2 #(
 
     // LFSR taps depend on WIDTH (primitive polynomial)
     // Example: WIDTH=8 uses taps at [7,5,4,3]
-    always_ff @(posedge clk or negedge resetN) begin
+    always_ff @(posedge clk) begin
         if (!resetN) begin
             lfsr <= 'h1;   // must not be zero
         end else begin

@@ -60,7 +60,7 @@ module pacman_move (
   // 16-bit signed instead of `int`: positions are pixels * 16 (< 11k) and
   // speeds are small, so values are unchanged while the adders and compares
   // are half as wide. (Not `int` also because its 2-state power-up value of 0
-  // conflicts with a non-zero async reset value on Gowin flip-flops.)
+  // conflicts with a non-zero reset value on Gowin flip-flops.)
   logic signed [15:0] speed;
   logic signed [15:0] prevSpeed;
   logic signed [15:0] Xposition;
@@ -96,7 +96,7 @@ module pacman_move (
 
 
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       SM_Motion <= IDLE_ST;
       Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
@@ -310,7 +310,7 @@ module pacman_move (
   // Registered: positions only change at startOfFrame (vertical blanking), so
   // one clock of delay is invisible, and it keeps the signed divide off the
   // long timing paths into the tile-neighbour and collision logic.
-  always_ff @(posedge clk or negedge resetN)
+  always_ff @(posedge clk)
     if (!resetN) begin
       topLeftX <= INITIAL_X;
       topLeftY <= INITIAL_Y;

@@ -38,7 +38,7 @@ module around_character #(
   localparam int LEFT_MSB  = 2*TILE_BITS-1;
   localparam int RIGHT_MSB = 1*TILE_BITS-1;
 
-  always_ff @(posedge clk or negedge resetN) begin
+  always_ff @(posedge clk) begin
     if (!resetN) begin
       tiles_around <= {4{WALL}};
     end else begin

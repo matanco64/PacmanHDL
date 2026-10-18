@@ -14,8 +14,8 @@ with a 5" 800×480 RGB LCD and builds with open-source tools only.
 
 | Target | Fits | Timing (33.75 MHz) | |
 |---|---|---|---|
-| Tang Nano 20K (GW2AR-18) | 37% | 43.6 MHz, passes | main target |
-| Tang Nano 9K (GW1NR-9) | 90% | ~19–20 MHz, fails | still being pipelined |
+| Tang Nano 20K (GW2AR-18) | 37% | 82 MHz, passes | roomy |
+| Tang Nano 9K (GW1NR-9) | 89% | 44 MHz, passes | tight on logic |
 | Simulator (Verilator + SDL2) | — | — | playable, ~13 fps (slow motion) |
 
 Not yet tested on real hardware. Sound is not ported yet: the DE-10 used its
@@ -33,7 +33,8 @@ openFPGALoader, Verilator) and put its `bin/` on your `PATH`. CI uses release
 ## Build and program
 
 ```sh
-make BOARD=tang_nano_20k          # or tang_nano_9k (default)
+make                              # Tang Nano 9K (default)
+make BOARD=tang_nano_20k
 make BOARD=tang_nano_20k prog     # load into SRAM
 make BOARD=tang_nano_20k flash    # write to on-board flash
 ```
@@ -87,7 +88,9 @@ tools/      MIF -> hex, resource report, map generator helpers
 every 25th frame against `sim/golden.sha256`. The golden run was recorded
 from the original DE-10 design and verified pixel for pixel. Every change
 made for the Tang port reproduces it exactly: the map moved to block RAM,
-bitmaps moved to ROM, and arithmetic was narrowed. Re-record with
+bitmaps moved to ROM, arithmetic was narrowed, resets became synchronous, and
+the ghosts' direction choice was spread over four pipeline stages (it is only
+needed once per frame). Re-record with
 `UPDATE=1 sim/regress.sh` only for intentional gameplay changes.
 
 ## Known quirks inherited from the DE-10 version

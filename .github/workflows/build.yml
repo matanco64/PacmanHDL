@@ -11,8 +11,6 @@ jobs:
       fail-fast: false
       matrix:
         board: [tang_nano_20k, tang_nano_9k]
-    # the 9K fits but does not meet 33.75 MHz timing yet
-    continue-on-error: ${{ matrix.board == 'tang_nano_9k' }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: YosysHQ/setup-oss-cad-suite@v4

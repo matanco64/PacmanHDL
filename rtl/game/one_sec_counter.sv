@@ -30,10 +30,10 @@ parameter int CLK_HZ = 31_500_000 ;// board clock
 
 
 	
-   always_ff @( posedge clk or negedge resetN )
+   always_ff @( posedge clk )
    begin
 	
-		// asynchronous reset
+		// synchronous reset
 		if ( !resetN ) begin
 			one_sec <= 1'b0;
 			oneSecCount <= 32'd0;

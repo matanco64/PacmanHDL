@@ -110,7 +110,7 @@ module map_manager #(
 
 
 	// ========Main state machine================================
-	always_ff @(posedge clk or negedge resetN) begin
+	always_ff @(posedge clk) begin
 	  if (!resetN) begin
 		 // Load the original map on reset
 		 currentMapIndex <= N_NEW_MAPS;  // Start with original
