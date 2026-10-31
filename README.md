@@ -21,6 +21,9 @@ with a 5" 800×480 RGB LCD and builds with open-source tools only.
 Not yet tested on real hardware. Sound is not ported yet: the DE-10 used its
 WM8731 codec, and the 20K has an onboard amplifier to target.
 
+How the port was done (fitting the 9K, closing timing, verification) is
+written up in [docs/PORTING.md](docs/PORTING.md).
+
 ## Tools
 
 Install [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build/releases)
@@ -80,6 +83,7 @@ assets/     ROM contents ($readmemh): maps, pickups, status icons
 sim/        Verilator: playable SDL front end, headless regression
 host/       PC-side controller script
 tools/      MIF -> hex, resource report, map generator helpers
+docs/       porting notes
 ```
 
 ## Regression
