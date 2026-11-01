@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PacmanHDL</title>
+<meta name="description" content="Pac-Man written in SystemVerilog for FPGAs, playable in the browser as a cycle-accurate Verilator simulation compiled to WebAssembly.">
+<style>
+  :root {
+    --bg: #0b0d12; --panel: #141821; --text: #e8eaf0; --muted: #98a0b3;
+    --accent: #ffd23f; --line: #262c3a; --key: #1d2230;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 4px; letter-spacing: .5px; }
+  h1 span { color: var(--accent); }
+  h2 { font-size: 1.15rem; margin: 40px 0 12px; }
+  .lede { color: var(--muted); margin: 0 0 24px; max-width: 72ch; }
+  a { color: var(--accent); }
+  code { font: .9em ui-monospace, monospace; }
+  .screen { position: relative; background: #000; border: 1px solid var(--line); border-radius: 8px;
+            overflow: hidden; aspect-ratio: 4 / 3; width: 100%; }
+  canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+  .overlay { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted);
+             background: rgba(0,0,0,.6); font-size: 1.1rem; text-align: center; padding: 16px; }
+  .overlay[hidden] { display: none; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between;
+         margin: 10px 0 0; color: var(--muted); font-size: .9rem; }
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px 24px;
+              background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-top: 16px; }
+  .controls div { display: flex; gap: 10px; align-items: baseline; }
+  kbd { background: var(--key); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px;
+        padding: 1px 6px; font: 600 .8rem ui-monospace, monospace; color: var(--text); white-space: nowrap; }
+  .pad { display: none; gap: 6px; justify-content: center; margin-top: 12px;
+         grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(2, 48px); }
+  .pad button { background: var(--key); color: var(--text); border: 1px solid var(--line); border-radius: 8px;
+                font-size: 1.2rem; touch-action: none; }
+  .pad .up { grid-column: 2; }
+  @media (pointer: coarse) { .pad { display: grid; } }
+  .photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .photos figure { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .photos img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #000; }
+  .photos .slot { aspect-ratio: 4 / 3; display: grid; place-items: center; color: var(--muted); font-size: .9rem;
+                  border-bottom: 1px dashed var(--line); padding: 16px; text-align: center; }
+  .photos figcaption { padding: 8px 12px; color: var(--muted); font-size: .9rem; }
+  .how { color: var(--muted); max-width: 75ch; }
+  .how li { margin: 4px 0; }
+  footer { margin-top: 48px; color: var(--muted); font-size: .85rem; max-width: 75ch; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Pacman<span>HDL</span></h1>
+  <p class="lede">Pac-Man built entirely in hardware: maze, four ghosts with their own chase rules, power pellets,
+    fruit, breakable walls and five levels, all computed in SystemVerilog as the screen is scanned. There is no CPU and
+    no frame buffer. What you play here is not a re-implementation. It is the actual RTL, simulated clock cycle by
+    clock cycle with Verilator and compiled to WebAssembly, with the display output sampled into the canvas.</p>
+
+  <div class="screen">
+    <canvas id="screen" width="640" height="480" aria-label="Game screen"></canvas>
+    <div class="overlay" id="overlay">Loading the hardware design…</div>
+  </div>
+  <div class="bar">
+    <span>Keyboard controls are below. The game starts after a short countdown.</span>
+    <span id="stats">–</span>
+  </div>
+  <div class="pad" id="pad">
+    <button class="up" data-k="1" aria-label="Up">▲</button>
+    <button data-k="4" aria-label="Left">◀</button><button data-k="2" aria-label="Down">▼</button><button data-k="8" aria-label="Right">▶</button>
+  </div>
+
+  <div class="controls">
+    <div><kbd>← ↑ → ↓</kbd><span>move (or WASD)</span></div>
+    <div><kbd>P</kbd> <kbd>Enter</kbd><span>pause / resume</span></div>
+    <div><kbd>Z</kbd> <kbd>X</kbd> <kbd>C</kbd><span>break a wall, in that order</span></div>
+    <div><kbd>N</kbd><span>next level (board button S2)</span></div>
+    <div><kbd>R</kbd><span>reset (board button S1)</span></div>
+  </div>
+
+  <h2>On the real hardware</h2>
+  <div class="photos">
+    <!-- Put photos in web/site/photos/ and replace a slot with:
+         <figure><img src="photos/de10.jpg" alt="…"><figcaption>…</figcaption></figure> -->
+    <figure><div class="slot">photo: DE10-Standard running the game</div><figcaption>The original: Intel Cyclone V on the DE10-Standard, 640×480 VGA</figcaption></figure>
+    <figure><div class="slot">photo: gameplay on the VGA monitor</div><figcaption>Gameplay on the VGA monitor</figcaption></figure>
+    <figure><div class="slot">photo: Tang Nano 9K with the 5" LCD</div><figcaption>The port: Sipeed Tang Nano 9K (Gowin GW1NR-9), open-source toolchain</figcaption></figure>
+  </div>
+
+  <h2>How this works</h2>
+  <ol class="how">
+    <li>The game core is the same RTL that is synthesized for the Tang Nano boards. It is checked frame by frame
+      against a golden run recorded from the original DE10-Standard design.</li>
+    <li>Verilator compiles it to C++, and Emscripten compiles that to WebAssembly. A Web Worker clocks the design one
+      pixel at a time, about 320,000 cycles per frame, and samples the display signals (RGB, data enable, VSYNC) into
+      the canvas the way a monitor would.</li>
+    <li>Your keys become the same 8-button mask the board receives over USB-serial.</li>
+  </ol>
+  <p class="how">Originally a pair project in the Technion EE Lab 1A course (044157), then ported to open-source tools.
+    Source: <a href="https://github.com/matanco64/PacmanHDL">github.com/matanco64/PacmanHDL</a></p>
+
+  <footer>Nothing is skipped: every clock cycle of the hardware is simulated. On most computers that is slower than
+    the board's 73 frames per second, so the game runs in slow motion. The speed is shown under the screen.</footer>
+</main>
+<script src="main.js"></script>
+</body>
+</html>

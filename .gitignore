@@ -20,3 +20,7 @@ sim_out/
 build/
 obj_dir/
 __pycache__/
+
+# browser build output (make web)
+web/site/pacman.js
+web/site/pacman.wasm

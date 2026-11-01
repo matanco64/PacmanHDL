@@ -17,6 +17,7 @@ with a 5" 800×480 RGB LCD and builds with open-source tools only.
 | Tang Nano 20K (GW2AR-18) | 37% | 82 MHz, passes | roomy |
 | Tang Nano 9K (GW1NR-9) | 89% | 44 MHz, passes | tight on logic |
 | Simulator (Verilator + SDL2) | — | — | playable, ~13 fps (slow motion) |
+| Browser (Verilator + WebAssembly) | — | — | playable, ~10 fps (slow motion) |
 
 Not yet tested on real hardware. Sound is not ported yet: the DE-10 used its
 WM8731 codec, and the 20K has an onboard amplifier to target.
@@ -72,6 +73,33 @@ No board? `make play` runs the same RTL in a window (R resets, N skips a
 level). It runs at about 13 of the game's 73 frames per second, so the game
 plays in slow motion.
 
+## Play in the browser
+
+`web/` compiles the same Verilator model to WebAssembly and runs it in a
+static page: a Web Worker clocks `sim/sim_top.sv` one pixel at a time, samples
+`rgb`/`de`/`vsync` into a canvas, and sends key presses as the same 8-button
+mask the board receives. The keys match the table above, plus R (reset) and
+N (next level).
+
+Building it needs [emsdk](https://emscripten.org/docs/getting_started/downloads.html)
+activated (`source emsdk_env.sh`) next to OSS CAD Suite:
+
+```sh
+make web                          # -> web/site/pacman.js + pacman.wasm
+python3 web/serve.py              # http://localhost:8000
+make web-bench                    # native build of the same harness, prints fps
+```
+
+The page is plain static files (`web/site/`), so GitHub Pages can host it.
+`.github/workflows/pages.yml` builds and deploys it on pushes to `main` once
+Pages is set to "GitHub Actions" in the repository settings. Photos of the
+hardware go in `web/site/photos/` (the slots are marked in `index.html`).
+
+Speed: about 10 of the game's 73 frames per second in Chrome on a laptop,
+the same as the native build. Nothing is skipped, so the game plays in slow
+motion. The web build compiles the model with `-O3`, since Verilator's
+default `-Os` runs at half the speed.
+
 ## Layout
 
 ```
@@ -81,6 +109,7 @@ rtl/io/     LCD timing, UART receiver, gamepad mapping
 boards/     Tang Nano top level and pin constraints (9K, 20K)
 assets/     ROM contents ($readmemh): maps, pickups, status icons
 sim/        Verilator: playable SDL front end, headless regression
+web/        browser build: WebAssembly harness and static page
 host/       PC-side controller script
 tools/      MIF -> hex, resource report, map generator helpers
 docs/       porting notes

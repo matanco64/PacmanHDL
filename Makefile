@@ -4,6 +4,7 @@
 #   make [BOARD=tang_nano_9k|tang_nano_20k]   bitstream in build/<board>/
 #   make prog / make flash                    load into SRAM / write to flash
 #   make play                                 play the RTL in a window (Verilator + SDL2)
+#   make web                                  browser build in web/site (Verilator + Emscripten)
 #   make regress                              compare against the recorded golden run
 #   make lint                                 Verilator lint
 
@@ -73,6 +74,31 @@ build/sim/play/Vsim_top: $(SIM_SRC) sim/play.cpp $(ASSETS)
 play: build/sim/play/Vsim_top
 	$<
 
+# Browser build: the same model compiled to WebAssembly (needs emsdk's em++ on PATH).
+# OPT_FAST=-O3: Verilator compiles the model with -Os by default, which halves the speed.
+# CFG_LDLIBS_THREADS: the model is single-threaded, so drop -pthread/-latomic.
+# The ROM images are embedded at the paths the RTL's $$readmemh calls use.
+WEB_EXPORTS := _pw_init,_pw_reset,_pw_set_inputs,_pw_run_frame,_pw_cycles
+WEB_LDFLAGS := -O3 -sMODULARIZE=1 -sEXPORT_NAME=createPacman -sENVIRONMENT=worker \
+  -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_FUNCTIONS=$(WEB_EXPORTS) -sEXPORTED_RUNTIME_METHODS=HEAPU8 \
+  --embed-file $(CURDIR)/assets@/assets
+WEB_MAKEFLAGS := CXX=em++ LINK=em++ AR=emar OPT_FAST=-O3 CFG_LDLIBS_THREADS=
+
+web/site/pacman.js: $(SIM_SRC) web/wasm.cpp $(ASSETS)
+	@mkdir -p build/sim/web
+	verilator $(VERILATOR_FLAGS) $(COMPACT) --Mdir build/sim/web -o pacman.js \
+	  -MAKEFLAGS "$(WEB_MAKEFLAGS)" -LDFLAGS "$(WEB_LDFLAGS)" $(SIM_SRC) web/wasm.cpp
+	cp build/sim/web/pacman.js build/sim/web/pacman.wasm web/site/
+
+web: web/site/pacman.js
+
+# native build of the browser harness: prints how fast the model runs
+web-bench: $(SIM_SRC) web/wasm.cpp $(ASSETS)
+	@mkdir -p build/sim/bench
+	verilator $(VERILATOR_FLAGS) $(COMPACT) --Mdir build/sim/bench -o bench \
+	  -MAKEFLAGS OPT_FAST=-O3 $(SIM_SRC) web/wasm.cpp
+	build/sim/bench/bench 300
+
 regress:
 	sim/regress.sh build/sim/regress
 
@@ -82,4 +108,4 @@ lint:
 clean:
 	rm -rf build
 
-.PHONY: all prog flash play regress lint clean
+.PHONY: all prog flash play web web-bench regress lint clean
