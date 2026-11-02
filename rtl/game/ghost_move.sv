@@ -1,3 +1,6 @@
+`ifndef SPEED_SCALE
+`define SPEED_SCALE 1  // steps per frame x N, for a build whose frame rate is N times lower
+`endif
 module ghost_move (
     input logic clk,
     input logic resetN,
@@ -271,7 +274,37 @@ module ghost_move (
     tileY = baseY / TILE_PIXELS;
   end
 
+  // The pipeline only has to run for its last few clocks before startOfFrame.
+  // In simulation the stages are enabled for just the final PIPE_STAGES + 2
+  // clocks of each frame (frame length measured from one startOfFrame to the
+  // next; every clock until the first frame has been measured), which spares
+  // the simulator most of its work here. The result at startOfFrame is the same.
+  // On the FPGA the gate would only cost logic, so the pipeline always runs.
+  logic pipeEn;
+`ifdef VERILATOR
+  logic [19:0] sinceSof, frameLen;
+  logic        lenKnown;
+
   always_ff @(posedge clk) begin
+    if (!resetN) begin
+      sinceSof <= '0;
+      frameLen <= '0;
+      lenKnown <= 1'b0;
+    end else if (startOfFrame) begin
+      frameLen <= sinceSof;
+      lenKnown <= 1'b1;
+      sinceSof <= '0;
+    end else begin
+      sinceSof <= sinceSof + 1'b1;
+    end
+  end
+
+  assign pipeEn = !lenKnown || (sinceSof + 20'(PIPE_STAGES + 2) >= frameLen);
+`else
+  assign pipeEn = 1'b1;
+`endif
+
+  always_ff @(posedge clk) if (pipeEn) begin
     tgtXQ   <= targetX[10:0];
     tgtYQ   <= targetY[10:0];
     colXQ   <= tileX * TILE_PIXELS;
@@ -573,10 +606,10 @@ module ghost_move (
 
           MOVE_ST: begin
             case (ghostDir)
-                DIR_UP:    if (canMoveUp) Yposition <= Yposition - MOVEMENT_SPEED;
-                DIR_DOWN:  if (canMoveDown) Yposition <= Yposition + MOVEMENT_SPEED;
-                DIR_LEFT:  if (canMoveLeft) Xposition <= Xposition - MOVEMENT_SPEED;
-                DIR_RIGHT: if (canMoveRight) Xposition <= Xposition + MOVEMENT_SPEED;
+                DIR_UP:    if (canMoveUp) Yposition <= Yposition - MOVEMENT_SPEED * `SPEED_SCALE;
+                DIR_DOWN:  if (canMoveDown) Yposition <= Yposition + MOVEMENT_SPEED * `SPEED_SCALE;
+                DIR_LEFT:  if (canMoveLeft) Xposition <= Xposition - MOVEMENT_SPEED * `SPEED_SCALE;
+                DIR_RIGHT: if (canMoveRight) Xposition <= Xposition + MOVEMENT_SPEED * `SPEED_SCALE;
             endcase
             SM_Motion <= CHANGE_ST;
           end

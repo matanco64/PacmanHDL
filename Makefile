@@ -80,7 +80,15 @@ play: build/sim/play/Vsim_top
 # unchanged, make regress passes with it).
 # CFG_LDLIBS_THREADS: the model is single-threaded, so drop -pthread/-latomic.
 # The ROM images are embedded at the paths the RTL's $$readmemh calls use.
-WEB_EXPORTS := _pw_init,_pw_reset,_pw_set_inputs,_pw_run_frame,_pw_cycles
+# WEB_SCALE=N moves Pac-Man and the ghosts N pixels per frame instead of 1 and
+# shortens the game-second to 73/N frames (CLK_HZ / N), so the browser needs N
+# times fewer frames for the same game time. N must divide the 16-px tile: 1, 2
+# or 4. 2 is the default (36.5 frames per game-second); WEB_SCALE=1 is the
+# board's exact timing, which make regress checks.
+WEB_SCALE ?= 2
+WEB_SIM := $(COMPACT) -GCLK_HZ=$(shell expr 23369344 / $(WEB_SCALE)) +define+SPEED_SCALE=$(WEB_SCALE) \
+  -fno-dfg -CFLAGS -DWEB_SCALE=$(WEB_SCALE)
+WEB_EXPORTS := _pw_init,_pw_reset,_pw_set_inputs,_pw_run_frame,_pw_cycles,_pw_game_fps
 WEB_LDFLAGS := -O3 -sMODULARIZE=1 -sEXPORT_NAME=createPacman -sENVIRONMENT=worker \
   -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_FUNCTIONS=$(WEB_EXPORTS) -sEXPORTED_RUNTIME_METHODS=HEAPU8 \
   --embed-file $(CURDIR)/assets@/assets
@@ -88,7 +96,7 @@ WEB_MAKEFLAGS := CXX=em++ LINK=em++ AR=emar OPT_FAST=-O3 CFG_LDLIBS_THREADS=
 
 web/site/pacman.js: $(SIM_SRC) web/wasm.cpp $(ASSETS)
 	@mkdir -p build/sim/web
-	verilator $(VERILATOR_FLAGS) $(COMPACT) -fno-dfg --Mdir build/sim/web -o pacman.js \
+	verilator $(VERILATOR_FLAGS) $(WEB_SIM) --Mdir build/sim/web -o pacman.js \
 	  -MAKEFLAGS "$(WEB_MAKEFLAGS)" -LDFLAGS "$(WEB_LDFLAGS)" $(SIM_SRC) web/wasm.cpp
 	cp build/sim/web/pacman.js build/sim/web/pacman.wasm web/site/
 
@@ -97,7 +105,7 @@ web: web/site/pacman.js
 # native build of the browser harness: prints how fast the model runs
 web-bench: $(SIM_SRC) web/wasm.cpp $(ASSETS)
 	@mkdir -p build/sim/bench
-	verilator $(VERILATOR_FLAGS) $(COMPACT) -fno-dfg --Mdir build/sim/bench -o bench \
+	verilator $(VERILATOR_FLAGS) $(WEB_SIM) --Mdir build/sim/bench -o bench \
 	  -MAKEFLAGS OPT_FAST=-O3 $(SIM_SRC) web/wasm.cpp
 	build/sim/bench/bench 300
 

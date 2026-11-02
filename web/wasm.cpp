@@ -82,6 +82,12 @@ EXPORT uint32_t* pw_run_frame() {
 
 EXPORT double pw_cycles() { return cycles; }
 
+#ifndef WEB_SCALE
+#define WEB_SCALE 1
+#endif
+// Frames per game-second this build is tuned for (73 on the board).
+EXPORT double pw_game_fps() { return 23369344.0 / WEB_SCALE / (656.0 * 488.0); }
+
 #ifndef __EMSCRIPTEN__
 int main(int argc, char** argv) {
   int frames = argc > 1 ? std::atoi(argv[1]) : 300;

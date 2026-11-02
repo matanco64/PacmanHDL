@@ -1,3 +1,6 @@
+`ifndef SPEED_SCALE
+`define SPEED_SCALE 1  // steps per frame x N, for a build whose frame rate is N times lower
+`endif
 module pacman_move (
 
     input logic       clk,
@@ -53,7 +56,7 @@ module pacman_move (
   localparam FIXED_POINT_MULTIPLIER = 16; // 4 bits for sub-pixel precision
   const int OBJECT_WIDTH_X = 32;
   const int OBJECT_HIGHT_Y = 32;
-  localparam NORMAL_SPEED = 16;
+  localparam NORMAL_SPEED = 16 * `SPEED_SCALE;
   localparam tileMultiplier = (TILE_PIXELS * FIXED_POINT_MULTIPLIER);
   
 

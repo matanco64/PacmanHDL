@@ -17,7 +17,7 @@ with a 5" 800×480 RGB LCD and builds with open-source tools only.
 | Tang Nano 20K (GW2AR-18) | 37% | 82 MHz, passes | roomy |
 | Tang Nano 9K (GW1NR-9) | 89% | 44 MHz, passes | tight on logic |
 | Simulator (Verilator + SDL2) | — | — | playable, ~13 fps (slow motion) |
-| Browser (Verilator + WebAssembly) | — | — | playable, ~10 fps (slow motion) |
+| Browser (Verilator + WebAssembly) | — | — | playable, ~30% of real speed |
 
 Not yet tested on real hardware. Sound is not ported yet: the DE-10 used its
 WM8731 codec, and the 20K has an onboard amplifier to target.
@@ -95,10 +95,21 @@ The page is plain static files (`web/site/`), so GitHub Pages can host it.
 Pages is set to "GitHub Actions" in the repository settings. Photos of the
 hardware go in `web/site/photos/` (the slots are marked in `index.html`).
 
-Speed: about 10 of the game's 73 frames per second in Chrome on a laptop,
-the same as the native build. Nothing is skipped, so the game plays in slow
-motion. The web build compiles the model with `-O3`, since Verilator's
-default `-Os` runs at half the speed.
+Speed: every clock is simulated, about 11 frames per second in Chrome on a
+laptop, so the game plays in slow motion, at about 30% of the board's speed.
+Two things get it there:
+
+- The web build runs at half the board's frame rate: `WEB_SCALE=2` (the
+  default) moves Pac-Man and the ghosts 2 pixels per frame instead of 1 and
+  makes the game-second 36.5 frames instead of 73. Gameplay is the same; only
+  the random draws (ghost behaviour, pickups) differ, since the generators
+  step every clock. `make web WEB_SCALE=1` builds the board's exact timing.
+- In simulation only, the ghosts' direction pipeline runs during the last few
+  clocks of each frame instead of all of them (`ifdef VERILATOR` in
+  `ghost_move.sv`; the result is identical and `make regress` checks it).
+
+The model is compiled with `-O3`, since Verilator's default `-Os` runs at
+half the speed.
 
 ## Layout
 

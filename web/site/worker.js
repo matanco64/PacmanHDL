@@ -2,7 +2,6 @@
 importScripts('pacman.js');
 
 const W = 640, H = 480;
-const BOARD_FPS = 33.75e6 / (896 * 517); // Tang Nano LCD timing: ~72.9 frames per second
 let buttons = 0, levelKeyN = 1, resetPending = false;
 
 onmessage = (e) => {
@@ -12,6 +11,7 @@ onmessage = (e) => {
 
 createPacman().then((m) => {
   m._pw_init();
+  const BOARD_FPS = m._pw_game_fps(); // ~73, or 73/N for a WEB_SCALE=N build
   postMessage({ type: 'ready' });
   let next = performance.now();
   let frames = 0, statT = performance.now();
