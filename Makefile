@@ -79,6 +79,7 @@ play: build/sim/play/Vsim_top
 # -fno-dfg: Verilator's DFG pass slows this design (9% native, ~4% in WASM; output
 # unchanged, make regress passes with it).
 # CFG_LDLIBS_THREADS: the model is single-threaded, so drop -pthread/-latomic.
+# UNAME_S=Emscripten: on a macOS host verilated.mk adds ld64-only -Wl,-U flags that wasm-ld rejects.
 # The ROM images are embedded at the paths the RTL's $$readmemh calls use.
 # WEB_SCALE=N moves Pac-Man and the ghosts N pixels per frame instead of 1 and
 # shortens the game-second to 73/N frames (CLK_HZ / N), so the browser needs N
@@ -92,7 +93,7 @@ WEB_EXPORTS := _pw_init,_pw_reset,_pw_set_inputs,_pw_run_frame,_pw_cycles,_pw_ga
 WEB_LDFLAGS := -O3 -sMODULARIZE=1 -sEXPORT_NAME=createPacman -sENVIRONMENT=worker \
   -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_FUNCTIONS=$(WEB_EXPORTS) -sEXPORTED_RUNTIME_METHODS=HEAPU8 \
   --embed-file $(CURDIR)/assets@/assets
-WEB_MAKEFLAGS := CXX=em++ LINK=em++ AR=emar OPT_FAST=-O3 CFG_LDLIBS_THREADS=
+WEB_MAKEFLAGS := CXX=em++ LINK=em++ AR=emar OPT_FAST=-O3 CFG_LDLIBS_THREADS= UNAME_S=Emscripten
 
 web/site/pacman.js: $(SIM_SRC) web/wasm.cpp $(ASSETS)
 	@mkdir -p build/sim/web
