@@ -17,7 +17,7 @@ with a 5" 800×480 RGB LCD and builds with open-source tools only.
 | Tang Nano 20K (GW2AR-18) | 37% | 82 MHz, passes | roomy |
 | Tang Nano 9K (GW1NR-9) | 89% | 44 MHz, passes | tight on logic |
 | Simulator (Verilator + SDL2) | — | — | playable, ~13 fps (slow motion) |
-| Browser (Verilator + WebAssembly) | — | — | playable, ~30% of real speed |
+| Browser (Verilator + WebAssembly) | — | — | playable, ~90% of real speed |
 
 Not yet tested on real hardware. Sound is not ported yet: the DE-10 used its
 WM8731 codec, and the 20K has an onboard amplifier to target.
@@ -95,10 +95,26 @@ The page is plain static files (`web/site/`), so GitHub Pages can host it.
 Pages is set to "GitHub Actions" in the repository settings. Photos of the
 hardware go in `web/site/photos/` (the slots are marked in `index.html`).
 
-Speed: every clock is simulated, about 11 frames per second in Chrome on a
-laptop, so the game plays in slow motion, at about 30% of the board's speed.
-Two things get it there:
+Speed: about 32 frames per second in Chrome on a laptop, close to 90% of
+the board's speed. Clocking every pixel gets about 11 (`?ff=0` on the page
+shows that). Three things get it there:
 
+- **Scan fast-forward** (`web/scanff.h`). The game draws the picture and
+  detects collisions while the raster scans, so every clock can change state,
+  but from one frame to the next almost nothing changes away from the sprites.
+  The harness snapshots every register of the model at the end of each row.
+  When everything a run of rows depends on equals the previous frame's state
+  at the same row, those rows would replay exactly what they did last frame:
+  the model is set to last frame's state at the end of the run, the canvas
+  keeps last frame's pixels, and the registers that run independently of the
+  frame (the 8-bit LFSRs and the one-second counter) are advanced
+  arithmetically. Rows near Pac-Man and the ghosts, rows of changed tiles,
+  vertical blanking, and the one-second tick are always clocked; while a
+  breakable wall or a fruit is waiting to be placed (which can hit any tile,
+  by LFSR) every row is. About 75-90% of rows are replayed during play.
+  `make ffverify` runs a fully clocked model beside a fast-forwarded one
+  through a scripted session (all five levels, pauses, deaths, wall breaks)
+  and compares every register and every pixel after every frame.
 - The web build runs at half the board's frame rate: `WEB_SCALE=2` (the
   default) moves Pac-Man and the ghosts 2 pixels per frame instead of 1 and
   makes the game-second 36.5 frames instead of 73. Gameplay is the same; only

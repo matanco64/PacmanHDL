@@ -5,6 +5,7 @@
 #   make prog / make flash                    load into SRAM / write to flash
 #   make play                                 play the RTL in a window (Verilator + SDL2)
 #   make web                                  browser build in web/site (Verilator + Emscripten)
+#   make ffverify                             check the browser build's scan fast-forward
 #   make regress                              compare against the recorded golden run
 #   make lint                                 Verilator lint
 
@@ -87,28 +88,57 @@ play: build/sim/play/Vsim_top
 # or 4. 2 is the default (36.5 frames per game-second); WEB_SCALE=1 is the
 # board's exact timing, which make regress checks.
 WEB_SCALE ?= 2
-WEB_SIM := $(COMPACT) -GCLK_HZ=$(shell expr 23369344 / $(WEB_SCALE)) +define+SPEED_SCALE=$(WEB_SCALE) \
-  -fno-dfg -CFLAGS -DWEB_SCALE=$(WEB_SCALE)
+WEB_CLK := $(shell expr 23369344 / $(WEB_SCALE))
+WEB_SIM := $(COMPACT) -GCLK_HZ=$(WEB_CLK) +define+SPEED_SCALE=$(WEB_SCALE) \
+  -fno-dfg -CFLAGS -DWEB_SCALE=$(WEB_SCALE) -CFLAGS -DFF_SEC=$(WEB_CLK)
 WEB_EXPORTS := _pw_init,_pw_reset,_pw_set_inputs,_pw_run_frame,_pw_cycles,_pw_game_fps
+WEB_EXPORTS := $(WEB_EXPORTS),_pw_set_fastforward,_pw_take_skip_ratio
 WEB_LDFLAGS := -O3 -sMODULARIZE=1 -sEXPORT_NAME=createPacman -sENVIRONMENT=worker \
   -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_FUNCTIONS=$(WEB_EXPORTS) -sEXPORTED_RUNTIME_METHODS=HEAPU8 \
   --embed-file $(CURDIR)/assets@/assets
 WEB_MAKEFLAGS := CXX=em++ LINK=em++ AR=emar OPT_FAST=-O3 CFG_LDLIBS_THREADS= UNAME_S=Emscripten
+# The scan fast-forward (web/scanff.h) reads the model's members directly, so the
+# web builds verilate first, list the members of the generated root class into
+# fields.inc, and then compile.
+WEB_HDRS := web/scanff.h
+VERILATE := verilator $(filter-out --build,$(VERILATOR_FLAGS)) $(WEB_SIM)
+FIELDS = awk '/^ *::[A-Za-z]/ && !/static/ && !/\(/ && /;$$/ { n=$$NF; sub(/;$$/,"",n); print "F(" n ")" }' \
+  $(1)/Vsim_top___024root.h > $(1)/fields.inc
+NPROC := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
-web/site/pacman.js: $(SIM_SRC) web/wasm.cpp $(ASSETS)
+web/site/pacman.js: $(SIM_SRC) web/wasm.cpp $(WEB_HDRS) $(ASSETS)
 	@mkdir -p build/sim/web
-	verilator $(VERILATOR_FLAGS) $(WEB_SIM) --Mdir build/sim/web -o pacman.js \
-	  -MAKEFLAGS "$(WEB_MAKEFLAGS)" -LDFLAGS "$(WEB_LDFLAGS)" $(SIM_SRC) web/wasm.cpp
+	$(VERILATE) --Mdir build/sim/web -o pacman.js -CFLAGS "-I$(CURDIR)/web -I$(CURDIR)/build/sim/web" \
+	  -LDFLAGS "$(WEB_LDFLAGS)" $(SIM_SRC) web/wasm.cpp
+	$(call FIELDS,build/sim/web)
+	$(MAKE) -C build/sim/web -f Vsim_top.mk -j$(NPROC) $(WEB_MAKEFLAGS)
 	cp build/sim/web/pacman.js build/sim/web/pacman.wasm web/site/
 
 web: web/site/pacman.js
 
 # native build of the browser harness: prints how fast the model runs
-web-bench: $(SIM_SRC) web/wasm.cpp $(ASSETS)
+web-bench: $(SIM_SRC) web/wasm.cpp $(WEB_HDRS) $(ASSETS)
 	@mkdir -p build/sim/bench
-	verilator $(VERILATOR_FLAGS) $(WEB_SIM) --Mdir build/sim/bench -o bench \
-	  -MAKEFLAGS OPT_FAST=-O3 $(SIM_SRC) web/wasm.cpp
-	build/sim/bench/bench 300
+	$(VERILATE) --Mdir build/sim/bench -o bench -CFLAGS "-I$(CURDIR)/web -I$(CURDIR)/build/sim/bench" \
+	  $(SIM_SRC) web/wasm.cpp
+	$(call FIELDS,build/sim/bench)
+	$(MAKE) -C build/sim/bench -f Vsim_top.mk -j$(NPROC) OPT_FAST=-O3
+	build/sim/bench/bench 300 0
+	build/sim/bench/bench 300 1
+
+# runs a fully clocked model beside a fast-forwarded one and compares every
+# register and pixel of every frame: make ffverify [FF_FRAMES=n] [FF_SEED=n]
+FF_FRAMES ?= 3000
+FF_SEED ?= 1
+build/sim/ffverify/ffverify: $(SIM_SRC) web/ffverify.cpp $(WEB_HDRS) $(ASSETS)
+	@mkdir -p build/sim/ffverify
+	$(VERILATE) --Mdir build/sim/ffverify -o ffverify \
+	  -CFLAGS "-I$(CURDIR)/web -I$(CURDIR)/build/sim/ffverify" $(SIM_SRC) web/ffverify.cpp
+	$(call FIELDS,build/sim/ffverify)
+	$(MAKE) -C build/sim/ffverify -f Vsim_top.mk -j$(NPROC) OPT_FAST=-O3
+
+ffverify: build/sim/ffverify/ffverify
+	$< $(FF_FRAMES) $(FF_SEED)
 
 regress:
 	sim/regress.sh build/sim/regress
@@ -119,4 +149,4 @@ lint:
 clean:
 	rm -rf build
 
-.PHONY: all prog flash play web web-bench regress lint clean
+.PHONY: all prog flash play web web-bench ffverify regress lint clean

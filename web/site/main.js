@@ -15,6 +15,8 @@ const held = new Map(); // source -> mask, so keys and touch buttons combine
 let levelKeyN = 1;
 
 const worker = new Worker('worker.js');
+// ?ff=0 clocks every row instead of replaying rows known from the previous frame
+if (new URLSearchParams(location.search).get('ff') === '0') worker.postMessage({ fastForward: false });
 
 function send() {
   let buttons = 0;
@@ -51,7 +53,9 @@ worker.onmessage = (e) => {
   ctx.putImageData(img, 0, 0);
   if (d.stats) {
     const pct = Math.round(100 * d.stats.fps / d.stats.boardFps);
-    statsEl.textContent = `${d.stats.fps.toFixed(1)} fps simulated · ${pct}% of hardware speed`;
+    const skip = Math.round(100 * d.stats.skip);
+    statsEl.textContent = `${d.stats.fps.toFixed(1)} fps simulated · ${pct}% of hardware speed` +
+      (d.stats.skip > 0 ? ` · ${skip}% of rows replayed` : '');
   }
 };
 worker.onerror = (e) => { overlay.hidden = false; overlay.textContent = 'Failed to load: ' + e.message; };

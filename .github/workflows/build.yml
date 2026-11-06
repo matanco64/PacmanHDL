@@ -33,3 +33,5 @@ jobs:
         with:
           osscadsuite-version: '2026-10-18'
       - run: make regress
+      # browser build: the scan fast-forward must match a fully clocked model
+      - run: make ffverify FF_FRAMES=2000

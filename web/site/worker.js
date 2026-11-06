@@ -2,15 +2,18 @@
 importScripts('pacman.js');
 
 const W = 640, H = 480;
-let buttons = 0, levelKeyN = 1, resetPending = false;
+let buttons = 0, levelKeyN = 1, resetPending = false, fastForward = true, m = null;
 
 onmessage = (e) => {
   if (e.data.reset) resetPending = true;
+  else if ('fastForward' in e.data) { fastForward = e.data.fastForward; if (m) m._pw_set_fastforward(fastForward); }
   else ({ buttons, levelKeyN } = e.data);
 };
 
-createPacman().then((m) => {
+createPacman().then((mod) => {
+  m = mod;
   m._pw_init();
+  m._pw_set_fastforward(fastForward);
   const BOARD_FPS = m._pw_game_fps(); // ~73, or 73/N for a WEB_SCALE=N build
   postMessage({ type: 'ready' });
   let next = performance.now();
@@ -30,7 +33,7 @@ createPacman().then((m) => {
     let stats = null;
     const t = performance.now();
     if (t - statT > 1000) {
-      stats = { fps: frames * 1000 / (t - statT), boardFps: BOARD_FPS };
+      stats = { fps: frames * 1000 / (t - statT), boardFps: BOARD_FPS, skip: m._pw_take_skip_ratio() };
       frames = 0; statT = t;
     }
     postMessage({ type: 'frame', px: px.buffer, stats }, [px.buffer]);
