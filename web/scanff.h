@@ -307,6 +307,9 @@ class Runner {
     std::memcpy(&v, s + f->poff, std::min<uint32_t>(f->size, 4));
     return v;
   }
+  // First y row of map row t. The scan's tile row is y/16 - 1 in 5 bits, so map row
+  // t is scanned on y rows 16(t+1)..16(t+1)+15, and row 31 on y rows 0..15.
+  static int tileRow(int t) { return (16 * (t + 1)) & 511; }
   static bool same(const uint8_t* a, const uint8_t* b, const Field& f) {
     return std::memcmp(a + f.poff, b + f.poff, f.size) == 0;
   }
@@ -345,7 +348,7 @@ class Runner {
       if (f.kind == K_MAP) {
         for (uint32_t t = 0; t < f.size; ++t)
           if (cur[f.poff + t] != prev[f.poff + t]) {
-            int y0 = int((t & 31) + 1) * 16 - 2, y1 = int((t & 31) + 1) * 16 + 17;  // map row k is drawn at y 16(k+1)
+            int y0 = tileRow(int(t & 31)) - 2, y1 = tileRow(int(t & 31)) + 17;
             if (y1 >= a) stop = std::min(stop, std::max(y0, a));
           }
       } else if (f.kind == K_ROWS) {
@@ -354,7 +357,7 @@ class Runner {
         // power pellets: rows of tiles holding one, in either frame's map
         for (uint32_t t = 0; t < fMap->size; ++t)
           if (cur[fMap->poff + t] == 5 || prev[fMap->poff + t] == 5) {
-            int y0 = int((t & 31) + 1) * 16 - 2, y1 = int((t & 31) + 1) * 16 + 17;  // map row k is drawn at y 16(k+1)
+            int y0 = tileRow(int(t & 31)) - 2, y1 = tileRow(int(t & 31)) + 17;
             if (y1 >= a) stop = std::min(stop, std::max(y0, a));
           }
       } else if (f.kind == K_LOCAL) {
@@ -363,14 +366,22 @@ class Runner {
         const Field* fy = fSpriteY[f.sprite];
         int y0 = int(std::min(val(cur, fy), val(prev, fy)));
         int y1 = int(std::max(val(cur, fy), val(prev, fy)));
-        // drawn on rows y..y+h (Pac-Man 16, ghosts 32); the tiles around it are read
-        // on map rows tile-1..tile+1, i.e. y rows 16*floor(y/16) - 16 .. + 32
-        int lo, hi;
-        if (f.tileBand) { lo = (y0 & ~15) - 16; hi = (y1 & ~15) + 32; }
-        else { lo = y0; hi = y1 + (f.sprite == 0 ? 16 : 32); }
-        lo -= 2; hi += 2;
-        if (f.sprite == 0) { lo -= fogMargin; hi += fogMargin; }
-        if (hi >= a) stop = std::max(lo, a);
+        if (f.tileBand) {
+          // the tiles around it are read on map rows tile-1..tile+1, where tile is
+          // y/16 - 1 in 5 bits (in the vertical tunnel, y >= 512, it wraps to 0)
+          for (int yy : {y0, y1})
+            for (int k = -1; k <= 1; ++k) {
+              int t = ((yy >> 4) - 1 + k) & 31;
+              int lo = tileRow(t) - 2, hi = tileRow(t) + 17;
+              if (hi >= a) stop = std::min(stop, std::max(lo, a));
+            }
+        } else {
+          // drawn on rows y..y+h (Pac-Man 16, ghosts 32); the fog (levels 3-5) is a
+          // circle around Pac-Man
+          int lo = y0 - 2, hi = y1 + (f.sprite == 0 ? 16 : 32) + 2;
+          if (f.sprite == 0) { lo -= fogMargin; hi += fogMargin; }
+          if (hi >= a) stop = std::min(stop, std::max(lo, a));
+        }
       } else {
         stop = a;
       }
@@ -384,7 +395,8 @@ class Runner {
       }
     }
     if (debugFrame == frames) {
-      std::printf("f%ld row %d: skip %d..%d, differs:", frames, v, a, b);
+      std::printf("f%ld row %d: skip %d..%d, pacY %u/%u level %d, differs:", frames, v, a, b, val(cur, fSpriteY[0]),
+                  val(prev, fSpriteY[0]), level);
       for (int i : diff) std::printf(" %s", fields[i].name + 25);
       std::printf("\n");
     }
