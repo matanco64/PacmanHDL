@@ -4,105 +4,267 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PacmanHDL</title>
-<meta name="description" content="Pac-Man written in SystemVerilog for FPGAs, playable in the browser as a cycle-accurate Verilator simulation compiled to WebAssembly.">
+<meta name="description" content="Pac-Man written in SystemVerilog for FPGAs, playable in the browser as a Verilator simulation of the real RTL, compiled to WebAssembly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0d12; --panel: #141821; --text: #e8eaf0; --muted: #98a0b3;
-    --accent: #ffd23f; --line: #262c3a; --key: #1d2230;
+    --sky: #120634; --page: #0a0428; --page-dark: #140a48; --navy: #ff3fb4; --cyan: #18e3ff;
+    --chrome: #c3c3c3; --chrome-hi: #ffffff; --chrome-lo: #808080; --chrome-dk: #000000;
+    --title1: #000a80; --title2: #1084d0; --yellow: #fff200; --ink: #000;
+    --pixel: "Press Start 2P", "Courier New", monospace;
+    --term: "VT323", "Courier New", monospace;
+    --ui: Tahoma, Verdana, "Segoe UI", sans-serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
-  h1 { font-size: 2rem; margin: 0 0 4px; letter-spacing: .5px; }
-  h1 span { color: var(--accent); }
-  h2 { font-size: 1.15rem; margin: 40px 0 12px; }
-  .lede { color: var(--muted); margin: 0 0 24px; max-width: 72ch; }
-  a { color: var(--accent); }
-  code { font: .9em ui-monospace, monospace; }
-  .screen { position: relative; background: #000; border: 1px solid var(--line); border-radius: 8px;
-            overflow: hidden; aspect-ratio: 4 / 3; width: 100%; }
-  canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
-  .overlay { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted);
-             background: rgba(0,0,0,.6); font-size: 1.1rem; text-align: center; padding: 16px; }
+  html { background: var(--sky); }
+  body {
+    margin: 0; min-height: 100vh; padding: 28px 12px 40px; color: var(--ink); font: 13px/1.45 var(--ui);
+    /* 90s arcade carpet */
+    background: #120634 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Crect width='160' height='160' fill='%23120634'/%3E%3Cg fill='none' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 30 l8 -8 l8 8 l8 -8 l8 8' stroke='%2318e3ff'/%3E%3Ccircle cx='118' cy='28' r='9' stroke='%23ff3fb4'/%3E%3Cpath d='M60 70 l14 0 l-7 -12 z' stroke='%23fff200'/%3E%3Cpath d='M120 96 q10 -14 20 0 t20 0' stroke='%2318e3ff'/%3E%3Ccircle cx='30' cy='122' r='5' stroke='%237dff4f'/%3E%3Cpath d='M80 130 l10 10 m0 -10 l-10 10' stroke='%23ff3fb4'/%3E%3Cpath d='M140 150 l6 -10 l6 10 z' stroke='%237dff4f'/%3E%3Cpath d='M8 78 q6 -10 12 0 t12 0' stroke='%23ff8a1f'/%3E%3C/g%3E%3Cg fill='%23fff200'%3E%3Ccircle cx='96' cy='54' r='2.5'/%3E%3Ccircle cx='44' cy='96' r='2'/%3E%3Ccircle cx='150' cy='70' r='2'/%3E%3C/g%3E%3Cg fill='%2318e3ff'%3E%3Ccircle cx='112' cy='132' r='2'/%3E%3Ccircle cx='60' cy='16' r='2'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 160px 160px;
+  }
+  a { color: var(--yellow); }
+  code { font: 1.15em var(--term); }
+
+  /* bevels */
+  .raised { background: var(--chrome);
+    box-shadow: inset -1px -1px var(--chrome-dk), inset 1px 1px var(--chrome-hi), inset -2px -2px var(--chrome-lo), inset 2px 2px #dfdfdf; }
+  .sunken { box-shadow: inset 1px 1px var(--chrome-lo), inset -1px -1px var(--chrome-hi), inset 2px 2px var(--chrome-dk), inset -2px -2px #dfdfdf; }
+
+  /* the browser window */
+  .window { max-width: 1080px; margin: 0 auto; padding: 3px; }
+  .titlebar { display: flex; align-items: center; gap: 6px; padding: 3px 3px 3px 6px; color: #fff; font-weight: bold;
+    background: linear-gradient(90deg, var(--title1), var(--title2)); user-select: none; }
+  .titlebar .icon { width: 16px; height: 16px; border-radius: 50%;
+    background: conic-gradient(from 60deg, transparent 0 60deg, var(--yellow) 60deg 360deg); }
+  .titlebar .t { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .titlebar .btns { display: flex; gap: 2px; }
+  .titlebar .btns span { width: 18px; height: 16px; display: grid; place-items: center; color: #000;
+    font: bold 11px/1 var(--ui); }
+  .menubar { display: flex; gap: 2px; padding: 2px 4px; }
+  .menubar span { padding: 1px 6px; }
+  .menubar span::first-letter { text-decoration: underline; }
+  .addr { display: flex; align-items: center; gap: 6px; padding: 3px 6px 5px; border-top: 1px solid var(--chrome-lo); }
+  .addr .field { flex: 1; background: #fff; padding: 2px 6px; font: 12px var(--ui); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  .addr .go { padding: 2px 10px; }
+
+  /* the page inside */
+  .viewport { margin: 2px 2px 0; background: var(--page); padding: 14px; }
+  /* starfield over a neon horizon grid */
+  .banner { position: relative; overflow: hidden; padding: 26px 16px 46px; text-align: center;
+    border: 3px solid var(--cyan); box-shadow: 0 0 12px var(--cyan), inset 0 0 12px rgba(24, 227, 255, .35);
+    background:
+      radial-gradient(1.5px 1.5px at 12% 22%, #fff 99%, transparent), radial-gradient(1px 1px at 31% 12%, #fff 99%, transparent),
+      radial-gradient(1.5px 1.5px at 47% 30%, #fff200 99%, transparent), radial-gradient(1px 1px at 66% 16%, #fff 99%, transparent),
+      radial-gradient(1.5px 1.5px at 82% 26%, #18e3ff 99%, transparent), radial-gradient(1px 1px at 92% 10%, #fff 99%, transparent),
+      radial-gradient(1px 1px at 5% 48%, #fff 99%, transparent), radial-gradient(1px 1px at 58% 44%, #ff3fb4 99%, transparent),
+      linear-gradient(#05011a, #1b0a52 62%, #4a0f6b 63%, #12062e); }
+  .banner::after { content: ""; position: absolute; left: -50%; right: -50%; bottom: 0; height: 38%;
+    background:
+      repeating-linear-gradient(90deg, rgba(255, 63, 180, .8) 0 2px, transparent 2px 40px),
+      repeating-linear-gradient(0deg, rgba(255, 63, 180, .8) 0 2px, transparent 2px 14px);
+    transform: perspective(120px) rotateX(55deg); transform-origin: bottom; opacity: .75; pointer-events: none; }
+  .banner h1, .banner .tagline { position: relative; z-index: 1; }
+  .banner h1 { margin: 0; font: 34px/1.2 var(--pixel); color: #fff; letter-spacing: 2px;
+    text-shadow: 3px 3px 0 var(--navy), -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000,
+      0 0 18px var(--navy); }
+  .banner h1 b { color: var(--yellow); font-weight: normal; }
+  .banner .pac { display: inline-block; width: 30px; height: 30px; border-radius: 50%; vertical-align: -2px;
+    margin-left: 10px; background: conic-gradient(from 60deg, transparent 0 60deg, var(--yellow) 60deg 360deg);
+    animation: chomp .35s steps(2) infinite alternate; }
+  @keyframes chomp { to { background: conic-gradient(from 80deg, transparent 0 20deg, var(--yellow) 20deg 360deg); } }
+  .banner .dots { position: absolute; left: 0; right: 0; bottom: 30%; height: 6px; z-index: 1;
+    background: radial-gradient(circle, #ffd7a8 2px, transparent 2.5px) 0 0 / 22px 6px repeat-x; }
+  .tagline { margin: 10px 0 0; color: #dff2ff; font: 20px/1.1 var(--term); }
+  nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 22px; margin: 12px 0 14px;
+    font: 10px/1.6 var(--pixel); }
+  nav a { color: #fff; text-decoration: none; text-shadow: 2px 2px 0 var(--navy); }
+  nav a:hover { color: var(--yellow); }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 14px; align-items: start; }
+  .box { background: var(--page-dark); border: 3px solid var(--cyan); padding: 10px;
+    box-shadow: 0 0 10px rgba(24, 227, 255, .45); }
+  .box + .box { margin-top: 14px; }
+  .box h2 { margin: -10px -10px 10px; padding: 6px 10px; background: var(--navy); color: #fff;
+    font: 10px/1.6 var(--pixel); letter-spacing: 1px; text-shadow: 2px 2px 0 #6a0a48; }
+  .lede { margin: 0 0 12px; color: #fff; font-size: 13px; }
+
+  .screen { position: relative; background: #000; padding: 6px; }
+  canvas { display: block; width: 100%; aspect-ratio: 4 / 3; image-rendering: pixelated; background: #000; }
+  /* CRT scanlines and vignette over the picture */
+  .screen::after { content: ""; position: absolute; inset: 6px; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .22) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, .45)); }
+  .overlay { position: absolute; inset: 6px; display: grid; place-items: center; text-align: center; padding: 16px;
+    background: rgba(0, 0, 20, .75); color: var(--yellow); font: 12px/1.8 var(--pixel); }
   .overlay[hidden] { display: none; }
-  .bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between;
-         margin: 10px 0 0; color: var(--muted); font-size: .9rem; }
-  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px 24px;
-              background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-top: 16px; }
-  .controls div { display: flex; gap: 10px; align-items: baseline; }
-  kbd { background: var(--key); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px;
-        padding: 1px 6px; font: 600 .8rem ui-monospace, monospace; color: var(--text); white-space: nowrap; }
-  .pad { display: none; gap: 6px; justify-content: center; margin-top: 12px;
-         grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(2, 48px); }
-  .pad button { background: var(--key); color: var(--text); border: 1px solid var(--line); border-radius: 8px;
-                font-size: 1.2rem; touch-action: none; }
-  .pad .up { grid-column: 2; }
+  .hint { margin: 8px 0 0; color: #dff2ff; font: 18px/1.1 var(--term); }
+
+  .pad { display: none; gap: 6px; justify-content: center; margin-top: 10px;
+    grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(2, 50px); }
+  .pad button { font: 16px var(--ui); color: #000; border: 0; touch-action: none; }
+  .pad button:active { box-shadow: inset 1px 1px var(--chrome-dk), inset -1px -1px var(--chrome-hi), inset 2px 2px var(--chrome-lo); }
+  .pad .up { grid-column: 2; grid-row: 1; }
+  .pad [data-k="4"] { grid-column: 1; grid-row: 2; }
+  .pad [data-k="2"] { grid-column: 2; grid-row: 2; }
+  .pad [data-k="8"] { grid-column: 3; grid-row: 2; }
   @media (pointer: coarse) { .pad { display: grid; } }
-  .photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
-  .photos figure { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-  .photos img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #000; }
-  .photos .slot { aspect-ratio: 4 / 3; display: grid; place-items: center; color: var(--muted); font-size: .9rem;
-                  border-bottom: 1px dashed var(--line); padding: 16px; text-align: center; }
-  .photos figcaption { padding: 8px 12px; color: var(--muted); font-size: .9rem; }
-  .how { color: var(--muted); max-width: 75ch; }
-  .how li { margin: 4px 0; }
-  footer { margin-top: 48px; color: var(--muted); font-size: .85rem; max-width: 75ch; }
+
+  .keys { display: grid; gap: 8px; }
+  .keys div { display: flex; align-items: center; gap: 8px; color: #fff; }
+  kbd { display: inline-block; min-width: 26px; padding: 3px 6px; text-align: center; color: #000;
+    font: 10px/1.4 var(--pixel); white-space: nowrap; }
+
+  /* live counters */
+  .stat { margin-bottom: 10px; }
+  .stat:last-of-type { margin-bottom: 4px; }
+  .stat .label { color: #cfe8ff; font: 18px/1 var(--term); margin-bottom: 3px; }
+  .odo { display: flex; gap: 2px; }
+  .odo span { width: 26px; height: 36px; display: grid; place-items: center; color: #fff; font: 34px/1 var(--term);
+    background: linear-gradient(#5b2bd6, #2a0f8a 48%, #10085a 52%, #3a1ab8); border: 1px solid #000;
+    box-shadow: inset 0 0 0 1px #8a6cff; text-shadow: 0 0 6px #b9a6ff; }
+  .odo small { align-self: end; margin-left: 4px; color: #fff; font: 20px/1 var(--term); }
+  .stat .sub { color: #cfe8ff; font: 15px/1.1 var(--term); margin-top: 2px; }
+  .modes { margin-top: 10px; font: 16px/1.2 var(--term); color: #fff; }
+  .btn { display: inline-block; padding: 5px 10px; color: #000; text-decoration: none; font: 9px/1.6 var(--pixel); }
+  .btn.yellow { background: var(--yellow); box-shadow: inset -2px -2px #b3a700, inset 2px 2px #fffbb0; }
+
+  .photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .photos figure { margin: 0; padding: 4px; }
+  .photos img, .photos .slot { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #000; }
+  .photos .slot { display: grid; place-items: center; padding: 14px; text-align: center; color: #9aa;
+    font: 17px/1.15 var(--term); background: repeating-linear-gradient(45deg, #101a3a 0 10px, #0c1430 10px 20px); }
+  .photos figcaption { padding: 6px 4px 2px; color: #000; font-size: 12px; }
+
+  ol.how { margin: 0; padding-left: 22px; color: #fff; }
+  ol.how li { margin: 6px 0; }
+  ol.how li::marker { color: var(--yellow); font: 10px var(--pixel); }
+  .credits { color: #dff2ff; margin: 10px 0 0; }
+
+  .statusbar { display: flex; gap: 2px; margin: 3px 2px 0; }
+  .statusbar span { padding: 2px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .statusbar span:first-child { flex: 1; }
+
+  @media (max-width: 820px) {
+    body { padding: 0; }
+    .menubar, .addr .go, .statusbar span:not(:first-child) { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    .banner h1 { font-size: 22px; }
+    .viewport { padding: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .banner .pac { animation: none; } }
 </style>
 </head>
 <body>
-<main>
-  <h1>Pacman<span>HDL</span></h1>
-  <p class="lede">Pac-Man built entirely in hardware: maze, four ghosts with their own chase rules, power pellets,
-    fruit, breakable walls and five levels, all computed in SystemVerilog as the screen is scanned. There is no CPU and
-    no frame buffer. What you play here is not a re-implementation. It is the actual RTL, simulated clock cycle by
-    clock cycle with Verilator and compiled to WebAssembly, with the display output sampled into the canvas.</p>
-
-  <div class="screen">
-    <canvas id="screen" width="640" height="480" aria-label="Game screen"></canvas>
-    <div class="overlay" id="overlay">Loading the hardware design…</div>
+<div class="window raised">
+  <div class="titlebar">
+    <span class="icon" aria-hidden="true"></span>
+    <span class="t">PacmanHDL – Hardware Explorer</span>
+    <span class="btns" aria-hidden="true"><span class="raised">_</span><span class="raised">□</span><span class="raised">×</span></span>
   </div>
-  <div class="bar">
-    <span>Keyboard controls are below. The game starts after a short countdown.</span>
-    <span id="stats">–</span>
-  </div>
-  <div class="pad" id="pad">
-    <button class="up" data-k="1" aria-label="Up">▲</button>
-    <button data-k="4" aria-label="Left">◀</button><button data-k="2" aria-label="Down">▼</button><button data-k="8" aria-label="Right">▶</button>
+  <div class="menubar" aria-hidden="true"><span>File</span><span>Edit</span><span>View</span><span>Favorites</span><span>Help</span></div>
+  <div class="addr">
+    <span>Address:</span>
+    <span class="field sunken" id="address">https://matanco64.github.io/PacmanHDL/</span>
+    <span class="go raised" aria-hidden="true">Go</span>
   </div>
 
-  <div class="controls">
-    <div><kbd>← ↑ → ↓</kbd><span>move (or WASD)</span></div>
-    <div><kbd>P</kbd> <kbd>Enter</kbd><span>pause / resume</span></div>
-    <div><kbd>Z</kbd> <kbd>X</kbd> <kbd>C</kbd><span>break a wall, in that order</span></div>
-    <div><kbd>N</kbd><span>next level (board button S2)</span></div>
-    <div><kbd>R</kbd><span>reset (board button S1)</span></div>
+  <div class="viewport sunken">
+    <header class="banner">
+      <h1>Pacman<b>HDL</b><span class="pac" aria-hidden="true"></span></h1>
+      <p class="tagline">Pac-Man in pure hardware &middot; no CPU &middot; no frame buffer</p>
+      <div class="dots" aria-hidden="true"></div>
+    </header>
+    <nav>
+      <a href="#play">Play</a><a href="#hardware">Hardware</a><a href="#how">How&nbsp;it&nbsp;works</a>
+      <a href="https://github.com/matanco64/PacmanHDL">Source</a>
+    </nav>
+
+    <div class="layout">
+      <div>
+        <section class="box" id="play">
+          <h2>&#9654; Insert coin</h2>
+          <p class="lede">Maze, four ghosts with their own chase rules, power pellets, fruit, breakable walls and five
+            levels, all computed in SystemVerilog as the screen is scanned. What you play here is not a
+            re-implementation: it is the actual RTL, simulated with Verilator and compiled to WebAssembly, with its
+            display signals sampled into the canvas the way a monitor would.</p>
+          <div class="screen sunken">
+            <canvas id="screen" width="640" height="480" aria-label="Game screen"></canvas>
+            <div class="overlay" id="overlay">Loading the<br>hardware design…</div>
+          </div>
+          <p class="hint">Use the arrow keys, or the pad on a touch screen. The game starts after a short countdown.</p>
+          <div class="pad" id="pad">
+            <button class="up raised" data-k="1" aria-label="Up">▲</button>
+            <button class="raised" data-k="4" aria-label="Left">◀</button><button class="raised" data-k="2" aria-label="Down">▼</button><button class="raised" data-k="8" aria-label="Right">▶</button>
+          </div>
+        </section>
+
+        <section class="box" id="hardware">
+          <h2>On the real hardware</h2>
+          <div class="photos">
+            <!-- Put photos in web/site/photos/ and replace a slot with:
+                 <figure class="raised"><img src="photos/de10.jpg" alt="…"><figcaption>…</figcaption></figure> -->
+            <figure class="raised"><div class="slot">photo: DE10-Standard running the game</div><figcaption>The original: Intel Cyclone V on the DE10-Standard, 640×480 VGA</figcaption></figure>
+            <figure class="raised"><div class="slot">photo: gameplay on the VGA monitor</div><figcaption>Gameplay on the VGA monitor</figcaption></figure>
+            <figure class="raised"><div class="slot">photo: Tang Nano 9K with the 5" LCD</div><figcaption>The port: Sipeed Tang Nano 9K (Gowin GW1NR-9), open-source toolchain</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="box" id="how">
+          <h2>How this works</h2>
+          <ol class="how">
+            <li>The game core is the same RTL that is synthesized for the Tang Nano boards. It is checked frame by
+              frame against a golden run recorded from the original DE10-Standard design.</li>
+            <li>Verilator compiles it to C++, and Emscripten compiles that to WebAssembly. A Web Worker runs the
+              design and samples its display signals (RGB, data enable, VSYNC) into the canvas.</li>
+            <li>A frame is about 320,000 clock cycles. Rows that would play out exactly as in the previous frame are
+              replayed from a saved snapshot of every register; the rest (around Pac-Man and the ghosts, changed tiles,
+              the one-second tick) are clocked cycle by cycle. A test runs this beside the fully clocked model and
+              compares every register and every pixel of every frame. <a href="?ff=0">Clock every row</a> to see the
+              difference.</li>
+            <li>Your keys become the same 8-button mask the board receives over USB-serial.</li>
+          </ol>
+          <p class="credits">Originally a pair project in the Technion EE Lab 1A course (044157), then ported to
+            open-source tools. Source: <a href="https://github.com/matanco64/PacmanHDL">github.com/matanco64/PacmanHDL</a></p>
+        </section>
+      </div>
+
+      <aside>
+        <section class="box">
+          <h2>Live from the RTL</h2>
+          <div class="stat"><div class="label">Frames / second</div><div class="odo" id="odo-fps"></div></div>
+          <div class="stat"><div class="label">Board speed</div><div class="odo" id="odo-speed"></div></div>
+          <div class="stat"><div class="label">Rows replayed</div><div class="odo" id="odo-skip"></div>
+            <div class="sub" id="mode"></div></div>
+          <div class="modes" id="stats">–</div>
+        </section>
+        <section class="box">
+          <h2>Controls</h2>
+          <div class="keys">
+            <div><kbd class="raised">←↑→↓</kbd><span>move (or WASD)</span></div>
+            <div><kbd class="raised">P</kbd><span>pause / resume</span></div>
+            <div><kbd class="raised">Z</kbd><kbd class="raised">X</kbd><kbd class="raised">C</kbd><span>break a wall</span></div>
+            <div><kbd class="raised">N</kbd><span>next level (S2)</span></div>
+            <div><kbd class="raised">R</kbd><span>reset (S1)</span></div>
+          </div>
+        </section>
+        <section class="box">
+          <h2>Get the source</h2>
+          <p class="lede">SystemVerilog, open-source FPGA build, Verilator simulator and this page.</p>
+          <a class="btn yellow" href="https://github.com/matanco64/PacmanHDL">GitHub &#9658;</a>
+        </section>
+      </aside>
+    </div>
   </div>
 
-  <h2>On the real hardware</h2>
-  <div class="photos">
-    <!-- Put photos in web/site/photos/ and replace a slot with:
-         <figure><img src="photos/de10.jpg" alt="…"><figcaption>…</figcaption></figure> -->
-    <figure><div class="slot">photo: DE10-Standard running the game</div><figcaption>The original: Intel Cyclone V on the DE10-Standard, 640×480 VGA</figcaption></figure>
-    <figure><div class="slot">photo: gameplay on the VGA monitor</div><figcaption>Gameplay on the VGA monitor</figcaption></figure>
-    <figure><div class="slot">photo: Tang Nano 9K with the 5" LCD</div><figcaption>The port: Sipeed Tang Nano 9K (Gowin GW1NR-9), open-source toolchain</figcaption></figure>
+  <div class="statusbar" aria-hidden="true">
+    <span class="sunken" id="status">Loading…</span>
+    <span class="sunken">Verilator + WebAssembly</span>
+    <span class="sunken">&#127760; Internet</span>
   </div>
-
-  <h2>How this works</h2>
-  <ol class="how">
-    <li>The game core is the same RTL that is synthesized for the Tang Nano boards. It is checked frame by frame
-      against a golden run recorded from the original DE10-Standard design.</li>
-    <li>Verilator compiles it to C++, and Emscripten compiles that to WebAssembly. A Web Worker clocks the design one
-      pixel at a time, about 320,000 cycles per frame, and samples the display signals (RGB, data enable, VSYNC) into
-      the canvas the way a monitor would.</li>
-    <li>Your keys become the same 8-button mask the board receives over USB-serial.</li>
-  </ol>
-  <p class="how">Originally a pair project in the Technion EE Lab 1A course (044157), then ported to open-source tools.
-    Source: <a href="https://github.com/matanco64/PacmanHDL">github.com/matanco64/PacmanHDL</a></p>
-
-  <footer>Nothing is skipped: every clock cycle of the hardware is simulated. On most computers that is slower than
-    the board's 73 frames per second, so the game runs in slow motion. The speed is shown under the screen.</footer>
-</main>
+</div>
 <script src="main.js"></script>
 </body>
 </html>
